@@ -1,120 +1,128 @@
 <!-- 表格头部，包含表格大小、刷新、全屏、列设置、其他设置 -->
 <template>
-  <div
-    class="flex-cb max-md:block!"
-    id="zen-table-header"
-  >
-    <div class="left">
-      <!-- 搜索栏组件 -->
-      <ZenSearchBar
-        v-if="searchConfig"
-        v-model="searchFormData"
-        v-bind="searchConfig"
-        @search="handleSearch"
-      />
-
+  <div class="flex-cb max-md:block!" id="art-table-header">
+    <div class="flex-wrap">
       <slot name="left"></slot>
     </div>
 
-    <div class="right">
-      <!-- 列设置 -->
-      <ElPopover
-        v-if="shouldShow('columns')"
-        placement="bottom"
-        trigger="click"
+    <div class="flex-c md:justify-end max-md:mt-3 max-sm:hidden!">
+      <div
+        v-if="showSearchBar != null"
+        class="button"
+        @click="search"
+        :class="showSearchBar ? 'active bg-theme! hover:bg-theme/80!' : ''"
       >
+        <ZenSvgIcon icon="ri:search-line" :class="showSearchBar ? 'text-white' : 'text-g-700'" />
+      </div>
+      <!-- 列设置 -->
+      <ElPopover v-if="shouldShow('columns')" placement="bottom" trigger="click">
         <template #reference>
-          <div class="btn">00</div>
+          <div class="button">
+            <ArtSvgIcon icon="ri:align-right" />
+          </div>
         </template>
         <div>
-          <VueDraggable
-            v-model="columns"
-            :disabled="false"
-            filter=".fixed-column"
-            :preventOnFilter="false"
-          >
-            <div
-              v-for="item in columns"
-              :key="item.prop || item.type"
-              class="column-option"
-              :class="{ 'fixed-column': item.fixed }"
+          <ElScrollbar max-height="380px">
+            <VueDraggable
+              v-model="columns"
+              :disabled="false"
+              filter=".fixed-column"
+              :preventOnFilter="false"
+              @move="checkColumnMove"
             >
               <div
-                class="drag-icon"
-                :class="{ disabled: item.fixed }"
+                v-for="item in columns"
+                :key="item.prop || item.type"
+                class="column-option flex-c"
+                :class="{ 'fixed-column': item.fixed }"
               >
-                <i class="iconfont-sys">{{ item.fixed ? '&#xe648;' : '&#xe648;' }}</i>
+                <div
+                  class="drag-icon mr-2 h-4.5 flex-cc text-g-500"
+                  :class="item.fixed ? 'cursor-default text-g-300' : 'cursor-move'"
+                >
+                  <ArtSvgIcon
+                    :icon="item.fixed ? 'ri:unpin-line' : 'ri:drag-move-2-fill'"
+                    class="text-base"
+                  />
+                </div>
+                <ElCheckbox
+                  :modelValue="getColumnVisibility(item)"
+                  @update:model-value="(val) => updateColumnVisibility(item, val)"
+                  :disabled="item.disabled"
+                  class="flex-1 min-w-0 [&_.el-checkbox__label]:overflow-hidden [&_.el-checkbox__label]:text-ellipsis [&_.el-checkbox__label]:whitespace-nowrap"
+                  >{{
+                    item.label || (item.type === 'selection' ? t('table.selection') : '')
+                  }}</ElCheckbox
+                >
               </div>
-              <ElCheckbox
-                v-model="item.checked"
-                :disabled="item.disabled"
-              >
-                {{ item.label || (item.type === 'selection' ? t('table.selection') : '') }}
-              </ElCheckbox>
-            </div>
-          </VueDraggable>
+            </VueDraggable>
+          </ElScrollbar>
         </div>
       </ElPopover>
-
+      <!-- 其他设置 -->
+      <ElPopover v-if="shouldShow('settings')" placement="bottom" trigger="click">
+        <template #reference>
+          <div class="button">
+            <ArtSvgIcon icon="ri:settings-line" />
+          </div>
+        </template>
+        <div>
+          <ElCheckbox v-if="showZebra" v-model="isZebra" :value="true">{{
+            t('table.zebra')
+          }}</ElCheckbox>
+          <ElCheckbox v-if="showBorder" v-model="isBorder" :value="true">{{
+            t('table.border')
+          }}</ElCheckbox>
+          <ElCheckbox v-if="showHeaderBackground" v-model="isHeaderBackground" :value="true">{{
+            t('table.headerBackground')
+          }}</ElCheckbox>
+        </div>
+      </ElPopover>
       <slot name="right"></slot>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { TableSizeEnum } from '@/enums/formEnum';
 import { useTableStore } from '@/store/modules/table';
-import { ElPopover } from 'element-plus';
 import { VueDraggable } from 'vue-draggable-plus';
 import { useI18n } from 'vue-i18n';
-import ZenSearchBar from '@/components/core/forms/zen-search-bar/index.vue';
 import type { ColumnOption } from '@/types/component';
-import type { SearchFormItem } from '@/components/core/forms/zen-search-bar/index.vue';
+import { ElScrollbar } from 'element-plus';
 
 defineOptions({ name: 'ZenTableHeader' });
 
 const { t } = useI18n();
 
-interface SearchBarConfig {
-  items: SearchFormItem[];
-  span?: number;
-  gutter?: number;
-  labelPosition?: 'left' | 'right'| 'top';
-  labelWidth?: string | number;
-  buttonLeftLimit?: number;
-  showSearch?: boolean;
-  disabledSearch?: boolean;
-}
+  interface Props {
 
-interface Props {
-  showZebra?: boolean;
-  showBorder?: boolean;
-  showHeaderBackground?: boolean;
-  fullClass?: string;
-  layout?: string;
-  loading?: boolean;
-  showSearchBar?: boolean;
-  tableSize?: TableSizeEnum;
-  isZebra?: boolean;
-  isBorder?: boolean;
-  isHeaderBackground?: boolean;
-  searchConfig?: SearchBarConfig;
-}
+    /** 斑马纹 */
+    showZebra?: boolean
+
+    /** 边框 */
+    showBorder?: boolean
+
+    /** 表头背景 */
+    showHeaderBackground?: boolean
+
+    /** 组件布局，子组件名用逗号分隔 */
+    layout?: string
+
+    /** 加载中 */
+    loading?: boolean
+
+    /** 搜索栏显示状态 */
+    showSearchBar?: boolean
+  }
 
 const props = withDefaults(defineProps<Props>(), {
-  fullClass: 'art-page-view',
-  isBorder: undefined,
-  isHeaderBackground: undefined,
-  isZebra: undefined,
-  layout: 'search,size,columns,settings',
-  searchConfig: undefined,
+  layout: 'search,columns,settings',
   showBorder: true,
   showHeaderBackground: true,
   showSearchBar: undefined,
   showZebra: true,
-  tableSize: undefined,
 });
 
 const columns = defineModel<ColumnOption[]>('columns', {
@@ -123,30 +131,34 @@ const columns = defineModel<ColumnOption[]>('columns', {
 });
 
 const emit = defineEmits<{
-  (e: 'search'): void;
-  (e: 'update:showSearchBar', value: boolean): void;
-  (e: 'search-data', data: Record<string, any>): void;
-}>();
-
-/** 表格大小选项配置 */
-const tableSizeOptions = [
-  { label: t('table.sizeOptions.small'), value: TableSizeEnum.SMALL },
-  { label: t('table.sizeOptions.default'), value: TableSizeEnum.DEFAULT },
-  { label: t('table.sizeOptions.large'), value: TableSizeEnum.LARGE },
-];
+    (e: 'search'): void
+    (e: 'update:showSearchBar', value: boolean): void
+  }>();
 
 /**
- * 获取表格大小对应的标签文本
- * @returns 表格大小标签
- */
-const getTableSizeLabel = () => {
-  const currentSize = props.tableSize ?? tableSize.value;
-  const option = tableSizeOptions.find((item) => item.value === currentSize);
-  return option ? option.label : '';
+   * 获取列的显示状态
+   * 优先使用 visible 字段，如果不存在则使用 checked 字段
+   */
+const getColumnVisibility = (col: ColumnOption): boolean => {
+  if (col.visible !== undefined) {
+    return col.visible;
+  }
+  return col.checked ?? true;
 };
 
+/**
+   * 更新列的显示状态
+   * 同时更新 checked 和 visible 字段以保持兼容性
+   */
+const updateColumnVisibility = (col: ColumnOption, value: boolean | string | number): void => {
+  const boolValue = !!value;
+  col.checked = boolValue;
+  col.visible = boolValue;
+};
+
+
 const tableStore = useTableStore();
-const { tableSize } = storeToRefs(tableStore);
+const { isBorder, isHeaderBackground, isZebra } = storeToRefs(tableStore);
 
 /** 解析 layout 属性，转换为数组 */
 const layoutItems = computed(() => {
@@ -154,16 +166,29 @@ const layoutItems = computed(() => {
 });
 
 /**
- * 检查组件是否应该显示
- * @param componentName 组件名称
- * @returns 是否显示
- */
+   * 检查组件是否应该显示
+   * @param componentName 组件名称
+   * @returns 是否显示
+   */
 const shouldShow = (componentName: string) => {
   return layoutItems.value.includes(componentName);
 };
 
-/** 搜索表单数据 */
-const searchFormData = ref<Record<string, any>>({});
+/**
+   * 拖拽移动事件处理 - 防止固定列位置改变
+   * @param evt move事件对象
+   * @returns 是否允许移动
+   */
+const checkColumnMove = (event: any) => {
+  // 拖拽进入的目标 DOM 元素
+  const toElement = event.related as HTMLElement;
+
+  // 如果目标位置是 fixed 列，则不允许移动
+  if (toElement && toElement.classList.contains('fixed-column')) {
+    return false;
+  }
+  return true;
+};
 
 /** 搜索事件处理 */
 const search = () => {
@@ -172,79 +197,25 @@ const search = () => {
   emit('search');
 };
 
-/** 处理搜索栏搜索事件 */
-const handleSearch = () => {
-  emit('search-data', searchFormData.value);
-  emit('search');
-};
-
-
-/**
- * 组件挂载时，如果父组件传入了相关配置，则更新store
- */
-onMounted(() => {
-  if (props.tableSize) {
-    useTableStore().setTableSize(props.tableSize);
-  }
-  if (props.isZebra !== undefined) {
-    tableStore.setIsZebra(props.isZebra);
-  }
-  if (props.isBorder !== undefined) {
-    tableStore.setIsBorder(props.isBorder);
-  }
-  if (props.isHeaderBackground !== undefined) {
-    tableStore.setIsHeaderBackground(props.isHeaderBackground);
-  }
-});
-
-/**
- * 监听props.tableSize变化，实时更新store
- */
-watch(
-  () => props.tableSize,
-  (newSize) => {
-    if (newSize) {
-      useTableStore().setTableSize(newSize);
-    }
-  },
-  { immediate: false },
-);
-
-/**
- * 监听表格样式属性变化，实时更新store
- */
-watch(
-  () => props.isZebra,
-  (newValue) => {
-    if (newValue !== undefined) {
-      tableStore.setIsZebra(newValue);
-    }
-  },
-  { immediate: false },
-);
-
-watch(
-  () => props.isBorder,
-  (newValue) => {
-    if (newValue !== undefined) {
-      tableStore.setIsBorder(newValue);
-    }
-  },
-  { immediate: false },
-);
-
-watch(
-  () => props.isHeaderBackground,
-  (newValue) => {
-    if (newValue !== undefined) {
-      tableStore.setIsHeaderBackground(newValue);
-    }
-  },
-  { immediate: false },
-);
 
 </script>
 
-<style scoped >
-@reference '@styles/core/tailwind.css';
+<style scoped>
+  @reference '@styles/core/tailwind.css';
+
+  .button {
+    @apply ml-2
+    size-8
+    flex
+    items-center
+    justify-center
+    cursor-pointer
+    rounded-md
+    bg-g-300/55
+    dark:bg-g-300/40
+    text-g-700
+    hover:bg-g-300
+    md:ml-0
+    md:mr-2.5;
+  }
 </style>

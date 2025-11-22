@@ -12,12 +12,16 @@ declare module 'vue' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    ElEmpty: typeof import('element-plus/es')['ElEmpty']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     'Index.': typeof import('./../../components/core/layouts/zen-user/index..vue')['default']
     LoginLeftView: typeof import('./../../components/core/views/login/LoginLeftView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -45,5 +49,8 @@ declare module 'vue' {
     ZenTable: typeof import('./../../components/core/tables/zen-table/index.vue')['default']
     ZenTableHeader: typeof import('./../../components/core/tables/zen-table-header/index.vue')['default']
     ZenUserMenu: typeof import('./../../components/core/layouts/zen-header-bar/widget/ZenUserMenu.vue')['default']
+  }
+  export interface GlobalDirectives {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

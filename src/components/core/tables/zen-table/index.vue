@@ -8,40 +8,36 @@
     >
       <template v-for="col in columns" :key="col.prop || col.type">
         <!-- 渲染普通列 -->
-        <ElTableColumn v-bind="cleanColumnProps(col)">
+        <ElTableColumn v-if="col.type !== 'expand'" v-bind="cleanColumnProps(col)">
           <template v-if="col.useHeaderSlot && col.prop" #header="headerScope">
-            <slot :name="col.headerSlotName || `${col.prop}-header`" v-bind="{ ...headerScope, prop: col.prop, label: col.label }">
+            <slot
+              :name="col.headerSlotName || `${col.prop}-header`"
+              v-bind="{ ...headerScope, prop: col.prop, label: col.label }"
+            >
               {{ col.label }}
             </slot>
           </template>
           <template v-if="col.useSlot && col.prop" #default="slotScope">
             <slot
               :name="col.slotName || col.prop"
-              v-bind="{ ...slotScope, prop: col.prop, value: col.prop ? slotScope.row[col.prop] : undefined,}"
+              v-bind="{
+                ...slotScope,
+                prop: col.prop,
+                value: col.prop ? slotScope.row[col.prop] : undefined
+              }"
             />
           </template>
         </ElTableColumn>
       </template>
 
-      <template
-        v-if="$slots.default"
-        #default
-      >
-        <slot />
-      </template>
+      <template v-if="$slots.default" #default><slot /></template>
 
-      <!-- 空数据模板 -->
       <template #empty>
         <div v-if="loading"></div>
-        <ElEmpty
-          v-else
-          :description="emptyText"
-          :imageSize="120"
-        />
+        <ElEmpty v-else :description="emptyText" :imageSize="120" />
       </template>
     </ElTable>
 
-    <!-- 分页器 -->
     <div
       class="pagination custom-pagination"
       v-if="showPagination"
@@ -62,12 +58,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue';
-import { ElPagination, ElTable, ElTableColumn, ElEmpty, type TableProps } from 'element-plus';
+import { ref, computed, nextTick, watchEffect } from 'vue';
+import type { ElTable, TableProps } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { ColumnOption } from '@/types';
 import { useTableStore } from '@/store/modules/table';
-import { useCommon } from '@/hooks/index';
+import { useCommon } from '@/hooks/core/useCommon';
 import { useTableHeight } from '@/hooks/core/useTableHeight';
 import { useResizeObserver, useWindowSize } from '@vueuse/core';
 
@@ -75,54 +71,75 @@ defineOptions({ name: 'ZenTable' });
 
 const { width } = useWindowSize();
 const elTableRef = ref<InstanceType<typeof ElTable> | null>(null);
-const tableHeaderRef = ref<HTMLElement>();
 const paginationRef = ref<HTMLElement>();
+const tableHeaderRef = ref<HTMLElement>();
 const tableStore = useTableStore();
-const { isHeaderBackground, isZebra, tableSize } = storeToRefs(tableStore);
+const { isBorder, isFullScreen, isHeaderBackground, isZebra, tableSize } = storeToRefs(tableStore);
 
-/**
- * @description 分页配置接口
- * @property {number} current 当前页码
- * @property {number} size 每页条数
- * @property {number} total 总条数
- */
-interface PaginationConfig {
-  current: number;
-  size: number;
-  total: number;
-}
+  /** 分页配置接口 */
+  interface PaginationConfig {
 
-/**
- * @description 分页器配置选项接口
- * @property {number[]} pageSizes 每页条数选项
- * @property {'left' | 'center' | 'right'} align 分页组件对齐方式
- * @property {string} layout 分页组件布局
- * @property {boolean} background 是否显示背景
- * @property {boolean} hideOnSinglePage 是否在只有一页时隐藏分页组件
- * @property {'small' | 'default' | 'large'} size 分页组件尺寸
- * @property {number} pagerCount 分页组件显示页码数量
- */
-interface PaginationOptions {
-  pageSizes?: number[];
-  align?: 'left' | 'center' | 'right';
-  layout?: string;
-  background?: boolean;
-  hideOnSinglePage?: boolean;
-  size?: 'small' | 'default' | 'large';
-  pagerCount?: number;
-}
+    /** 当前页码 */
+    current: number
 
-interface ZenTableProps extends TableProps<Record<string, any>> {
-  loading?: boolean;
-  columns?: ColumnOption[];
-  pagination?: PaginationConfig;
-  paginationOptions?: PaginationOptions;
-  emptyHeight?: string;
-  emptyText?: string;
-  showTableHeader?: boolean;
-}
+    /** 每页显示条目个数 */
+    size: number
 
-const props = withDefaults(defineProps<ZenTableProps>(), {
+    /** 总条目数 */
+    total: number
+  }
+
+  /** 分页器配置选项接口 */
+  interface PaginationOptions {
+
+    /** 每页显示个数选择器的选项列表 */
+    pageSizes?: number[]
+
+    /** 分页器的对齐方式 */
+    align?: 'left' | 'center' | 'right'
+
+    /** 分页器的布局 */
+    layout?: string
+
+    /** 是否显示分页器背景 */
+    background?: boolean
+
+    /** 只有一页时是否隐藏分页器 */
+    hideOnSinglePage?: boolean
+
+    /** 分页器的大小 */
+    size?: 'small' | 'default' | 'large'
+
+    /** 分页器的页码数量 */
+    pagerCount?: number
+  }
+
+  /** ArtTable 组件的 Props 接口 */
+  interface ArtTableProps extends TableProps<Record<string, any>> {
+
+    /** 加载状态 */
+    loading?: boolean
+
+    /** 列渲染配置 */
+    columns?: ColumnOption[]
+
+    /** 分页状态 */
+    pagination?: PaginationConfig
+
+    /** 分页配置 */
+    paginationOptions?: PaginationOptions
+
+    /** 空数据表格高度 */
+    emptyHeight?: string
+
+    /** 空数据时显示的文本 */
+    emptyText?: string
+
+    /** 是否开启 ArtTableHeader，解决表格高度自适应问题 */
+    showTableHeader?: boolean
+  }
+
+const props = withDefaults(defineProps<ArtTableProps>(), {
   border: undefined,
   columns: () => [],
   emptyHeight: '100%',
@@ -167,6 +184,9 @@ const mergedPaginationOptions = computed(() => ({
   ...props.paginationOptions,
 }));
 
+// 边框 (优先级：props > store)
+const border = computed(() => props.border ?? isBorder.value);
+
 // 斑马纹
 const stripe = computed(() => props.stripe ?? isZebra.value);
 
@@ -176,7 +196,6 @@ const size = computed(() => props.size ?? tableSize.value);
 // 数据是否为空
 const isEmpty = computed(() => props.data?.length === 0);
 
-// 动态计算表格头部高度
 const paginationHeight = ref(0);
 const tableHeaderHeight = ref(0);
 
@@ -215,6 +234,9 @@ const { containerHeight } = useTableHeight({
 
 // 表格高度逻辑
 const height = computed(() => {
+  // 全屏模式下占满全屏
+  if (isFullScreen.value) {return '100%';}
+
   // 空数据且非加载状态时固定高度
   if (isEmpty.value && !props.loading) {return props.emptyHeight;}
 
@@ -230,7 +252,7 @@ const headerCellStyle = computed(() => ({
   background: isHeaderBackground.value
     ? 'var(--el-fill-color-lighter)'
     : 'var(--default-box-color)',
-  ...(props.headerCellStyle || {}),
+  ...(props.headerCellStyle || {}), // 合并用户传入的样式
 }));
 
 // 是否显示分页器
@@ -314,6 +336,3 @@ defineExpose({
   scrollToTop,
 });
 </script>
-<style lang="scss" scoped>
-@forward './style.scss'
-</style>

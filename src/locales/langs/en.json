@@ -43,6 +43,20 @@
       "title": "Messages"
     }
   },
+  "common": {
+    "search": "Search ",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "total": "Total",
+    "page": "Page",
+    "itemsPerPage": "Items per page",
+    "placeholder": "Search anything"
+  },
+  "table": {
+      "searchBar": {
+      "search":"search"
+    }
+  },
   "patients": {
     "pageTitle": "Patient",
     "addPatient": "Add Patient",
@@ -78,14 +92,17 @@
     "cancelDelete": "Deletion cancelled",
     "loadFailed": "Failed to load patient list, please try again later"
   },
-  "common": {
-    "search": "Search ",
-    "reset": "Reset",
-    "refresh": "Refresh",
-    "total": "Total",
-    "page": "Page",
-    "itemsPerPage": "Items per page",
-    "placeholder": "Search anything"
+  "doctor": {
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "department": "Department",
+      "specialist": "Specialist",
+      "totalPatients": "Total Patients",
+      "todaysAppointment": "Today's Appointments",
+      "availabilityStatus": "Availability Status",
+      "action": "Action"
+    }
   },
   "inventory": {
     "table": {
@@ -96,11 +113,6 @@
       "Qty In Stock": "Qty In Stock",
       "Qty In Recorder": "Qty In Recorder",
       "Action": "Action"
-    }
-  },
-  "table": {
-        "searchBar": {
-      "search":"search"
     }
   }
 }

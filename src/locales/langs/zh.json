@@ -43,6 +43,20 @@
       "title": "消息中心"
     }
   },
+  "common": {
+    "search": "搜索",
+    "reset": "重置",
+    "refresh": "刷新",
+    "total": "总计",
+    "page": "页",
+    "itemsPerPage": "每页条数",
+    "placeholder": "搜索任何内容"
+  },
+  "table": {
+    "searchBar": {
+      "search": "搜索"
+    }
+  },
   "patients": {
     "pageTitle": "患者管理",
     "addPatient": "添加患者",
@@ -78,14 +92,17 @@
     "cancelDelete": "已取消删除",
     "loadFailed": "加载患者列表失败，请稍后重试"
   },
-  "common": {
-    "search": "搜索",
-    "reset": "重置",
-    "refresh": "刷新",
-    "total": "总计",
-    "page": "页",
-    "itemsPerPage": "每页条数",
-    "placeholder": "搜索任何内容"
+  "doctors": {
+    "table": {
+      "id": "ID",
+      "name": "姓名",
+      "department": "科室",
+      "specialist": "专业",
+      "totalPatients": "总患者数",
+      "todaysAppointment": "今日预约",
+      "availabilityStatus": "可用性状态",
+      "action": "操作"
+    }
   },
   "inventory": {
     "table": {
@@ -96,11 +113,6 @@
       "Qty In Stock": "库存数量",
       "Qty In Recorder": "记录数量",
       "Action": "操作"
-    }
-  },
-  "table": {
-    "searchBar": {
-      "search": "搜索"
     }
   }
 }

@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<Props>(), {
 const headerBar = useHeaderBar(props.config);
 
 // 直接使用配置
-const { shouldShowBreadcrumb, shouldShowChat, shouldShowGlobalSearch, shouldShowLanguage, shouldShowNotification, shouldShowSettings, showThemeToggle } = headerBar;
+const { shouldShowBreadcrumb, shouldShowChat, shouldShowGlobalSearch, shouldShowLanguage, shouldShowNotification, shouldShowSettings } = headerBar;
 
 // 原有的业务逻辑保持不变
 const router = useRouter();
