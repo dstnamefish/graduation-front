@@ -2,206 +2,183 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* 基础颜色 */
-  --zen-color: #fff;
-  --theme-color: var(--main-color);
+  /* 品牌色系 */
+  --wn-p-50: #f2fcfd;
+  --wn-p-100: #dff9fa;
+  --wn-p-200: #bff5f2;
+  --wn-p-300: #aff3f0;
+  --wn-p-400: #bef8f6;
+  --wn-p-500: #a2f2ef;
+  --wn-p-600: #8ae8e4;
+  --wn-p-700: #76d6d1;
 
-  /* 主题颜色 */
-  --zen-primary: #a2f2ee;
-  --zen-secondary: #253958;
-  --zen-tertiary: #dff8f8;
-  --zen-error: #f26250;
-  --zen-info: #f2d650;
-  --zen-success: #50f294;
-  --zen-warning: #f2c150;
-  --zen-danger: #f26250;
+  /* 中性色系 */
+  --wn-n-0: #ffffff;
+  --wn-n-50: #f8fafc;
+  --wn-n-100: #f1f5f9;
+  --wn-n-150: #f0f0f0;
+  --wn-n-200: #e5e5e5;
+  --wn-n-250: #e0e0e0;
+  --wn-n-300: #e2e8f0;
+  --wn-n-400: #94a3b8;
+  --wn-n-500: #64748b;
+  --wn-n-600: #475569;
+  --wn-n-700: #2e3a52;
+  --wn-n-800: #243956;
+  --wn-n-900: #182639;
 
-  /* 灰度范围 - 从最亮到最暗 */
-  --zen-gray-100: #f9fafb;
-  --zen-gray-200: #f2f4f5;
-  --zen-gray-300: #e6eaeb;
-  --zen-gray-400: #dbdfe1;
-  --zen-gray-500: #949eb7;
-  --zen-gray-600: #7987a1;
-  --zen-gray-700: #4d5875;
-  --zen-gray-800: #383853;
-  --zen-gray-900: #323251;
+  /* 错误色系 */
+  --wn-f-red-50: #fff5f4;
+  --wn-f-red-100: #ffe5e5;
+  --wn-f-red-200: #fdbbbc;
+  --wn-f-red-500: #fc4245;
+  --wn-f-red-600: #e03a3d;
 
-  /* 边框颜色 */
-  --zen-card-border-color: rgb(0 0 0 / 7%);
-  --default-border: #e2e8ee;
-  --default-border-dashed: #dbdfe9;
+  /* 功能色系 */
+  --wn-f-red: #fc4245;
+  --wn-f-green: #50f294;
+  --wn-f-yellow: #f2c150;
 
-  /* 背景颜色 */
-  --default-bg-color: #fff;
-  --default-box-bg: #f0f0f0;
-  --default-table-color: #e70000;
-
-  /* 悬停颜色 */
-  --zen-hover-color: #f2f4f5;
-
-  /* 激活颜色 */
-  --zen-active-color: #f2f4f5;
-
-  /* 元素组件激活颜色 */
-  --zen-el-active-color: #f2f4f5;
+  /* 文字色阶 */
+  --wn-t-0: #121317;
+  --wn-t-100: #1c1c1e;
+  --wn-t-200: #8e8e93;
+  --wn-t-300: #b2b2b2;
 }
 
+/* 暗黑模式 */
 .dark {
-  /* 基础颜色 */
-  --zen-color: #000;
+  --wn-p-50: #0a2a30;
+  --wn-p-100: #0f3a42;
+  --wn-p-200: #154a55;
+  --wn-p-300: #1a5a68;
+  --wn-p-400: #1f6a7b;
+  --wn-p-500: #247a8e;
+  --wn-p-600: #298aa1;
+  --wn-p-700: #2e9ab4;
 
-  /* 灰度范围 - 从最亮到最暗 */
-  --zen-gray-100: #110f0f;
-  --zen-gray-200: #17171c;
-  --zen-gray-300: #393946;
-  --zen-gray-400: #505062;
-  --zen-gray-500: #73738c;
-  --zen-gray-600: #8f8fa3;
-  --zen-gray-700: #ababba;
-  --zen-gray-800: #c7c7d1;
-  --zen-gray-900: #e3e3e8;
+  --wn-n-0: #182639;
+  --wn-n-50: #1a1a1a;
+  --wn-n-100: #1e1e1e;
+  --wn-n-150: #222222;
+  --wn-n-200: #262626;
+  --wn-n-250: #333333;
+  --wn-n-300: #303030;
+  --wn-n-400: #434343;
+  --wn-n-500: #8c8c8c;
+  --wn-n-600: #bfbfbf;
+  --wn-n-700: #d9d9d9;
+  --wn-n-800: #e6e6e8;
+  --wn-n-900: #ffffff;
 
-  /* 边框颜色 */
-  --zen-card-border: rgb(255 255 255 / 7%);
-  --default-border: rgb(255 255 255 / 10%);
-  --default-border-dashed: #363843;
+  --wn-f-red-50: #2a0a0a;
+  --wn-f-red-100: #3d1414;
+  --wn-f-red-200: #5a1f1f;
+  --wn-f-red-500: #ff5252;
+  --wn-f-red-600: #ff6b6b;
 
-  /* 背景颜色 */
-  --default-bg-color: #070707;
-  --default-box-color: #161618;
-  --default-table-color: #e70000;
-
-  /* 悬停颜色 */
-  --zen-hover-color: #252530;
-
-  /* 激活颜色 */
-  --zen-active-color: #202226;
-
-  /* 元素组件激活颜色 */
-  --zen-el-active-color: #2e2e38;
+  --wn-t-0: #ffffff;
+  --wn-t-100: #e5e5ea;
+  --wn-t-200: #8e8e93;
+  --wn-t-300: #48484a;
 }
 
-/* ==================== Tailwind 主题 ==================== */
+/* ==================== Tailwind 配置中心 (Theme) ==================== */
 @theme {
   /* Box Color (Light: white / Dark: black) */
-  --color-box: var(--default-box-color);
+  --color-box: var(--wn-n-0);
 
-  /* System Theme Color */
-  --color-theme: var(--theme-color);
+  /* 主题颜色 */
+  --color-primary: var(--wn-p-500);
+  --color-secondary: var(--wn-p-100);
+  --color-tertiary: var(--wn-n-800);
 
-  /* Hover Color */
-  --color-hover-color: var(--zen-hover-color);
+  /* 文本颜色 */
+  --color-t-0: var(--wn-t-0); /* 纯黑/白文字 */
+  --color-t-100: var(--wn-t-100); /* 一级文字 */
+  --color-t-200: var(--wn-t-200); /* 二级文字 */
+  --color-t-300: var(--wn-t-300); /* 失效文字 */
 
-  /* Active Color */
-  --color-active-color: var(--zen-active-color);
+  /* 灰度阶梯*/
+  --color-g-0: var(--wn-n-0);
+  --color-g-50: var(--wn-n-50);
+  --color-g-100: var(--wn-n-100);
+  --color-g-150: var(--wn-n-150);
+  --color-g-200: var(--wn-n-200);
+  --color-g-250: var(--wn-n-250);
+  --color-g-300: var(--wn-n-300);
+  --color-g-400: var(--wn-n-400);
+  --color-g-500: var(--wn-n-500);
+  --color-g-600: var(--wn-n-600);
+  --color-g-700: var(--wn-n-700);
+  --color-g-800: var(--wn-n-800);
+  --color-g-900: var(--wn-n-900);
 
-  /* Active Color */
-  --color-el-active-color: var(--zen-active-color);
+  /* 边框颜色 */
+  --color-br: var(--wn-n-250);
 
-  /* ElementPlus Theme Colors */
-  --color-primary: var(--zen-primary);
-  --color-secondary: var(--zen-secondary);
-  --color-error: var(--zen-error);
-  --color-info: var(--zen-info);
-  --color-success: var(--zen-success);
-  --color-warning: var(--zen-warning);
-  --color-danger: var(--zen-danger);
+  /* 选中颜色 */
 
-  /* Gray Scale Colors (Auto-adapts to dark mode) */
-  --color-g-100: var(--zen-gray-100);
-  --color-g-200: var(--zen-gray-200);
-  --color-g-300: var(--zen-gray-300);
-  --color-g-400: var(--zen-gray-400);
-  --color-g-500: var(--zen-gray-500);
-  --color-g-600: var(--zen-gray-600);
-  --color-g-700: var(--zen-gray-700);
-  --color-g-800: var(--zen-gray-800);
-  --color-g-900: var(--zen-gray-900);
+  /* 激活颜色 */
 }
 
-/* ==================== 自定义边框圆角工具 ==================== */
-@utility rounded-custom-xs {
-  border-radius: calc(var(--custom-radius) / 2);
-}
-
-@utility rounded-custom-sm {
-  border-radius: calc(var(--custom-radius) / 2 + 2px);
-}
-
-/* ==================== 自定义实用类 ==================== */
+/* ==================== 实用类 (Utilities) ==================== */
 @layer utilities {
-  /* Flexbox Layout Utilities */
-  .flex-c {
+  /* items 对齐系列 */
+  .flex-ic {
     @apply flex items-center;
   }
-
-  .flex-b {
-    @apply flex justify-between;
+  .flex-is {
+    @apply flex items-start;
+  }
+  .flex-ie {
+    @apply flex items-end;
   }
 
+  /* justify 对齐系列 */
+  .flex-jc {
+    @apply flex justify-center;
+  }
+  .flex-jb {
+    @apply flex justify-between;
+  }
+  .flex-js {
+    @apply flex justify-start;
+  }
+  .flex-je {
+    @apply flex justify-end;
+  }
+  .flex-ja {
+    @apply flex justify-around;
+  }
+
+  /* 组合对齐（items + justify）*/
   .flex-cc {
     @apply flex items-center justify-center;
   }
-
   .flex-cb {
     @apply flex items-center justify-between;
   }
-
-  /* Transition Utilities */
-  .tad-200 {
-    @apply transition-all duration-200;
+  .flex-cs {
+    @apply flex items-center justify-start;
+  }
+  .flex-ce {
+    @apply flex items-center justify-end;
   }
 
-  .tad-300 {
-    @apply transition-all duration-300;
+  /* 其他 */
+  .flex-row-reverse {
+    @apply flex flex-row-reverse;
+  }
+  .flex-col-reverse {
+    @apply flex flex-col-reverse;
   }
 
-  /* Border Utilities */
-  .border-full-d {
-    @apply border border-(--default-border);
-  }
-
-  .border-b-d {
-    @apply border-b border-(--default-border);
-  }
-
-  .border-t-d {
-    @apply border-t border-(--default-border);
-  }
-
-  .border-l-d {
-    @apply border-l border-(--default-border);
-  }
-
-  .border-r-d {
-    @apply border-r border-(--default-border);
-  }
-
-  /* Cursor Utilities */
   .c-p {
     @apply cursor-pointer;
   }
-}
 
-/* ==================== 自定义组件类 ==================== */
-@layer components {
-  /* Art Card Header Component */
-  .zen-card-header {
-    @apply flex justify-between pr-6 pb-1;
-
-    .title {
-      h4 {
-        @apply text-lg font-medium text-g-900;
-      }
-
-      p {
-        @apply mt-1 text-sm text-g-600;
-
-        span {
-          @apply ml-2 font-medium;
-        }
-      }
-    }
+  .border-br {
+    @apply border border-br;
   }
 }

@@ -25,7 +25,7 @@ import { StorageKeyManager } from '@/utils/storage/storage-key-manager';
  * - 使用 localStorage 作为存储介质
  *
  * @module store/index
- * @author Art Design Pro Team
+ * @author 16518
  */
 import type { App } from 'vue';
 

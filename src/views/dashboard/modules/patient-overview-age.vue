@@ -6,9 +6,15 @@
         <p class="text-sm text-[#666] mt-1">by Age Stages</p>
       </div>
 
-      <button class="flex items-center gap-2 text-white bg-[#233956] px-3 py-2.5 rounded-xl hover:bg-[#334155] transition-colors">
+      <button
+        class="flex items-center gap-2 text-white bg-[#233956] px-3 py-2.5 rounded-xl hover:bg-[#334155] transition-colors"
+      >
         Last 8 Days
-        <ZenSvgIcon icon="local-common/arrow-down" :size="20" color="#ffffff" />
+        <WnSvgIcon
+          icon="local-common/arrow-down"
+          :size="20"
+          color="#ffffff"
+        />
       </button>
     </div>
 
@@ -34,7 +40,7 @@
 </template>
 <script setup lang="ts">
 import { useChart } from '@/hooks/core/useChart';
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 defineOptions({ name: 'PatientOverviewAge' });
 

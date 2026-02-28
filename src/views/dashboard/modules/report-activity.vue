@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 // --- 类型定义 ---
 type ActivityType = 'discharge' | 'admission' | 'maintenance' | 'restock' | 'emergency';
@@ -14,39 +14,37 @@ interface ActivityItem {
 
 // --- 模拟数据 ---
 const dashRecentActivities = ref<ActivityItem[]>([
-  { 
-    id: 1, 
-    content: 'Felix Müller was discharged from Room 205 after successful treatment', 
-    time: '08:30 AM', 
-    iconType: 'discharge' 
+  {
+    id: 1,
+    content: 'Felix Müller was discharged from Room 205 after successful treatment',
+    time: '08:30 AM',
+    iconType: 'discharge',
   },
-  { 
-    id: 2, 
-    content: 'Léa Rousseau admitted to Room 312 for surgery scheduled later today', 
-    time: '09:00 AM', 
-    iconType: 'admission' 
+  {
+    id: 2,
+    content: 'Léa Rousseau admitted to Room 312 for surgery scheduled later today',
+    time: '09:00 AM',
+    iconType: 'admission',
   },
-  { 
-    id: 3, 
-    content: 'MRI machine in Radiology Department received routine maintenance check', 
-    time: '10:00 AM', 
-    iconType: 'maintenance' 
+  {
+    id: 3,
+    content: 'MRI machine in Radiology Department received routine maintenance check',
+    time: '10:00 AM',
+    iconType: 'maintenance',
   },
-  { 
-    id: 4, 
-    content: 'ICU received restock of essential medications', 
-    time: '11:00 AM', 
-    iconType: 'restock' 
+  {
+    id: 4,
+    content: 'ICU received restock of essential medications',
+    time: '11:00 AM',
+    iconType: 'restock',
   },
-  { 
-    id: 5, 
-    content: 'Code Blue emergency response initiated for a patient in Room 108', 
-    time: '01:15 PM', 
-    iconType: 'emergency' 
+  {
+    id: 5,
+    content: 'Code Blue emergency response initiated for a patient in Room 108',
+    time: '01:15 PM',
+    iconType: 'emergency',
   },
 ]);
-
-
 
 const getActIconName = (type: ActivityType) => {
   return `local-dashboard/${type}`;
@@ -60,8 +58,13 @@ const getActIconName = (type: ActivityType) => {
       <div class="flex flex-col gap-0.5">
         <h2 class="text-2xl font-bold text-slate-900">Recent Activity</h2>
       </div>
-      <button class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-90">
-        <ZenSvgIcon icon="local-common/more" :size="24" />
+      <button
+        class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-90"
+      >
+        <WnSvgIcon
+          icon="local-common/more"
+          :size="24"
+        />
       </button>
     </div>
 
@@ -70,16 +73,19 @@ const getActIconName = (type: ActivityType) => {
       <!-- Vertical line indicator -->
       <div class="absolute left-5 top-2 bottom-2 w-px bg-slate-100"></div>
 
-      <div 
-        v-for="item in dashRecentActivities" 
-        :key="item.id" 
+      <div
+        v-for="item in dashRecentActivities"
+        :key="item.id"
         class="flex items-start gap-4 relative z-10 group"
       >
         <!-- Icon Container -->
-        <div 
+        <div
           class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#a2f2ef] text-[#1A2E44]"
         >
-          <ZenSvgIcon :icon="getActIconName(item.iconType)" :size="24" />
+          <WnSvgIcon
+            :icon="getActIconName(item.iconType)"
+            :size="24"
+          />
         </div>
 
         <!-- Content -->

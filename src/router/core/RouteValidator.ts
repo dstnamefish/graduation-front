@@ -4,7 +4,7 @@
  * 负责验证路由配置的合法性
  *
  * @module router/core/RouteValidator
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import { RoutesAlias } from '../routesAlias';

@@ -1,23 +1,33 @@
 <template>
-  <div class=" p-6 rounded-3xl  border-2 border-[#e7e7e9] w-full">
+  <div class="p-6 rounded-3xl border-2 border-[#e7e7e9] w-full">
     <div class="flex justify-between items-center mb-8">
       <div class="flex flex-col gap-0.5">
         <h2 class="text-2xl font-bold text-slate-900">Report</h2>
       </div>
-      <button class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-95">
-        <ZenSvgIcon icon="local-common/more" :size="20" />
+      <button
+        class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-95"
+      >
+        <WnSvgIcon
+          icon="local-common/more"
+          :size="20"
+        />
       </button>
     </div>
 
     <div class="max-h-[480px] overflow-y-auto custom-scrollbar">
       <div class="flex flex-col gap-3">
-        <div 
-          v-for="item in dashboardReports" 
-          :key="item.id" 
+        <div
+          v-for="item in dashboardReports"
+          :key="item.id"
           class="group flex items-center p-3 rounded-2xl cursor-pointer bg-[#f5f5f5] border border-transparent"
         >
-          <div class="w-10 h-10 rounded-xl flex  items-center justify-center shrink-0 transition-colors bg-[#a2f2ef]">
-            <ZenSvgIcon :icon="getReportIcon(item.iconType)" :size="20" />
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors bg-[#a2f2ef]"
+          >
+            <WnSvgIcon
+              :icon="getReportIcon(item.iconType)"
+              :size="20"
+            />
           </div>
 
           <div class="flex-1 ml-3 mr-2 min-w-0">
@@ -30,9 +40,9 @@
             </p>
           </div>
 
-          <ZenSvgIcon 
-            icon="local-common/chevron-right" 
-            :size="16" 
+          <WnSvgIcon
+            icon="local-common/chevron-right"
+            :size="16"
           />
         </div>
       </div>
@@ -42,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 defineOptions({ name: 'Report' });
 

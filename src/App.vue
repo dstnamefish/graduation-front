@@ -4,7 +4,11 @@
     :locale="locales[language]"
     :zIndex="3000"
   >
-    <RouterView></RouterView>
+    <RouterView #default="{ Component }">
+      <Transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </Transition>
+    </RouterView>
   </ElConfigProvider>
 </template>
 

@@ -7,15 +7,9 @@ export const inventoryRoutes: AppRouteRecord[] = [
   {
     component: '/inventory',
     meta: {
+      icon: 'local-menu/inventory',
       keepAlive: false,
       roles: ['ADMIN'],
-      showBreadcrumb: true,
-      showChat: true,
-      showGlobalSearch: true,
-      showLanguage: true,
-      showNotification: true,
-      showSettings: true,
-      showThemeToggle: true,
       title: 'menus.inventory.title',
     },
     name: 'Inventory',

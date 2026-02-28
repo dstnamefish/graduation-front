@@ -1,15 +1,37 @@
 <template>
-  <ElRow :gutter="24" class="flex flex-wrap">
-    <ElCol v-for="(item, index) in dataList" :key="index" :xs="24" :sm="12" :md="6" :lg="6" >
-      <div class="group relative flex flex-col justify-between px-6 py-6 rounded-[24px] border border-[#e7e7e9] transition-all duration-300 ">
+  <ElRow
+    :gutter="24"
+    class="flex flex-wrap"
+  >
+    <ElCol
+      v-for="(item, index) in dataList"
+      :key="index"
+      :xs="24"
+      :sm="12"
+      :md="6"
+      :lg="6"
+    >
+      <div
+        class="group relative flex flex-col justify-between px-6 py-6 rounded-[24px] border border-[#e7e7e9] transition-all duration-300"
+      >
         <div class="flex justify-between items-start">
           <div class="flex items-center gap-3">
-            <ZenSvgIcon :icon="getIcon(item.iconName)" :size="20" color="#666"/>
+            <WnSvgIcon
+              :icon="getIcon(item.iconName)"
+              :size="20"
+              color="#666"
+            />
             <span class="text-sm font-medium text-slate-500 leading-[21px]">{{ item.title }}</span>
           </div>
-          
-          <button class="text-slate-300 hover:text-slate-600 transition-colors cursor-pointer p-1 -mr-1">
-             <ZenSvgIcon icon="local-common/more" :size="20" color="#666"/>
+
+          <button
+            class="text-slate-300 hover:text-slate-600 transition-colors cursor-pointer p-1 -mr-1"
+          >
+            <WnSvgIcon
+              icon="local-common/more"
+              :size="20"
+              color="#666"
+            />
           </button>
         </div>
 
@@ -18,28 +40,37 @@
             {{ item.value.toLocaleString() }}
           </span>
 
-          <div 
+          <div
             class="flex items-center px-2 py-1 rounded-lg text-[12px] font-medium"
-            :class="item.trendPercent >= 0 ? 'bg-[#a1f1ee]'   : 'bg-[#ffbabc]'" 
+            :class="item.trendPercent >= 0 ? 'bg-[#a1f1ee]' : 'bg-[#ffbabc]'"
           >
-            <ZenSvgIcon :icon="item.trendPercent >= 0 ? 'local-dashboard/trend-up' : 'local-dashboard/trend-down'" :size="12" class="mr-1"  />
-            <span class="leading-[18px]">{{ item.trendPercent > 0 ? '+' : '' }}{{ item.trendPercent }}%</span>
+            <WnSvgIcon
+              :icon="
+                item.trendPercent >= 0 ? 'local-dashboard/trend-up' : 'local-dashboard/trend-down'
+              "
+              :size="12"
+              class="mr-1"
+            />
+            <span class="leading-[18px]">
+              {{ item.trendPercent > 0 ? '+' : '' }}{{ item.trendPercent }}%
+            </span>
           </div>
         </div>
 
-        <div class="text-[12px] text-slate-400 font-regular mt-2 flex items-center gap-1 leading-[18px]">
+        <div
+          class="text-[12px] text-slate-400 font-regular mt-2 flex items-center gap-1 leading-[18px]"
+        >
           <span>{{ Math.abs(item.changeValue) }}</span>
           <span>{{ item.changeValue >= 0 ? 'more' : 'less' }}</span>
           <span>than yesterday</span>
         </div>
-
       </div>
     </ElCol>
   </ElRow>
 </template>
 
 <script setup lang="ts">
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 defineOptions({ name: 'CardList' });
 
@@ -83,6 +114,4 @@ const dataList = reactive<CardDataItem[]>([
     changeValue: 56,
   },
 ]);
-
-
 </script>

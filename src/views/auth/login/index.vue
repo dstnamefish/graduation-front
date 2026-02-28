@@ -1,186 +1,132 @@
+<!-- 登录页面 -->
 <template>
-  <div class="login">
-    <LoginLeftView />
-    <div class="login-form">
-      <div class="login-header">
-        <h1 class="login-title">医疗系统登录</h1>
-        <p class="login-subtitle">请输入您的账号信息以继续</p>
-      </div>
+  <div class="w-full">
+    <!-- Logo -->
+    <div class="flex-cc flex-col mb-8">
+      <img src="/favicon.svg" alt="Logo" class="w-16 h-16 drop-shadow-sm" />
+    </div>
 
-      <div class="form-container">
-        <ZenFormAuth
-          ref="formRef"
-          :fields="fields"
-          @submit="handleLogin"
-        />
+    <!-- 标题 -->
+    <div class="text-center mb-9 space-y-2">
+      <h2 class="text-2xl font-bold tracking-tight text-t-100">
+        {{ t('auth.login.title') }}
+      </h2>
+      <p class="text-sm text-t-200">
+        {{ t('auth.login.subtitle') }}
+      </p>
+    </div>
 
-        <!-- 只保留登录按钮 -->
-        <FormActions
-          :loading="isLoading"
-          :hasErrors="hasFormErrors"
-          submitText="登录"
-          loadingText="登录中..."
-          :showReset="false"
-          @submit="handleFormSubmit"
-        />
-      </div>
+    <!-- 表单 -->
+    <ElForm ref="loginFormRef" :model="loginForm" :rules="rules" labelPosition="top" size="large">
+      <ElFormItem :label="t('auth.login.workId')" prop="username" class="mb-6">
+        <ElInput v-model="loginForm.username" :placeholder="t('auth.login.workIdPlaceholder')" />
+      </ElFormItem>
 
-      <div class="login-footer">
-        <div class="login-options">
-          <RouterLink
-            :to="RoutesAlias.ForgotPassword"
-            class="forgot-password"
-          >
-            忘记密码？
-          </RouterLink>
-          <RouterLink :to="RoutesAlias.Register">注册账号</RouterLink>
+      <ElFormItem :label="t('auth.login.password')" prop="password" class="mb-4">
+        <ElInput v-model="loginForm.password" type="password" :placeholder="t('auth.login.passwordPlaceholder')" showPassword/>
+      </ElFormItem>
+
+      <!-- 记住我和忘记密码 -->
+      <div class="flex-cb mb-8">
+        <div class="flex-ic gap-2">
+          <ElCheckbox v-model="loginForm.remember" class="mr-0!" />
+          <span class="text-sm text-t-200 cursor-pointer select-none" @click="loginForm.remember = !loginForm.remember">
+            {{ t('auth.login.rememberMe') }}
+          </span>
         </div>
+        <ElLink :underline="false" @click="goToForgotPassword">
+          {{ t('auth.login.forgotPassword') }}
+        </ElLink>
       </div>
+
+      <!-- 登录按钮 -->
+      <ElFormItem>
+        <ElButton type="primary" class="w-full h-12" @click="handleLogin(loginFormRef)">
+          {{ t('auth.login.loginButton') }}
+        </ElButton>
+      </ElFormItem>
+    </ElForm>
+
+    <!-- 注册 -->
+    <div class="mt-4 text-sm flex-cc gap-1 text-t-200">
+      <span>{{ t('auth.login.noAccount') }}</span>
+      <ElLink :underline="false" @click="goToRegister">
+        {{ t('auth.login.registerNow') }}
+      </ElLink>
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
+import { ElMessage } from 'element-plus';
+import type { FormInstance, FormRules } from 'element-plus';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
 import { fetchLogin } from '@/api/core/auth';
-import FormActions from '@/components/core/forms/zen-form-actions/index.vue';
-import ZenFormAuth from '@/components/core/forms/zen-form-auth/index.vue';
-import LoginLeftView from '@/components/core/views/login/LoginLeftView.vue';
 import { RoutesAlias } from '@/router/routesAlias';
 import { useUserStore } from '@/store/modules/user';
-import type { LoginParams } from '@/types/api/core/auth';
-import type { FormProps, ValidatorFunction } from '@/types/component/form.ts';
 
+defineOptions({ name: 'Login' });
+
+const { t } = useI18n();
 const router = useRouter();
 const userStore = useUserStore();
-const formRef = ref<InstanceType<typeof ZenFormAuth>>();
-const isLoading = ref(false);
 
-// 自定义验证器：检查用户名是否包含特殊字符
-const validateUsername: ValidatorFunction = async (value, field, formData) => {
-  if (!value) {
-    return true;
-  } // 空值由 required 规则处理
+const loginFormRef = ref<FormInstance>();
 
-  // 检查是否包含特殊字符（只允许字母、数字、下划线）
-  const hasSpecialChars = /[^a-zA-Z0-9_]/.test(value);
-  if (hasSpecialChars) {
-    return '用户名只能包含字母、数字和下划线';
-  }
-
-  // 检查是否以数字开头
-  if (/^\d/.test(value)) {
-    return '用户名不能以数字开头';
-  }
-
-  return true;
-};
-
-// 自定义验证器：密码强度检查
-const validatePasswordStrength: ValidatorFunction = async (value, field, formData) => {
-  if (!value) {
-    return true;
-  } // 空值由 required 规则处理
-
-  // 检查是否包含至少一个字母
-  if (!/[a-zA-Z]/.test(value)) {
-    return '密码必须包含至少一个字母';
-  }
-
-  // 检查是否包含至少一个数字
-  if (!/\d/.test(value)) {
-    return '密码必须包含至少一个数字';
-  }
-
-  // 检查密码强度（可选：包含特殊字符会更安全）
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
-  if (value.length >= 8 && hasSpecialChar) {
-    return true; // 强密码
-  } else if (value.length >= 6) {
-    return true; // 中等密码，通过但可以提示
-  }
-
-  return '密码强度不够，建议包含特殊字符';
-};
-
-// 定义表单字段配置
-const fields = ref<FormProps['fields']>([
-  {
-    label: '用户名',
-    maxLength: 20,
-    minLength: 3,
-    name: 'username',
-    placeholder: '请输入用户名',
-    required: true,
-
-    // 使用自定义验证器
-    validator: validateUsername,
-  },
-  {
-    label: '密码',
-    maxLength: 20,
-    minLength: 6,
-    name: 'password',
-    placeholder: '请输入密码',
-    required: true,
-    type: 'password',
-
-    // 使用验证规则对象，可以自定义错误消息
-    validator: {
-      message: '密码格式不符合要求',
-      validator: validatePasswordStrength,
-    },
-  },
-]);
-
-// 计算属性：是否有表单错误
-const hasFormErrors = computed(() => {
-  return formRef.value?.hasErrors || false;
+const loginForm = reactive({
+  password: '',
+  remember: false,
+  username: '',
 });
 
-// 处理表单提交按钮点击
-const handleFormSubmit = async () => {
-  if (!formRef.value) {
+const rules: FormRules = {
+  password: [
+    { message: t('auth.login.validation.passwordRequired'), required: true, trigger: 'blur' },
+    { message: t('auth.login.validation.passwordLength'), min: 6, trigger: 'blur' },
+  ],
+  username: [
+    { message: t('auth.login.validation.workIdRequired'), required: true, trigger: 'blur' },
+  ],
+};
+
+const handleLogin = async (formEl: FormInstance | undefined) => {
+  if (!formEl) {
     return;
   }
+  await formEl.validate(async (valid) => {
+    if (valid) {
+      try {
+        const res = await fetchLogin({
+          password: loginForm.password,
+          username: loginForm.username,
+        });
 
-  const isValid = await formRef.value.validateForm();
-  if (isValid) {
-    await handleLogin(formRef.value.formData);
-  }
+        userStore.setToken(res.accessToken, res.refreshToken);
+        userStore.setLoginStatus(true);
+
+        if (!loginForm.remember) {
+          loginForm.remember = true;
+        }
+
+        ElMessage.success(t('auth.login.loginSuccess'));
+
+        router.push('/');
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
+    } else {
+      ElMessage.error(t('auth.login.validation.checkInputs'));
+    }
+  });
 };
 
-const handleLogin = async (formData: Record<string, any>) => {
-  try {
-    isLoading.value = true;
+const goToRegister = () => {
+  router.push(RoutesAlias.Register);
+};
 
-    // 准备登录数据
-    const loginData: LoginParams = {
-      password: formData.password,
-      username: formData.username,
-    };
-
-    // 调用登录API
-    const response = await fetchLogin(loginData);
-
-    // 存储用户信息、token和refreshToken
-    if (response.token) {
-      userStore.setToken(response.token, response.refreshToken);
-    }
-    if (response.userInfo) {
-      userStore.setUserInfo(response.userInfo);
-    }
-    userStore.setLoginStatus(true);
-
-    ElMessage.success('登录成功！');
-
-    router.push('/');
-  } catch (error) {
-    ElMessage.error('登录失败，请检查账号密码是否正确');
-    console.error('登录错误:', error);
-  } finally {
-    isLoading.value = false;
-  }
+const goToForgotPassword = () => {
+  router.push(RoutesAlias.ForgotPassword);
 };
 </script>
-<style lang="scss" scoped>
-@forward './index';
-</style>

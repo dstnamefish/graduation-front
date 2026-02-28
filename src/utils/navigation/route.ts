@@ -19,7 +19,7 @@
  * - iframe 页面特殊处理
  *
  * @module utils/navigation/route
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import { AppRouteRecord } from '@/types';

@@ -25,7 +25,7 @@
  * - 自动计算最大扩散半径
  *
  * @module utils/theme/animation
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { SystemThemeEnum } from '@/enums/appEnum';
 import { useCommon } from '@/hooks/core/useCommon';

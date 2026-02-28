@@ -3,7 +3,7 @@
  * 集中管理便于维护和更新链接地址
  *
  * @module utils/constants/links
- * @author Art Design Pro Team
+ * @author 16518
  */
 export const WEB_LINKS = {
   // 个人 Bilibili 主页

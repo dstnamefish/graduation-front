@@ -6,16 +6,29 @@
         <p class="text-sm text-[#666]">by Departments</p>
       </div>
       <button class="text-[#666] cursor-pointer">
-        <ZenSvgIcon icon="local-common/more" :size="20" />
+        <WnSvgIcon
+          icon="local-common/more"
+          :size="20"
+        />
       </button>
     </div>
 
-    <div ref="chartRef" class="w-full h-[280px]"></div>
+    <div
+      ref="chartRef"
+      class="w-full h-[280px]"
+    ></div>
 
     <div class="flex flex-col gap-3 mt-4">
-      <div v-for="item in currentData" :key="item.name" class="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 -mx-2 rounded-xl transition-colors">
+      <div
+        v-for="item in currentData"
+        :key="item.name"
+        class="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 -mx-2 rounded-xl transition-colors"
+      >
         <div class="flex items-center gap-3">
-          <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: item.color }"></span>
+          <span
+            class="w-2.5 h-2.5 rounded-full"
+            :style="{ backgroundColor: item.color }"
+          ></span>
           <span class="text-[#666]">{{ item.name }}</span>
         </div>
         <span class="">{{ item.percentage }}%</span>
@@ -27,7 +40,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, markRaw } from 'vue';
 import * as echarts from 'echarts';
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 defineOptions({ name: 'PatientOverviewDepartment' });
 
@@ -103,7 +116,7 @@ const renderChart = () => {
           fill: '#666',
           fontSize: 16,
           fontWeight: 500,
-          align: 'center'
+          align: 'center',
         },
       },
       {
@@ -111,11 +124,16 @@ const renderChart = () => {
         left: 'center',
         top: '48%',
         style: {
-          text: selectedTab.value === 'This Day' ? '124' : (selectedTab.value === 'This Month' ? '8,420' : '1,890'),
+          text:
+            selectedTab.value === 'This Day'
+              ? '124'
+              : selectedTab.value === 'This Month'
+                ? '8,420'
+                : '1,890',
           fill: '#243956',
           fontSize: 28,
           fontWeight: 800,
-          align: 'center'
+          align: 'center',
         },
       },
       {
@@ -135,24 +153,29 @@ const renderChart = () => {
               fill: '#666',
               fontSize: 12,
               fontWeight: 500,
-              align: 'left'
-            }
+              align: 'left',
+            },
           },
           {
             type: 'polyline', // polyline 是 ECharts 最基础的类型，兼容性最好
             // 为不同长度的文字精确设置左边距
-            left: selectedTab.value === 'This Day' ? 52 : (selectedTab.value === 'This Week' ? 60 : 68),
+            left:
+              selectedTab.value === 'This Day' ? 52 : selectedTab.value === 'This Week' ? 60 : 68,
             top: 2, // 中心对齐微调
             shape: {
-              points: [[0, 0], [5, 5], [10, 0]], // 定义向下箭头的折线点坐标
+              points: [
+                [0, 0],
+                [5, 5],
+                [10, 0],
+              ], // 定义向下箭头的折线点坐标
             },
             style: {
               stroke: '#666',
               lineWidth: 1.5,
-              fill: 'none'
-            }
-          }
-        ]
+              fill: 'none',
+            },
+          },
+        ],
       },
     ],
     series: [
@@ -167,14 +190,14 @@ const renderChart = () => {
           scale: true,
           scaleSize: 10,
         },
-        data: currentData.value.map(item => ({
+        data: currentData.value.map((item) => ({
           value: item.value,
           name: item.name,
           itemStyle: { color: item.color },
         })),
         itemStyle: {
-          borderWidth: 0
-        }
+          borderWidth: 0,
+        },
       },
     ],
   };

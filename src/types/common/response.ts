@@ -16,13 +16,13 @@
  * - 响应数据解析
  *
  * @module types/common/response
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 /** 基础 API 响应结构 */
 export interface BaseResponse<T = unknown> {
 
-  /** 状态码 */
+  /** 状态码 (标准HTTP状态码: 200, 400, 401, 500等) */
   code: number
 
   /** 消息 */

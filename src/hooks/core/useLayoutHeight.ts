@@ -1,4 +1,4 @@
-/**
+﻿/**
  * useLayoutHeight - 页面布局高度管理
  *
  * 自动计算和管理页面内容区域的高度，确保内容区域能够正确填充剩余空间。
@@ -23,7 +23,7 @@ import { ref, computed, watch, onMounted } from 'vue';
  *
  * @property {number} [extraSpacing=15] 额外的间距（默认 15px）
  * @property {boolean} [updateCssVar=true] 是否自动更新 CSS 变量（默认 true）
- * @property {string} [cssVarName='--zen-full-height'] CSS 变量名称（默认 '--zen-full-height'）
+ * @property {string} [cssVarName='--Wn-full-height'] CSS 变量名称（默认 '--Wn-full-height'）
  */
 interface LayoutHeightOptions {
   extraSpacing?: number;
@@ -32,7 +32,7 @@ interface LayoutHeightOptions {
 }
 
 export function useLayoutHeight(options: LayoutHeightOptions = {}) {
-  const { cssVarName = '--zen-full-height', extraSpacing = 15, updateCssVar = true } = options;
+  const { cssVarName = '--Wn-full-height', extraSpacing = 15, updateCssVar = true } = options;
 
   // 元素引用
   const headerRef = ref<HTMLElement>();
@@ -87,20 +87,26 @@ export function useLayoutHeight(options: LayoutHeightOptions = {}) {
  *
  * ```
  */
-export function useAutoLayoutHeight(headerIds: string[] = ['app-header', 'app-content-header'], options: LayoutHeightOptions = {}) {
-  const { cssVarName = '--zen-full-height', extraSpacing = 15, updateCssVar = true } = options;
+export function useAutoLayoutHeight(
+  headerIds: string[] = ['app-header', 'app-content-header', 'app-footer'],
+  options: LayoutHeightOptions = {},
+) {
+  const { cssVarName = '--Wn-full-height', extraSpacing = 15, updateCssVar = true } = options;
 
   // 创建元素引用
   const headerRef = ref<HTMLElement>();
   const contentHeaderRef = ref<HTMLElement>();
+  const footerRef = ref<HTMLElement>();
 
   // 使用 VueUse 自动监听元素尺寸变化
   const { height: headerHeight } = useElementSize(headerRef);
   const { height: contentHeaderHeight } = useElementSize(contentHeaderRef);
+  const { height: footerHeight } = useElementSize(footerRef);
 
   // 计算容器最小高度（响应式）
   const containerMinHeight = computed(() => {
-    const totalHeight = headerHeight.value + contentHeaderHeight.value + extraSpacing;
+    const totalHeight =
+      headerHeight.value + contentHeaderHeight.value + footerHeight.value + extraSpacing;
     return `calc(100vh - ${totalHeight}px)`;
   });
 
@@ -123,12 +129,16 @@ export function useAutoLayoutHeight(headerIds: string[] = ['app-header', 'app-co
       requestAnimationFrame(() => {
         const header = document.getElementById(headerIds[0]);
         const contentHeader = document.getElementById(headerIds[1]);
+        const footer = document.getElementById(headerIds[2]);
 
         if (header) {
           headerRef.value = header;
         }
         if (contentHeader) {
           contentHeaderRef.value = contentHeader;
+        }
+        if (footer) {
+          footerRef.value = footer;
         }
       });
     }
@@ -149,5 +159,11 @@ export function useAutoLayoutHeight(headerIds: string[] = ['app-header', 'app-co
 
     /** 头部元素引用 */
     headerRef,
+
+    /** 底部高度 */
+    footerHeight,
+
+    /** 底部元素引用 */
+    footerRef,
   };
 }

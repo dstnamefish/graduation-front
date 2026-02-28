@@ -11,7 +11,7 @@
  * - 支持 GET/POST/PUT/DELETE 等常用方法
  *
  * @module utils/http
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
@@ -67,7 +67,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
     const { accessToken } = useUserStore();
-    if (accessToken) { request.headers.set('Authorization', `Bearer ${accessToken}`); }
+
+    // 后端期望的是原始token，不需要Bearer前缀
+    if (accessToken) { request.headers.set('Authorization', accessToken); }
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json');

@@ -29,3 +29,12 @@ declare module 'qrcode.vue' {
 // 全局变量声明
 // 版本号
 declare const __APP_VERSION__: string;
+
+// JSX 命名空间声明，解决 "no interface 'JSX.IntrinsicElements' exists" 报错
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elem: string]: any;
+    }
+  }
+}

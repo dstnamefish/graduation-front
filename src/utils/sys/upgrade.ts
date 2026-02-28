@@ -34,7 +34,7 @@ import { ElNotification } from 'element-plus';
  * 6. 更新本地版本号
  *
  * @module utils/sys/upgrade
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { useUserStore } from '@/store/modules/user';
 import { StorageConfig } from '@/utils/storage/storage-config';

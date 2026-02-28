@@ -25,7 +25,7 @@ import { useSettingStore } from '@/store/modules/setting';
  * - 多标签页导航系统
  *
  * @module utils/navigation/worktab
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { useWorktabStore } from '@/store/modules/worktab';
 

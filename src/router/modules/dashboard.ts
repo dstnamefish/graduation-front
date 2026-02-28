@@ -7,17 +7,14 @@ export const dashboardRoutes: AppRouteRecord[] = [
   {
     component: '/dashboard',
     meta: {
-      headerBar:{
-        breadcrumb: true,
-        chat: true,
+      headerBar: {
+        breadcrumb: false,
         globalSearch: true,
-        language: true,
-        notification: true,
-        settings: true,
-        themeToggle: true,
       },
+      icon: 'local-menu/dashboard',
       keepAlive: false,
       roles: ['ADMIN'],
+      fixedHeight: false,
       title: 'menus.dashboard.title',
     },
     name: 'Dashboard',

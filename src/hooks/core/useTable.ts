@@ -14,7 +14,7 @@
  * 6. 列配置管理 - 动态显示/隐藏列、列排序、配置持久化、批量操作（可选）
  *
  * @module useTable
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import { useWindowSize } from '@vueuse/core';

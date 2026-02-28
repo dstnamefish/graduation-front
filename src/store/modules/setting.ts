@@ -28,7 +28,7 @@
  * - 支持跨版本数据迁移
  *
  * @module store/modules/setting
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -74,23 +74,11 @@ export const useSettingStore = defineStore(
     const systemThemeColor = ref(SETTING_DEFAULT_CONFIG.systemThemeColor);
 
     // 界面显示设置
-    /** 是否显示菜单按钮 */
-    const showMenuButton = ref(SETTING_DEFAULT_CONFIG.showMenuButton);
-
-    /** 是否显示快速入口 */
-    const showFastEnter = ref(SETTING_DEFAULT_CONFIG.showFastEnter);
-
-    /** 是否显示刷新按钮 */
-    const showRefreshButton = ref(SETTING_DEFAULT_CONFIG.showRefreshButton);
-
     /** 是否显示面包屑 */
     const showCrumbs = ref(SETTING_DEFAULT_CONFIG.showCrumbs);
 
     /** 是否显示工作台标签 */
     const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab);
-
-    /** 是否显示语言切换 */
-    const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage);
 
     /** 是否显示进度条 */
     const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress);
@@ -130,9 +118,6 @@ export const useSettingStore = defineStore(
     /** 标签页样式 */
     const tabStyle = ref(SETTING_DEFAULT_CONFIG.tabStyle);
 
-    /** 自定义圆角 */
-    const customRadius = ref(SETTING_DEFAULT_CONFIG.customRadius);
-
     /** 容器宽度 */
     const containerWidth = ref(SETTING_DEFAULT_CONFIG.containerWidth);
 
@@ -165,13 +150,6 @@ export const useSettingStore = defineStore(
      */
     const getMenuOpenWidth = computed((): string => {
       return menuOpenWidth.value + 'px' || SETTING_DEFAULT_CONFIG.menuOpenWidth + 'px';
-    });
-
-    /**
-     * 获取自定义圆角
-     */
-    const getCustomRadius = computed((): string => {
-      return customRadius.value + 'rem' || SETTING_DEFAULT_CONFIG.customRadius + 'rem';
     });
 
     /**
@@ -250,31 +228,10 @@ export const useSettingStore = defineStore(
     };
 
     /**
-     * 切换菜单按钮显示
-     */
-    const setButton = () => {
-      showMenuButton.value = !showMenuButton.value;
-    };
-
-    /**
-     * 切换快速入口显示
-     */
-    const setFastEnter = () => {
-      showFastEnter.value = !showFastEnter.value;
-    };
-
-    /**
      * 切换自动关闭
      */
     const setAutoClose = () => {
       autoClose.value = !autoClose.value;
-    };
-
-    /**
-     * 切换刷新按钮显示
-     */
-    const setShowRefreshButton = () => {
-      showRefreshButton.value = !showRefreshButton.value;
     };
 
     /**
@@ -290,13 +247,6 @@ export const useSettingStore = defineStore(
      */
     const setWorkTab = (show: boolean) => {
       showWorkTab.value = show;
-    };
-
-    /**
-     * 切换语言切换显示
-     */
-    const setLanguage = () => {
-      showLanguage.value = !showLanguage.value;
     };
 
     /**
@@ -367,15 +317,6 @@ export const useSettingStore = defineStore(
     };
 
     /**
-     * 设置自定义圆角
-     * @param radius 圆角值
-     */
-    const setCustomRadius = (radius: string) => {
-      customRadius.value = radius;
-      document.documentElement.style.setProperty('--custom-radius', `${radius}rem`);
-    };
-
-    /**
      * 设置节日烟花加载状态
      * @param isLoad 是否已加载
      */
@@ -404,10 +345,8 @@ export const useSettingStore = defineStore(
       boxBorderMode,
       colorWeak,
       containerWidth,
-      customRadius,
       dualMenuShowText,
       festivalDate,
-      getCustomRadius,
       getMenuOpenWidth,
       getMenuTheme,
       hideSettingGuide,
@@ -424,35 +363,26 @@ export const useSettingStore = defineStore(
       reload,
       setAutoClose,
       setBorderMode,
-      setButton,
       setColorWeak,
       setContainerWidth,
       setCrumbs,
-      setCustomRadius,
       setDualMenuShowText,
       setElementTheme,
-      setFastEnter,
       setFestivalDate,
       setGlopTheme,
       setholidayFireworksLoaded,
-      setLanguage,
       setMenuOpen,
       setMenuOpenWidth,
       setNprogress,
       setPageTransition,
       setShowFestivalText,
-      setShowRefreshButton,
       setTabStyle,
       setUniqueOpened,
       setWatermarkVisible,
       setWorkTab,
       showCrumbs,
-      showFastEnter,
       showFestivalText,
-      showLanguage,
-      showMenuButton,
       showNprogress,
-      showRefreshButton,
       showSettingGuide,
       showWorkTab,
       switchMenuLayouts,

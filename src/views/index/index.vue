@@ -1,26 +1,37 @@
-<template>
-  <div class="app-layout">
-    <aside id="app-sidebar">
-      <ZenSidebarMenu />
-    </aside>
+﻿<template>
+  <div class="w-full h-screen overflow-hidden bg-(--default-bg-color)">
+    <div class="flex flex-row h-full">
+      <!-- 侧边栏 -->
+      <aside
+        class="shrink-0 bg-[#f5f5f6] transition-all duration-300 max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:z-30 max-lg:h-screen"
+      >
+        <WnSidebarMenu />
+      </aside>
 
-    <main id="app-main">
-      <div id="app-header">
-        <ZenHeaderBar
-          :showBreadcrumb="route.meta.showBreadcrumb"
-          :showGlobalSearch="route.meta.showGlobalSearch"
-          :showNotification="route.meta.showNotification"
-          :showChat="route.meta.showChat"
-          :showLanguage="route.meta.showLanguage"
-          :showSettings="route.meta.showSettings"
-          :showThemeToggle="route.meta.showThemeToggle"
-        />
-      </div>
+      <!-- 主体内容区域 -->
+      <div class="relative flex flex-col flex-1 min-w-0">
+        <!-- 顶部固定遮盖层 -->
+        <header
+          id="app-header"
+          class="absolute top-0 left-0 right-0 z-[300] shrink-0 bg-white"
+        >
+          <WnHeaderBar />
+        </header>
 
-      <div id="app-content">
-        <ZenPageContent />
+        <!-- 滚动容器 -->
+        <main class="flex-1 overflow-y-auto overflow-x-hidden pt-20 pb-16">
+          <WnPageContent class="h-full px-6 py-1" />
+        </main>
+
+        <!-- 底部固定遮盖层 -->
+        <footer
+          id="app-footer"
+          class="absolute bottom-0 left-0 right-0 z-[300] shrink-0 bg-white border-t border-slate-100/50"
+        >
+          <WnFooter />
+        </footer>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -31,6 +42,17 @@ defineOptions({ name: 'AppLayout' });
 const route = useRoute();
 </script>
 
-<style lang="scss" scoped>
-@forward './index.scss';
+<style scoped lang="scss">
+/* 移动端/小屏幕适配 */
+@media only screen and (width <= 800px) {
+  :deep(.layout-content) {
+    width: calc(100% - 40px);
+  }
+}
+
+@media only screen and (width <= 640px) {
+  :deep(.layout-content) {
+    width: calc(100% - 30px);
+  }
+}
 </style>

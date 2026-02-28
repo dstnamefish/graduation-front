@@ -29,7 +29,7 @@
  * - 登出时自动清理
  *
  * @module store/modules/user
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -69,7 +69,7 @@ export const useUserStore = defineStore(
     const info = ref<Partial<UserInfo>>({});
 
     // 搜索历史记录
-    const searchHistory = ref<AppRouteRecord[]>([]);
+    const searchHistory = ref<any[]>([]);
 
     // 访问令牌
     const accessToken = ref('');
@@ -117,7 +117,7 @@ export const useUserStore = defineStore(
      * 设置搜索历史
      * @param list 搜索历史列表
      */
-    const setSearchHistory = (list: AppRouteRecord[]) => {
+    const setSearchHistory = (list: any[]) => {
       searchHistory.value = list;
     };
 
@@ -154,7 +154,7 @@ export const useUserStore = defineStore(
      * @param roleCode 角色编码
      * @returns 是否匹配
      */
-    const checkRoleCode = (roleCode: string):boolean => {
+    const checkRoleCode = (roleCode: string): boolean => {
       return info.value.roleCode === roleCode;
     };
 

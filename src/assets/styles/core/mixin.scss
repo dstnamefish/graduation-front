@@ -36,7 +36,10 @@
 
 /**
 * css3动画
-*
+* @param {Map} 起始状态
+* @param {Map} 结束状态
+* @param {String} 动画名称
+* @param {String} 动画属性
 */
 @mixin animation(
   $from: (
@@ -119,4 +122,38 @@
   --tw-backdrop-blur: blur(30px);
 
   backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+
+// 渐变按钮混合宏
+@mixin gradient-button($from: #667eea, $to: #764ba2) {
+  background: linear-gradient(135deg, $from 0%, $to 100%);
+  background-size: 200% 200%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-position: 100% 0;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 输入框焦点样式
+@mixin input-focus($color: #667eea) {
+  &:focus {
+    border-color: $color;
+    box-shadow: 0 0 0 3px rgb(102 126 234 / 10%);
+  }
+}
+
+// 卡片悬停效果
+@mixin card-hover {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgb(102 126 234 / 15%);
+  }
 }

@@ -4,13 +4,12 @@
  * 负责动态加载 Vue 组件
  *
  * @module router/core/ComponentLoader
- * @author Art Design Pro Team
+ * @author 16518
  */
-
 import { h } from 'vue';
 
 export class ComponentLoader {
-  private modules: Record<string, () => Promise<any>>;
+  private modules: Record<string, () => Promise<Component>>;
 
   constructor() {
     // 动态导入 views 目录下所有 .vue 组件
@@ -20,7 +19,7 @@ export class ComponentLoader {
   /**
    * 加载组件
    */
-  load(componentPath: string): () => Promise<any> {
+  load(componentPath: string): () => Promise<Component> {
     if (!componentPath) {
       return this.createEmptyComponent();
     }
@@ -45,21 +44,21 @@ export class ComponentLoader {
   /**
    * 加载布局组件
    */
-  loadLayout(): () => Promise<any> {
+  loadLayout(): () => Promise<Component> {
     return () => import('@/views/index/index.vue');
   }
 
   /**
    * 加载 iframe 组件
    */
-  loadIframe(): () => Promise<any> {
+  loadIframe(): () => Promise<Component> {
     return () => import('@/views/outside/Iframe.vue');
   }
 
   /**
    * 创建空组件
    */
-  private createEmptyComponent(): () => Promise<any> {
+  private createEmptyComponent(): () => Promise<Component> {
     return () =>
       Promise.resolve({
         render() {
@@ -71,7 +70,7 @@ export class ComponentLoader {
   /**
    * 创建错误提示组件
    */
-  private createErrorComponent(componentPath: string): () => Promise<any> {
+  private createErrorComponent(componentPath: string): () => Promise<Component> {
     return () =>
       Promise.resolve({
         render() {

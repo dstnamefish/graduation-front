@@ -11,7 +11,7 @@ import type { LoginParams, LoginResponse, RegisterParams, RegisterResponse } fro
  */
 
 /**
- * 认证
+ * 认证API
  */
 
 /**
@@ -23,8 +23,8 @@ export function fetchLogin(params: LoginParams) {
   return request.post<LoginResponse>({
     params,
     showErrorMessage: true,
-    showSuccessMessage: true,
-    url:'auth/login',
+    showSuccessMessage: false,
+    url: '/ua/login',
   });
 }
 
@@ -38,6 +38,6 @@ export function fetchRegister(params: RegisterParams) {
     params,
     showErrorMessage: true,
     showSuccessMessage: true,
-    url:'auth/register',
+    url: '/ua/register',
   });
 }

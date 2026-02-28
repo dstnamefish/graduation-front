@@ -14,7 +14,7 @@ import { router } from '@/router';
  * - 智能判断跳转目标类型（外部链接/内部路由）
  *
  * @module utils/navigation/jump
- * @author Art Design Pro Team
+ * @author 16518
  */
 import { AppRouteRecord } from '@/types/router';
 

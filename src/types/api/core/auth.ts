@@ -8,18 +8,20 @@ import { UserInfo } from './user';
 export interface LoginParams {
   username: string;
   password: string;
+  captchaKey?: string;
+  captchaCode?: string;
 }
 
 /**
  * 登录响应
- * @property token 访问令牌
+ * @property accessToken 访问令牌
  * @property refreshToken 刷新令牌
- * @property user 用户信息
+ * @property expiresIn 过期时间
  */
 export interface LoginResponse {
-  token: string;
+  accessToken: string;
   refreshToken: string;
-  userInfo: UserInfo;
+  expiresIn: number;
 }
 
 /**

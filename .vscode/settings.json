@@ -73,5 +73,10 @@
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"
   },
-  "svg.preview.background": "transparent"
+  "svg.preview.background": "dark-transparent",
+  "volar.autoCompleteRefs": false,
+  "volar.codeLens.pugTools": false,
+  "volar.codeLens.scriptSetupTools": false,
+  "vue.inlayHints.missingProps": false,
+  "vue.server.hybridMode": false
 }

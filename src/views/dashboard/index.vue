@@ -1,7 +1,7 @@
 <template>
-  <div class="flex min-h-screen items-stretch">
+  <div class="flex min-h-screen items-stretch pb-6">
     <!-- 左侧主内容区域 -->
-    <main class="flex-1 p-6 space-y-6 min-w-0 flex flex-col">
+    <main class="flex-1 pr-6 space-y-6 min-w-0 flex flex-col">
       <!-- 顶部数据卡片 -->
       <CardList class="shrink-0" />
 
@@ -25,9 +25,11 @@
     </main>
 
     <!-- 右侧侧边栏：日历 & 本日议程 & 最近活动 -->
-    <aside class="hidden xl:flex w-[460px] flex-col gap-6 p-6 pl-0 backdrop-blur-xl">
+    <aside class="hidden xl:flex w-[460px] flex-col gap-6 pl-0 backdrop-blur-xl">
       <!-- 背景 -->
-      <div class="bg-[#f5f5f5] rounded-2xl p-6 border border-[#f5f5f5] flex flex-col flex-1 min-h-0">
+      <div
+        class="bg-[#f5f5f5] rounded-2xl p-6 border border-[#f5f5f5] flex flex-col flex-1 min-h-0"
+      >
         <!-- 日历 -->
         <div class="shrink-0">
           <MiniCalendar v-model="selectedDate" />
@@ -37,7 +39,10 @@
 
         <!-- 今日议程 -->
         <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1 -mr-1">
-          <DailyAgenda :date="selectedDate" :events="currentEvents" />
+          <DailyAgenda
+            :date="selectedDate"
+            :events="currentEvents"
+          />
         </div>
       </div>
 
@@ -79,14 +84,19 @@ const selectedDate = ref(new Date(2028, 6, 12)); // 6 表示 7月
 const mockDatabase: Record<string, CalendarEvent[]> = {
   '2028-07-12': [
     { id: 1, title: 'Morning Staff Meeting', timeRange: '08:00 AM - 09:00 AM', type: 'meeting' },
-    { id: 2, title: 'Patient Consultation - Gen Med', timeRange: '10:00 AM - 12:00 PM', type: 'consultation' },
+    {
+      id: 2,
+      title: 'Patient Consultation - Gen Med',
+      timeRange: '10:00 AM - 12:00 PM',
+      type: 'consultation',
+    },
     { id: 3, title: 'Break / Admin', timeRange: '12:00 PM - 01:00 PM', type: 'break' },
     { id: 4, title: 'Surgery - Orthopedics', timeRange: '01:00 PM - 03:00 PM', type: 'surgery' },
     { id: 5, title: 'Training Session', timeRange: '04:00 PM - 05:00 PM', type: 'meeting' },
   ],
   '2028-07-13': [
     { id: 6, title: 'Emergency Review', timeRange: '09:00 AM - 10:00 AM', type: 'consultation' },
-  ]
+  ],
 };
 
 // 3. 计算属性：获取选中日期的事件
@@ -95,7 +105,7 @@ const currentEvents = computed(() => {
   const month = String(selectedDate.value.getMonth() + 1).padStart(2, '0');
   const day = String(selectedDate.value.getDate()).padStart(2, '0');
   const key = `${year}-${month}-${day}`;
-  
+
   return mockDatabase[key] || [];
 });
 </script>

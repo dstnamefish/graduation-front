@@ -39,9 +39,6 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 容器宽度 */
   containerWidth: ContainerWidthEnum.FULL,
 
-  /** 自定义圆角 */
-  customRadius: '0.75',
-
   /** 双菜单是否显示文本 */
   dualMenuShowText: false,
 
@@ -72,23 +69,11 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 是否显示面包屑 */
   showCrumbs: true,
 
-  /** 是否显示快速入口 */
-  showFastEnter: true,
-
   /** 是否显示节日文本 */
   showFestivalText: false,
 
-  /** 是否显示语言切换 */
-  showLanguage: true,
-
-  /** 是否显示菜单按钮 */
-  showMenuButton: true,
-
   /** 是否显示进度条 */
   showNprogress: false,
-
-  /** 是否显示刷新按钮 */
-  showRefreshButton: true,
 
   /** 是否显示设置引导 */
   showSettingGuide: true,

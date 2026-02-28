@@ -7,15 +7,9 @@ export const departmentsRoutes: AppRouteRecord[] = [
   {
     component: '/departments',
     meta: {
+      icon: 'local-menu/departments',
       keepAlive: false,
       roles: ['ADMIN'],
-      showBreadcrumb: true,
-      showChat: true,
-      showGlobalSearch: true,
-      showLanguage: true,
-      showNotification: true,
-      showSettings: true,
-      showThemeToggle: true,
       title: 'menus.departments.title',
     },
     name: 'Departments',

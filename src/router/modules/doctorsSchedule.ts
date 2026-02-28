@@ -7,15 +7,9 @@ export const doctorsScheduleRoutes: AppRouteRecord[] = [
   {
     component: '/doctors-schedule',
     meta: {
+      icon: 'local-menu/schedule',
       keepAlive: false,
       roles: ['ADMIN'],
-      showBreadcrumb: true,
-      showChat: true,
-      showGlobalSearch: true,
-      showLanguage: true,
-      showNotification: true,
-      showSettings: true,
-      showThemeToggle: true,
       title: 'menus.doctorsSchedule.title',
     },
     name: 'DoctorsSchedule',

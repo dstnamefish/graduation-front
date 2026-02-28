@@ -12,7 +12,7 @@
  * 4. 响应式状态 - 所有状态自动响应配置和 store 变化
  *
  * @module useHeaderBar
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import { storeToRefs } from 'pinia';
@@ -34,8 +34,7 @@ export function useHeaderBar() {
   const headerBarConfigRef = computed<HeaderBarFeatureConfig>(() => headerBarConfig);
 
   // 从store中获取相关状态
-  const { showCrumbs, showFastEnter, showLanguage, showMenuButton, showRefreshButton } =
-    storeToRefs(settingStore);
+  const { showCrumbs } = storeToRefs(settingStore);
 
   /**
    * 检查特定功能是否启用
@@ -70,7 +69,7 @@ export function useHeaderBar() {
    */
   const getFeatureConfigFromMeta = (feature: string) => {
     const metaConfig = getHeaderBarMetaConfig.value;
-    if(feature in metaConfig) {
+    if (feature in metaConfig) {
       return metaConfig[feature as keyof typeof metaConfig];
     }
     return headerBarConfigRef.value[feature as keyof HeaderBarFeatureConfig];
@@ -83,28 +82,34 @@ export function useHeaderBar() {
    * @param defaultValue 默认值（当配置文件和meta都没有时使用）
    * @returns 是否显示
    */
-  const shouldShowFeatureFromMeta = (feature: keyof HeaderBarFeatureConfig, storeState?: boolean, defaultValue?: boolean) => {
+  const shouldShowFeatureFromMeta = (
+    feature: keyof HeaderBarFeatureConfig,
+    storeState?: boolean,
+    defaultValue?: boolean,
+  ) => {
     const metaConfig = getHeaderBarMetaConfig.value;
-    if(feature in metaConfig) {
+    if (feature in metaConfig) {
       const metaResult = metaConfig[feature as keyof typeof metaConfig];
-      return storeState !== undefined ? (metaResult as boolean) && storeState : (metaResult as boolean);
+      return storeState !== undefined
+        ? (metaResult as boolean) && storeState
+        : (metaResult as boolean);
     }
     return isFeatureEnabled(feature) && (storeState ?? defaultValue);
   };
 
   // 检查菜单按钮是否显示
   const shouldShowMenuButton = computed(() => {
-    return shouldShowFeatureFromMeta('menuButton', showMenuButton.value, true);
+    return shouldShowFeatureFromMeta('menuButton', undefined, true);
   });
 
   // 检查刷新按钮是否显示
   const shouldShowRefreshButton = computed(() => {
-    return shouldShowFeatureFromMeta('refreshButton', showRefreshButton.value, true);
+    return shouldShowFeatureFromMeta('refreshButton', undefined, true);
   });
 
   // 检查快速入口是否显示
   const shouldShowFastEnter = computed(() => {
-    return shouldShowFeatureFromMeta('fastEnter', showFastEnter.value, true);
+    return shouldShowFeatureFromMeta('fastEnter', undefined, true);
   });
 
   // 检查面包屑是否显示
@@ -134,7 +139,7 @@ export function useHeaderBar() {
 
   // 检查语言切换是否显示
   const shouldShowLanguage = computed(() => {
-    return shouldShowFeatureFromMeta('language', showLanguage.value, true);
+    return shouldShowFeatureFromMeta('language', undefined, true);
   });
 
   // 检查设置面板是否显示
@@ -215,32 +220,33 @@ export function useHeaderBar() {
     getDisabledFeatures, // 获取所有禁用的功能
     getEnabledFeatures, // 获取所有启用的功能
     getFeatureConfig, // 获取功能配置
+    getFeatureConfigFromMeta, // 从meta或配置获取功能配置
     getFeatureInfo, // 获取功能配置（别名）
     getInactiveFeatures, // 获取所有禁用的功能（别名）
+
     // 配置
     headerBarConfig: headerBarConfigRef,
 
+    // Meta相关配置和方法
+    headerBarMetaConfig: getHeaderBarMetaConfig, // 当前路由的meta配置
     isFeatureActive, // 检查功能是否启用（别名）
     // 方法
     isFeatureEnabled, // 检查功能是否启用
+
     shouldShowBreadcrumb, // 是否显示面包屑
+
     shouldShowChat, // 是否显示聊天功能
-
     shouldShowFastEnter, // 是否显示快速入口
-
+    shouldShowFeatureFromMeta, // 基于meta的显示检查方法
     shouldShowFullscreen, // 是否显示全屏按钮
     shouldShowGlobalSearch, // 是否显示全局搜索
     shouldShowLanguage, // 是否显示语言切换
     // 显示状态计算属性
     shouldShowMenuButton, // 是否显示菜单按钮
     shouldShowNotification, // 是否显示通知中心
+
     shouldShowRefreshButton, // 是否显示刷新按钮
     shouldShowSettings, // 是否显示设置面板
     shouldShowThemeToggle, // 是否显示主题切换
-
-    // Meta相关配置和方法
-    headerBarMetaConfig: getHeaderBarMetaConfig,  // 当前路由的meta配置
-    getFeatureConfigFromMeta,  // 从meta或配置获取功能配置
-    shouldShowFeatureFromMeta,  // 基于meta的显示检查方法
   };
 }

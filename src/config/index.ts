@@ -90,7 +90,6 @@ const appConfig: SystemConfig = {
 
   // 系统其他项默认配置
   systemSetting: {
-    defaultCustomRadius: '0.75',
     defaultMenuWidth: 240,
     defaultTabStyle: 'tab-default',
   },

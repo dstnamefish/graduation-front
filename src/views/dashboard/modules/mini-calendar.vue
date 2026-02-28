@@ -4,18 +4,36 @@
     <div class="flex items-center justify-between px-1">
       <h2 class="text-xl font-bold text-slate-900">{{ currentMonthYear }}</h2>
       <div class="flex gap-1">
-        <button @click="changeMonth(-1)" class="p-2 hover:bg-slate-100 rounded-lg transition-colors group">
-          <ZenSvgIcon icon="local-common/arrow-left" :size="18" class="text-slate-400 group-hover:text-slate-600 transition-colors" />
+        <button
+          @click="changeMonth(-1)"
+          class="p-2 hover:bg-slate-100 rounded-lg transition-colors group"
+        >
+          <WnSvgIcon
+            icon="local-common/arrow-left"
+            :size="18"
+            class="text-slate-400 group-hover:text-slate-600 transition-colors"
+          />
         </button>
-        <button @click="changeMonth(1)" class="p-2 hover:bg-slate-100 rounded-lg transition-colors group">
-          <ZenSvgIcon icon="local-common/arrow-right" :size="18" class="text-slate-400 group-hover:text-slate-600 transition-colors" />
+        <button
+          @click="changeMonth(1)"
+          class="p-2 hover:bg-slate-100 rounded-lg transition-colors group"
+        >
+          <WnSvgIcon
+            icon="local-common/arrow-right"
+            :size="18"
+            class="text-slate-400 group-hover:text-slate-600 transition-colors"
+          />
         </button>
       </div>
     </div>
 
     <!-- 周日历 -->
     <div class="grid grid-cols-7 text-center">
-      <span v-for="day in weekDays" :key="day" class="text-sm text-slate-400 ">
+      <span
+        v-for="day in weekDays"
+        :key="day"
+        class="text-sm text-slate-400"
+      >
         {{ day.substring(0, 3) }}
       </span>
     </div>
@@ -31,12 +49,15 @@
         :class="[
           dayObj.isSelected ? 'bg-[#243956] text-white z-10' : 'hover:bg-slate-50 text-slate-600',
           !dayObj.isCurrentMonth ? 'opacity-20 cursor-default' : 'cursor-pointer',
-          dayObj.isToday && !dayObj.isSelected ? 'text-blue-600' : ''
+          dayObj.isToday && !dayObj.isSelected ? 'text-blue-600' : '',
         ]"
       >
         {{ dayObj.date.getDate() }}
         <!-- 当前日期 -->
-        <span v-if="dayObj.isToday && !dayObj.isSelected" class="absolute bottom-1.5 w-1 h-1 bg-[#045] rounded-full"></span>
+        <span
+          v-if="dayObj.isToday && !dayObj.isSelected"
+          class="absolute bottom-1.5 w-1 h-1 bg-[#045] rounded-full"
+        ></span>
       </button>
     </div>
   </div>
@@ -44,7 +65,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import ZenSvgIcon from '@/components/core/base/zen-svg-icon/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 interface DayObj {
   date: Date;
@@ -54,7 +75,7 @@ interface DayObj {
 }
 
 const props = defineProps<{
-  modelValue: Date // 选中的日期
+  modelValue: Date; // 选中的日期
 }>();
 
 const emit = defineEmits(['update:modelValue']);
@@ -73,32 +94,32 @@ const currentMonthYear = computed(() => {
 const calendarGrid = computed<DayObj[]>(() => {
   const year = viewDate.value.getFullYear();
   const month = viewDate.value.getMonth();
-  
+
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
-  
+
   const days: DayObj[] = [];
-  
+
   // Padding for last month
   const startDay = firstDayOfMonth.getDay();
   for (let i = startDay; i > 0; i--) {
     const d = new Date(year, month, 1 - i);
     days.push(createDayObj(d, false));
   }
-  
+
   // Current month days
   for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
     const d = new Date(year, month, i);
     days.push(createDayObj(d, true));
   }
-  
+
   // Padding for next month to fill grid
   const remainingSlots = 42 - days.length;
   for (let i = 1; i <= remainingSlots; i++) {
     const d = new Date(year, month + 1, i);
     days.push(createDayObj(d, false));
   }
-  
+
   return days;
 });
 
@@ -108,7 +129,7 @@ function createDayObj(date: Date, isCurrentMonth: boolean): DayObj {
     date: date,
     isCurrentMonth,
     isToday: date.toDateString() === today.toDateString(),
-    isSelected: date.toDateString() === props.modelValue.toDateString()
+    isSelected: date.toDateString() === props.modelValue.toDateString(),
   };
 }
 
@@ -122,7 +143,10 @@ function selectDate(date: Date) {
   emit('update:modelValue', date);
 }
 
-watch(() => props.modelValue, (newVal) => {
-  viewDate.value = new Date(newVal);
-});
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    viewDate.value = new Date(newVal);
+  },
+);
 </script>

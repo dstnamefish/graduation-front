@@ -36,7 +36,7 @@
  * - createErrorHandler: 生成错误处理器
  *
  * @module utils/table/tableUtils
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 import { tableConfig } from './tableConfig';
@@ -45,14 +45,14 @@ import type { ApiResponse } from './tableCache';
 
 // 请求参数基础接口，扩展分页参数
 export interface BaseRequestParams extends Api.Common.PaginationParams {
-  [key: string]: unknown
+  [key: string]: unknown;
 }
 
 // 错误处理接口
 export interface TableError {
-  code: string
-  message: string
-  details?: unknown
+  code: string;
+  message: string;
+  details?: unknown;
 }
 
 // 辅助函数：从对象中提取记录数组
@@ -91,7 +91,9 @@ function extractPagination(
         break;
       }
     }
-    if (result.current !== undefined) {break;}
+    if (result.current !== undefined) {
+      break;
+    }
   }
 
   const sizeFields = tableConfig.sizeFields;
@@ -102,10 +104,14 @@ function extractPagination(
         break;
       }
     }
-    if (result.size !== undefined) {break;}
+    if (result.size !== undefined) {
+      break;
+    }
   }
 
-  if (result.current === undefined && result.size === undefined) {return undefined;}
+  if (result.current === undefined && result.size === undefined) {
+    return undefined;
+  }
   return result;
 }
 
@@ -211,7 +217,9 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
 
   const debouncedFn = (...args: Parameters<T>): Promise<any> => {
     return new Promise((resolve, reject) => {
-      if (timeoutId) {clearTimeout(timeoutId);}
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       lastArgs = args;
       lastResolve = resolve;
       lastReject = reject;
@@ -232,7 +240,9 @@ export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   };
 
   debouncedFn.cancel = () => {
-    if (timeoutId) {clearTimeout(timeoutId);}
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
     timeoutId = null;
     lastArgs = null;
     lastResolve = null;
@@ -273,13 +283,15 @@ export const createErrorHandler = (
 ) => {
   const logger = {
     error: (message: string, ...args: any[]) => {
-      if (enableLog) {console.error(`[useTable] ${message}`, ...args);}
+      if (enableLog) {
+        console.error(`[useTable] ${message}`, ...args);
+      }
     },
   };
 
   return (err: unknown, context: string): TableError => {
     const tableError: TableError = {
-      code: 'UNKNOWN_ERROR',
+      code: 'UNKNOWn_ERROR',
       details: err,
       message: '未知错误',
     };

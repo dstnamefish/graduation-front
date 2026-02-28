@@ -3,7 +3,7 @@
  * 提供向后兼容性和便捷导入
  *
  * @module utils/index
- * @author Art Design Pro Team
+ * @author 16518
  */
 
 // UI 相关

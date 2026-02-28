@@ -44,17 +44,31 @@
     }
   },
   "common": {
-    "search": "Search ",
+    "search": {
+      "label": "Search",
+      "result": "Search Record",
+      "history": "Search Record",
+      "noResult": "No results found",
+      "noHistory": "No search history"
+    },
+    "clear": "Clear",
+    "select": "Select",
+    "navigate": "Navigate",
+    "close": "Close",
     "reset": "Reset",
     "refresh": "Refresh",
     "total": "Total",
     "page": "Page",
     "itemsPerPage": "Items per page",
-    "placeholder": "Search anything"
+    "placeholder": "Search anything",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "table": {
-      "searchBar": {
-      "search":"search"
+    "searchBar": {
+      "search": "Search",
+      "filter": "Filter",
+      "columnConfig": "Column Config"
     }
   },
   "patients": {
@@ -114,5 +128,97 @@
       "Qty In Recorder": "Qty In Recorder",
       "Action": "Action"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "welcome": "Welcome to Wellnest",
+      "slogan": "Manage your clinical tasks smarter, faster, and easier — all in one place",
+      "subtitle": "Log in to your Wellnest dashboard to continue managing your work",
+      "workId": "Work ID",
+      "workIdPlaceholder": "e.g. 10001",
+      "password": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password",
+      "loginButton": "Login",
+      "noAccount": "Don't have an account?",
+      "registerNow": "Register now",
+      "loginSuccess": "Login success!",
+      "loginFailed": "Login failed, please check your credentials",
+      "validation": {
+        "workIdRequired": "Please input Work ID",
+        "passwordRequired": "Please input password",
+        "passwordLength": "Password length should be at least 6",
+        "checkInputs": "Please check your inputs."
+      }
+    },
+    "register": {
+      "title": "Create Your Account",
+      "subtitle": "Join Wellnest to manage your workspace efficiently",
+      "workId": "Work ID",
+      "workIdPlaceholder": "e.g. 10001",
+      "email": "Email Address",
+      "emailPlaceholder": "e.g. hello@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "createAccountButton": "Create Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "loginNow": "Log in",
+      "registrationSuccess": "Registration simulated successfully!",
+      "validation": {
+        "workIdRequired": "Please input Work ID",
+        "emailRequired": "Please input email address",
+        "emailInvalid": "Please input correct email address",
+        "passwordRequired": "Please input password",
+        "passwordLength": "Password length should be at least 6",
+        "confirmPasswordRequired": "Please confirm password",
+        "passwordMismatch": "Password confirmation does not match!"
+      }
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Choose a method to verify your identity and reset your password",
+      "emailTab": "Email",
+      "phoneTab": "Phone",
+      "emailAddress": "Email Address",
+      "emailPlaceholder": "e.g. hello@example.com",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "e.g. 13800138000",
+      "verificationCode": "Verification Code",
+      "codePlaceholder": "6-digit code",
+      "sendCode": "Send Code",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "New secure password",
+      "confirmNewPassword": "Confirm New Password",
+      "confirmNewPasswordPlaceholder": "Confirm new password",
+      "resetButton": "Reset Password",
+      "backToLogin": "Back to Log in",
+      "codeSentEmail": "Verification code sent to your email!",
+      "codeSentPhone": "Verification code sent to your phone!",
+      "resetSuccess": "Password reset successfully!",
+      "validation": {
+        "emailRequired": "Please input email address",
+        "emailInvalid": "Please input correct email address",
+        "phoneRequired": "Please input phone number",
+        "phoneInvalid": "Please input correct phone number",
+        "codeRequired": "Please input verification code",
+        "newPasswordRequired": "Please input new password",
+        "newPasswordLength": "Password length should be at least 6",
+        "confirmNewPasswordRequired": "Please confirm new password",
+        "passwordMismatch": "Password confirmation does not match!"
+      }
+    }
+  },
+  "userMenu": {
+    "viewProfile": "View Profile",
+    "changePassword": "Change Password",
+    "logout": "Log out",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "logoutTitle": "Logout Confirmation",
+    "logoutSuccess": "Logged out successfully",
+    "cancelLogout": "Logout cancelled"
   }
 }

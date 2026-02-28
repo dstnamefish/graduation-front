@@ -31,7 +31,7 @@
  * 例如：recordFields: ['list', 'data', 'records', 'items', 'yourCustomField']
  *
  * @module utils/table/tableConfig
- * @author Art Design Pro Team
+ * @author 16518
  */
 export const tableConfig = {
   // 当前页码

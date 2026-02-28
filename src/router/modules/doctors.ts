@@ -7,15 +7,14 @@ export const doctorsRoutes: AppRouteRecord[] = [
   {
     component: '/doctors',
     meta: {
+      headerBar: {
+        breadcrumb: true,
+        globalSearch: false,
+      },
+      icon: 'local-menu/doctors',
       keepAlive: false,
       roles: ['ADMIN'],
-      showBreadcrumb: true,
-      showChat: true,
-      showGlobalSearch: true,
-      showLanguage: true,
-      showNotification: true,
-      showSettings: true,
-      showThemeToggle: true,
+      fixedHeight: true,
       title: 'menus.doctors.title',
     },
     name: 'Doctors',

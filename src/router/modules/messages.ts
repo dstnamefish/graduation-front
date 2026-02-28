@@ -7,15 +7,9 @@ export const messagesRoutes: AppRouteRecord[] = [
   {
     component: '/messages',
     meta: {
+      icon: 'local-menu/messages',
       keepAlive: false,
       roles: ['ADMIN'],
-      showBreadcrumb: true,
-      showChat: true,
-      showGlobalSearch: true,
-      showLanguage: true,
-      showNotification: true,
-      showSettings: true,
-      showThemeToggle: true,
       title: 'menus.messages.title',
     },
     name: 'Messages',

@@ -51,7 +51,7 @@ import { RoutesAlias } from '../routesAlias';
  * 6. 未匹配路由跳转到 404 页面
  *
  * @module router/guards/beforeEach
- * @author Art Design Pro Team
+ * @author 16518
  */
 import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 
@@ -188,18 +188,18 @@ function handleLoginStatus(
  * 检查路由是否为静态路由
  */
 function isStaticRoute(path: string): boolean {
-  const checkRoute = (routes: any[], targetPath: string): boolean => {
+  const checkRoute = (routes: any[], targetPath: string, parentPath = ''): boolean => {
     return routes.some((route) => {
-      // 处理动态路由参数匹配
-      const routePath = route.path;
-      const pattern = routePath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*');
+      // 拼接当前路由的完整路径，确保处理父子路径的连接
+      const currentPath = route.path.startsWith('/') ? route.path : `${parentPath}/${route.path}`.replace(/\/+/g, '/');
+      const pattern = currentPath.replace(/:[^/]+/g, '[^/]+').replace(/\*/g, '.*');
       const regex = new RegExp(`^${pattern}$`);
 
       if (regex.test(targetPath)) {
         return true;
       }
       if (route.children && route.children.length > 0) {
-        return checkRoute(route.children, targetPath);
+        return checkRoute(route.children, targetPath, currentPath);
       }
       return false;
     });
