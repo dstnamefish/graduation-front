@@ -74,7 +74,7 @@ const appConfig: SystemConfig = {
 
   // 系统信息
   systemInfo: {
-    name: 'Zen',
+    name: 'WellNest',
   },
 
   // 系统主色

@@ -136,7 +136,7 @@ onMounted(() => {
     <template #reference>
       <div
         ref="triggerRef"
-        class="flex-cc gap-2 h-10 rounded-xl p-2 bg-g-150 hover:bg-g-200 cursor-pointer transition-all duration-200"
+        class="flex-cc gap-2 h-10 rounded-xl p-2 bg-field-muted hover:bg-field-muted-hover cursor-pointer transition-all duration-200"
       >
         <!-- 用户头像 -->
         <div class="w-7 h-7 rounded-lg flex-cc overflow-hidden">
@@ -155,13 +155,13 @@ onMounted(() => {
         </div>
 
         <!-- 用户名 -->
-        <span class="text-sm text-t-0">
+        <span class="text-sm text-color-text-main">
           {{ userInfo?.realName || userInfo?.username || 'Alfredo Westervelt' }}
         </span>
 
         <!-- 下拉箭头 -->
         <ArrowDown
-          class="w-4 h-4 text-g-500 transition-transform duration-300"
+          class="w-4 h-4 text-color-text-sub transition-transform duration-300"
           :class="{ 'rotate-180': isPopoverVisible }"
         />
       </div>
@@ -177,18 +177,20 @@ onMounted(() => {
           <!-- 分隔线 -->
           <div
             v-if="item.hasDivider"
-            class="h-[0.5px] bg-br my-1.5 opacity-60"
+            class="h-[0.5px] bg-color-border my-1.5 opacity-60"
           ></div>
 
           <div
-            class="p-2 cursor-pointer rounded-xl flex items-center gap-2 transition-colors duration-150 group hover:bg-g-150"
+            class="p-2 cursor-pointer rounded-xl flex items-center gap-2 transition-colors duration-150 group hover:bg-field-muted"
             @click="handleItemClick(item.onClick)"
           >
             <component
               :is="item.icon"
-              class="w-6 h-6 text-g-500 group-hover:text-g-700 transition-all"
+              class="w-6 h-6 text-color-text-sub group-hover:text-color-text-body transition-all"
             />
-            <span class="text-sm font-medium text-g-700 group-hover:text-g-950 transition-colors">
+            <span
+              class="text-sm font-medium text-color-text-body group-hover:text-color-text-main transition-colors"
+            >
               {{ t(item.label) }}
             </span>
           </div>

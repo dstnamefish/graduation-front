@@ -2,17 +2,29 @@
 <template>
   <div>
     <ElDropdown v-if="hasAnyAuthItem">
-      <WnIconButton icon="ri:more-2-fill" class="size-8! bg-g-200 dark:bg-g-300/45 text-sm" />
+      <WnIconButton
+        icon="ri:more-2-fill"
+        class="size-8! bg-color-slate-200 dark:bg-color-slate-300/45 text-sm"
+      />
       <template #dropdown>
         <ElDropdownMenu>
-          <template v-for="item in list" :key="item.key">
+          <template
+            v-for="item in list"
+            :key="item.key"
+          >
             <ElDropdownItem
               v-if="!item.auth || hasAuth(item.auth)"
               :disabled="item.disabled"
               @click="handleClick(item)"
             >
-              <div class="flex-c gap-2" :style="{ color: item.color }">
-                <WnSvgIcon v-if="item.icon" :icon="item.icon" />
+              <div
+                class="flex-c gap-2"
+                :style="{ color: item.color }"
+              >
+                <WnSvgIcon
+                  v-if="item.icon"
+                  :icon="item.icon"
+                />
                 <span>{{ item.label }}</span>
               </div>
             </ElDropdownItem>
@@ -44,13 +56,13 @@ const { hasAuth } = useAuth();
  * @property {string} [iconColor] - 图标颜色（优先级高于 color）
  */
 export interface ButtonMoreItem {
-  key: string | number
-  label: string
-  disabled?: boolean
-  auth?: string
-  icon?: string
-  color?: string
-  iconColor?: string
+  key: string | number;
+  label: string;
+  disabled?: boolean;
+  auth?: string;
+  icon?: string;
+  color?: string;
+  iconColor?: string;
 }
 
 /**
@@ -61,8 +73,8 @@ export interface ButtonMoreItem {
  * @property {string} [auth] - 整体权限控制，用于检查是否显示更多按钮
  */
 interface Props {
-  list: ButtonMoreItem[]
-  auth?: string
+  list: ButtonMoreItem[];
+  auth?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -73,8 +85,8 @@ const hasAnyAuthItem = computed(() => {
 });
 
 const emit = defineEmits<{
-    (e: 'click', item: ButtonMoreItem): void
-  }>();
+  (e: 'click', item: ButtonMoreItem): void;
+}>();
 
 const handleClick = (item: ButtonMoreItem) => {
   emit('click', item);

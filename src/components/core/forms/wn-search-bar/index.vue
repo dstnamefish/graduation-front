@@ -9,6 +9,7 @@
     :label-position="labelPosition"
     v-bind="{ ...$attrs }"
     class="flex flex-wrap items-center gap-2"
+    :style="themeStyles"
   >
     <ElFormItem
       v-for="item in visibleFormItems"
@@ -27,8 +28,9 @@
           :is="getComponent(item)"
           v-model="modelValue[item.key]"
           v-bind="getProps(item)"
+          :class="item.class"
+          :style="item.background ? { '--background-color': item.background } : {}"
         >
-          <!-- 下拉选择 -->
           <template v-if="item.type === 'select' && getProps(item)?.options">
             <ElOption
               v-for="option in getProps(item).options"
@@ -36,8 +38,6 @@
               :key="option.value"
             />
           </template>
-
-          <!-- 复选框组 -->
           <template v-if="item.type === 'checkboxgroup' && getProps(item)?.options">
             <ElCheckbox
               v-for="option in getProps(item).options"
@@ -45,8 +45,6 @@
               :key="option.value"
             />
           </template>
-
-          <!-- 单选框组 -->
           <template v-if="item.type === 'radiogroup' && getProps(item)?.options">
             <ElRadio
               v-for="option in getProps(item).options"
@@ -54,8 +52,6 @@
               :key="option.value"
             />
           </template>
-
-          <!-- 动态插槽支持 -->
           <template
             v-for="(slotFn, slotName) in getSlots(item)"
             :key="slotName"
@@ -143,6 +139,8 @@ export interface SearchFormItem {
   props?: Record<string, any>;
   slots?: Record<string, (() => any) | undefined>;
   placeholder?: string;
+  class?: string;
+  background?: string;
 }
 
 /**
@@ -155,19 +153,21 @@ export interface SearchFormItem {
  */
 interface SearchBarProps {
   items: SearchFormItem[];
+  backgroundTheme?: 'white' | 'gray';
   labelPosition?: 'left' | 'right' | 'top';
   labelWidth?: string | number;
 }
 
 const props = withDefaults(defineProps<SearchBarProps>(), {
   items: () => [],
+  backgroundTheme: 'gray',
   labelPosition: 'right',
   labelWidth: '70px',
 });
 
 const modelValue = defineModel<Record<string, any>>({ default: {} });
 
-const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'slots'];
+const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'slots', 'class', 'background'];
 
 const getProps = (item: SearchFormItem) => {
   if (item.props) return item.props;
@@ -207,6 +207,14 @@ const visibleFormItems = computed(() => {
   return filteredItems;
 });
 
+const themeStyles = computed(() => {
+  const isWhite = props.backgroundTheme === 'white';
+  return {
+    '--background-color': isWhite ? 'var(--color-slate-50)' : 'var(--color-slate-100)',
+    '--background-color-hover': isWhite ? 'var(--color-slate-100)' : 'var(--color-slate-200)',
+    '--background-color-focus': '#ffffff',
+  };
+});
 defineExpose({
   ref: formInstance,
   validate: (...args: any[]) => formInstance.value?.validate(...args),

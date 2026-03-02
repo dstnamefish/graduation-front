@@ -1,434 +1,290 @@
+<!-- 库存管理页面 -->
 <template>
-  <div class="inventory-page">
-    <!-- Header Section -->
-    <WnTableHeader id="Wn-table-header">
+  <div class="h-full flex flex-col">
+    <!-- 表头 -->
+    <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-        <div class="flex items-center gap-3">
-          <ElSelect
-            v-model="filters.category"
-            placeholder="All Category"
-            clearable
-            class="w-36"
-            @change="handleFilter"
-          >
-            <ElOption
-              label="All Category"
-              value=""
-            />
-            <ElOption
-              label="PPE"
-              value="PPE"
-            />
-            <ElOption
-              label="Sanitizer"
-              value="Sanitizer"
-            />
-            <ElOption
-              label="Medical Equipment"
-              value="Medical Equipment"
-            />
-            <ElOption
-              label="Medical Supplies"
-              value="Medical Supplies"
-            />
-            <ElOption
-              label="First Aid"
-              value="First Aid"
-            />
-            <ElOption
-              label="Surgical Instruments"
-              value="Surgical Instruments"
-            />
-          </ElSelect>
-          <ElSelect
-            v-model="filters.status"
-            placeholder="All Status"
-            clearable
-            class="w-32"
-            @change="handleFilter"
-          >
-            <ElOption
-              label="All Status"
-              value=""
-            />
-            <ElOption
-              label="Available"
-              value="Available"
-            />
-            <ElOption
-              label="Low"
-              value="Low"
-            />
-            <ElOption
-              label="Out of Stock"
-              value="Out of Stock"
-            />
-          </ElSelect>
-        </div>
+        <WnSearchBarInline
+          v-model="searchModel"
+          :items="searchItems"
+          background-theme="gray"
+          @keyup.enter="handleSearch"
+        />
       </template>
 
       <template #right>
-        <div class="flex items-center gap-3">
-          <ElInput
-            v-model="searchQuery"
-            placeholder="Search item, etc."
-            prefix-icon="Search"
-            class="w-48"
-            clearable
-            @clear="handleSearch"
-            @keyup.enter="handleSearch"
-          />
-          <ElButton
-            type="primary"
-            @click="handleAddItem"
+        <div class="flex items-center gap-4">
+          <div
+            class="w-11 h-11 rounded-xl bg-white border border-slate-100 flex-cc cursor-pointer hover:bg-slate-50 transition-colors shadow-sm"
           >
             <WnSvgIcon
-              icon="solar:add-circle-bold"
-              :size="16"
-              class="mr-1"
+              icon="solar:settings-linear"
+              :size="20"
+              class="text-slate-500"
             />
-            Add Item
-          </ElButton>
+          </div>
+          <WnButton
+            mode="add"
+            label="Add Item"
+            @click="handleAddItem"
+          />
         </div>
       </template>
     </WnTableHeader>
 
-    <!-- Table Section -->
-    <WnTable
-      ref="tableRef"
-      :loading="loading"
-      :pagination="pagination"
-      :data="tableData"
-      :columns="columns"
-      @pagination:size-change="handleSizeChange"
-      @pagination:current-change="handleCurrentChange"
-    >
-      <!-- Image Column -->
-      <template #image="{ row }">
-        <div class="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-cc">
-          <img
-            v-if="row.image"
-            :src="row.image"
-            class="w-full h-full object-contain p-1"
-          />
-          <WnSvgIcon
-            v-else
-            icon="solar:box-bold"
-            :size="24"
-            class="text-gray-400"
-          />
-        </div>
-      </template>
+    <!-- 表格内容 -->
+    <div class="flex-1 min-h-0">
+      <WnTable
+        ref="tableRef"
+        :loading="loading"
+        :pagination="pagination"
+        :data="tableData"
+        :columns="columns"
+        header-theme="white"
+        :border="true"
+        background-theme="gray"
+        @pagination:size-change="handlePaginationChange('size', $event)"
+        @pagination:current-change="handlePaginationChange('current', $event)"
+      >
+        <!-- 图片插槽 -->
+        <template #image="{ row }">
+          <div class="flex items-center justify-center p-2">
+            <div
+              class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex-cc overflow-hidden shadow-sm p-2"
+            >
+              <img
+                v-if="row.image"
+                :src="row.image"
+                class="w-full h-full object-contain"
+              />
+              <WnSvgIcon
+                v-else
+                icon="solar:box-minimalistic-bold"
+                :size="24"
+                class="text-slate-300"
+              />
+            </div>
+          </div>
+        </template>
 
-      <!-- Item Name Column -->
-      <template #name="{ value }">
-        <span class="font-medium text-secondary">{{ value }}</span>
-      </template>
+        <!-- Item 栏插槽 -->
+        <template #item="{ row }">
+          <div class="flex flex-col py-1">
+            <span class="font-semibold text-slate-800">{{ row.name }}</span>
+            <span class="text-xs text-slate-400">{{ row.itemCode }}</span>
+          </div>
+        </template>
 
-      <!-- Category Column -->
-      <template #category="{ value }">
-        <span class="text-gray-600">{{ value }}</span>
-      </template>
-
-      <!-- Availability Column -->
-      <template #availability="{ value }">
-        <div class="flex items-center gap-2">
-          <span
-            :class="[
-              'w-2 h-2 rounded-full',
-              value === 'Available' ? 'bg-success' : value === 'Low' ? 'bg-warning' : 'bg-error',
-            ]"
-          />
-          <span
-            :class="[
-              'text-sm',
-              value === 'Available'
-                ? 'text-success'
-                : value === 'Low'
-                  ? 'text-warning'
-                  : 'text-error',
-            ]"
+        <!-- 状态/库存状态插槽 -->
+        <template #availability="{ value }">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium"
+            :class="statusClassMap[value as keyof typeof statusClassMap]"
           >
+            <span
+              class="w-1.5 h-1.5 rounded-full"
+              :class="statusDotMap[value as keyof typeof statusDotMap]"
+            ></span>
             {{ value }}
-          </span>
-        </div>
-      </template>
+          </div>
+        </template>
 
-      <!-- Qty in Stock Column -->
-      <template #qtyInStock="{ value }">
-        <span class="font-medium text-secondary">{{ value }}</span>
-      </template>
-
-      <!-- Qty to Reorder Column -->
-      <template #qtyToReorder="{ value }">
-        <span class="text-gray-600">{{ value }}</span>
-      </template>
-
-      <!-- Actions Column -->
-      <template #action="{ row }">
-        <div class="flex items-center gap-2">
-          <ElButton
-            type="primary"
-            size="small"
-            link
-            @click="handleReorder(row)"
-          >
-            <WnSvgIcon
-              icon="solar:refresh-bold"
-              :size="14"
-              class="mr-1"
-            />
-            Reorder
-          </ElButton>
-        </div>
-      </template>
-    </WnTable>
+        <!-- 操作插槽 -->
+        <template #action="{ row }">
+          <div class="flex items-center gap-3">
+            <button
+              class="w-9 h-9 flex-cc rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
+              title="View details"
+            >
+              <WnSvgIcon
+                icon="solar:eye-bold"
+                :size="18"
+              />
+            </button>
+            <el-button
+              size="small"
+              class="rounded-lg! font-semibold"
+              @click="handleReorder(row)"
+            >
+              Reorder
+            </el-button>
+          </div>
+        </template>
+      </WnTable>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed, h, watch } from 'vue';
+import WnSearchBarInline, {
+  type SearchFormItem,
+} from '@/components/core/forms/Wn-search-bar/index.vue';
+import { getMockInventory, type InventoryItem } from '@/mock/inventory';
+import type { ColumnOption } from '@/types';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import { ElMessage } from 'element-plus';
-import { inventoryService } from '@/api/services';
-import type { ColumnOption } from '@/types/component';
 
 defineOptions({ name: 'Inventory' });
 
-// State
 const tableRef = ref();
 const loading = ref(false);
-const searchQuery = ref('');
 
-const filters = reactive({
+const searchModel = reactive({
+  query: '',
   category: '',
   status: '',
 });
 
-interface InventoryItem {
-  id: number;
-  name: string;
-  category: string;
-  availability: string;
-  qtyInStock: number;
-  qtyToReorder: number;
-  image?: string;
-}
+const statusClassMap = {
+  'Available': 'bg-teal-50/50 border-teal-100 text-teal-600',
+  'Low': 'bg-orange-50/50 border-orange-100 text-orange-600',
+  'Out of Stock': 'bg-slate-100/50 border-slate-200 text-slate-500',
+};
 
+const statusDotMap = {
+  'Available': 'bg-teal-500',
+  'Low': 'bg-orange-500',
+  'Out of Stock': 'bg-slate-400',
+};
+
+// Search Items configuration
+const searchItems = computed<SearchFormItem[]>(() => [
+  {
+    key: 'category',
+    type: 'select',
+    props: {
+      placeholder: 'All Category',
+      options: categories.value.map((c) => ({ label: c, value: c })),
+      style: { width: '160px' },
+    },
+    slots: {
+      prefix: () =>
+        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
+    },
+  },
+  {
+    key: 'status',
+    type: 'select',
+    props: {
+      placeholder: 'All Status',
+      options: [
+        { label: 'Available', value: 'Available' },
+        { label: 'Low', value: 'Low' },
+        { label: 'Out of Stock', value: 'Out of Stock' },
+      ],
+      style: { width: '160px' },
+    },
+    slots: {
+      prefix: () =>
+        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
+    },
+  },
+  {
+    key: 'query',
+    type: 'input',
+    props: {
+      placeholder: 'Search item, etc',
+      style: { width: '320px' },
+    },
+    slots: {
+      prefix: () =>
+        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-common/search', size: 18 })]),
+    },
+  },
+]);
+
+// Table Data State
+const allData = ref<InventoryItem[]>([]);
 const tableData = ref<InventoryItem[]>([]);
-
 const pagination = reactive({
   current: 1,
-  size: 12,
+  size: 10,
   total: 0,
 });
 
-// Columns based on the screenshot
+const categories = computed(() => [...new Set(allData.value.map((item) => item.category))]);
+
+// Columns Configuration
 const columns: ColumnOption[] = [
-  { label: 'Image', prop: 'image', width: 80, useSlot: true },
-  { label: 'Item', prop: 'name', minWidth: 180, useSlot: true },
-  { label: 'Category', prop: 'category', minWidth: 160, useSlot: true },
-  { label: 'Availability', prop: 'availability', width: 130, useSlot: true },
-  { label: 'Qty in Stock', prop: 'qtyInStock', width: 120, useSlot: true, align: 'center' },
-  { label: 'Qty to Reorder', prop: 'qtyToReorder', width: 130, useSlot: true, align: 'center' },
-  { label: 'Action', prop: 'action', fixed: 'right', width: 120, useSlot: true },
+  { type: 'selection', width: 60, align: 'center' },
+  { label: 'Image', prop: 'image', width: 100, useSlot: true, align: 'center' },
+  { label: 'Item', prop: 'item', minWidth: 220, useSlot: true, sortable: true },
+  { label: 'Category', prop: 'category', minWidth: 160, sortable: true },
+  { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
+  { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true, align: 'center' },
+  { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true, align: 'center' },
+  { label: 'Action', prop: 'action', width: 180, useSlot: true, align: 'center' },
 ];
 
-// Methods
-const fetchInventory = async () => {
+const fetchData = async () => {
   loading.value = true;
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 600));
+
   try {
-    const params = {
-      pageNum: pagination.current,
-      pageSize: pagination.size,
-      category: filters.category || undefined,
-    };
-    const res = await inventoryService.fetchInventory(params);
-    tableData.value = (res.list || []).map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      category: item.category || 'Medical Supplies',
-      availability: getAvailabilityStatus(item.quantity, item.minStock),
-      qtyInStock: item.quantity || 0,
-      qtyToReorder: item.minStock || 100,
-      image: item.image,
-    }));
-    pagination.total = res.total || 0;
-  } catch {
-    // Use mock data on error
-    tableData.value = getMockInventory();
-    pagination.total = tableData.value.length;
+    const data = getMockInventory();
+    allData.value = data;
+    applyFilters();
+  } catch (error) {
+    console.error('Failed to fetch inventory:', error);
   } finally {
     loading.value = false;
   }
 };
 
-const getAvailabilityStatus = (qty: number, minStock: number): string => {
-  if (qty <= 0) {
-    return 'Out of Stock';
-  }
-  if (qty <= minStock * 0.3) {
-    return 'Low';
-  }
-  return 'Available';
+const applyFilters = () => {
+  const { query, category, status } = searchModel;
+  const lowerQuery = query.toLowerCase();
+
+  const filtered = allData.value.filter(
+    (item) =>
+      (!category || item.category === category) &&
+      (!status || item.availability === status) &&
+      (!query ||
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.itemCode.toLowerCase().includes(lowerQuery) ||
+        item.category.toLowerCase().includes(lowerQuery)),
+  );
+
+  pagination.total = filtered.length;
+  const start = (pagination.current - 1) * pagination.size;
+  tableData.value = filtered.slice(start, start + pagination.size);
 };
 
 const handleSearch = () => {
   pagination.current = 1;
-  fetchInventory();
+  applyFilters();
 };
 
-const handleFilter = () => {
-  pagination.current = 1;
-  fetchInventory();
+const handlePaginationChange = (type: 'size' | 'current', val: number) => {
+  if (type === 'size') {
+    pagination.size = val;
+    pagination.current = 1;
+  } else {
+    pagination.current = val;
+  }
+  applyFilters();
 };
 
-const handleSizeChange = (size: number) => {
-  pagination.size = size;
-  pagination.current = 1;
-  fetchInventory();
-};
-
-const handleCurrentChange = (page: number) => {
-  pagination.current = page;
-  fetchInventory();
-};
+// 监听搜索条件变化
+watch(
+  () => [searchModel.category, searchModel.status, searchModel.query],
+  () => {
+    handleSearch();
+  },
+  { deep: false },
+);
 
 const handleAddItem = () => {
-  ElMessage.info('Add Item dialog would open here');
+  ElMessage.success('Add Item dialog opened');
 };
 
 const handleReorder = (row: InventoryItem) => {
-  ElMessage.success(`Reorder request sent for ${row.name}`);
+  ElMessage.info(`Reordering ${row.name}`);
 };
 
-// Mock data based on screenshot
-const getMockInventory = (): InventoryItem[] => [
-  {
-    id: 1,
-    name: 'Surgical Masks',
-    category: 'PPE',
-    availability: 'Available',
-    qtyInStock: 500,
-    qtyToReorder: 200,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913461.png',
-  },
-  {
-    id: 2,
-    name: 'Gloves',
-    category: 'PPE',
-    availability: 'Low',
-    qtyInStock: 50,
-    qtyToReorder: 150,
-    image: 'https://cdn-icons-png.flaticon.com/512/3588/3588614.png',
-  },
-  {
-    id: 3,
-    name: 'Hand Sanitizer',
-    category: 'Sanitizer',
-    availability: 'Available',
-    qtyInStock: 200,
-    qtyToReorder: 100,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913499.png',
-  },
-  {
-    id: 4,
-    name: 'Thermometers',
-    category: 'Medical Equipment',
-    availability: 'Out of Stock',
-    qtyInStock: 0,
-    qtyToReorder: 300,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913423.png',
-  },
-  {
-    id: 5,
-    name: 'Stethoscopes',
-    category: 'Medical Equipment',
-    availability: 'Available',
-    qtyInStock: 30,
-    qtyToReorder: 50,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913433.png',
-  {
-    id: 6,;
-  height: 100%
-    name: 'Blood Pressure Monitors',
-    category: 'Medical Equipment',
-    availability: 'Low',
-    qtyInStock: 25,
-    qtyToReorder: 100,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913440.png',
-  },
-  {
-    id: 7,
-    name: 'Bandages',
-    category: 'First Aid',
-    availability: 'Available',
-    qtyInStock: 300,
-    qtyToReorder: 200,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913464.png',
-  },
-  {
-    id: 8,
-    name: 'IV Fluids',
-    category: 'Medical Supplies',
-    availability: 'Low',
-    qtyInStock: 10,
-    qtyToReorder: 150,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913457.png',
-  },
-  {
-    id: 9,
-    name: 'Scalpel Blades',
-    category: 'Surgical Instruments',
-    availability: 'Out of Stock',
-    qtyInStock: 0,
-    qtyToReorder: 200,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913412.png',
-  },
-  {
-    id: 10,
-    name: 'Syringes',
-    category: 'Medical Supplies',
-    availability: 'Available',
-    qtyInStock: 400,
-    qtyToReorder: 300,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913473.png',
-  },
-  {
-    id: 11,
-    name: 'Medical Gowns',
-    category: 'PPE',
-    availability: 'Available',
-    qtyInStock: 150,
-    qtyToReorder: 200,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913488.png',
-  },
-  {
-    id: 12,
-    name: 'Disinfectant Wipes',
-    category: 'Sanitizer',
-    availability: 'Available',
-    qtyInStock: 25,
-    qtyToReorder: 200,
-    image: 'https://cdn-icons-png.flaticon.com/512/2913/2913507.png',
-  },
-];
-
-// Lifecycle
 onMounted(() => {
-  fetchInventory();
+  fetchData();
 });
 </script>
-
-<style scoped>
-.inventory-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.flex-cc {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>

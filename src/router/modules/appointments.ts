@@ -7,9 +7,11 @@ export const appointmentsRoutes: AppRouteRecord[] = [
   {
     component: '/appointments',
     meta: {
+      headerBar: {
+        globalSearch: false,
+      },
       icon: 'local-menu/appointments',
-      keepAlive: false,
-      roles: ['ADMIN'],
+      fixedHeight: true,
       title: 'menus.appointments.title',
     },
     name: 'Appointments',

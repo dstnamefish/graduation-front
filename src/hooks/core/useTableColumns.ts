@@ -41,8 +41,7 @@ import type { ColumnOption } from '@/types/component';
 /**
  * 特殊列类型
  */
-const SPECIAL_COLUMNS: Record<string, { label: string; prop: string; }> = {
-  expand: { label: $t('table.column.expand'), prop: '__expand__' },
+const SPECIAL_COLUMNS: Record<string, { label: string; prop: string }> = {
   index: { label: $t('table.column.index'), prop: '__index__' },
   selection: { label: $t('table.column.selection'), prop: '__selection__' },
 };
@@ -85,71 +84,70 @@ export const getColumnChecks = <T>(columns: ColumnOption<T>[]) =>
  * 动态列配置接口
  */
 export interface DynamicColumnConfig<T = any> {
-
   /**
    * 新增列
    * @param column 列配置
    * @param index 可选的插入位置，默认末尾
    */
-  addColumn: (column: ColumnOption<T>, index?: number) => void
+  addColumn: (column: ColumnOption<T>, index?: number) => void;
 
   /**
    * 删除列
    * @param prop 列的唯一标识或标识数组
    */
-  removeColumn: (prop: string | string[]) => void
+  removeColumn: (prop: string | string[]) => void;
 
   /**
    * 切换列显示状态
    * @param prop 列的唯一标识
    * @param visible 可选的显示状态，默认取反
    */
-  toggleColumn: (prop: string, visible?: boolean) => void
+  toggleColumn: (prop: string, visible?: boolean) => void;
 
   /**
    * 更新列
    * @param prop 列的唯一标识
    * @param updates 列配置更新
    */
-  updateColumn: (prop: string, updates: Partial<ColumnOption<T>>) => void
+  updateColumn: (prop: string, updates: Partial<ColumnOption<T>>) => void;
 
   /**
    * 批量更新列
    * @param updates 列更新配置
    */
-  batchUpdateColumns: (updates: Array<{ prop: string; updates: Partial<ColumnOption<T>> }>) => void
+  batchUpdateColumns: (updates: Array<{ prop: string; updates: Partial<ColumnOption<T>> }>) => void;
 
   /**
    * 重新排序列
    * @param fromIndex 源索引
    * @param toIndex 目标索引
    */
-  reorderColumns: (fromIndex: number, toIndex: number) => void
+  reorderColumns: (fromIndex: number, toIndex: number) => void;
 
   /**
    * 获取列配置
    * @param prop 列的唯一标识
    * @returns 列配置
    */
-  getColumnConfig: (prop: string) => ColumnOption<T> | undefined
+  getColumnConfig: (prop: string) => ColumnOption<T> | undefined;
 
   /**
    * 获取所有列配置
    * @returns 所有列配置
    */
-  getAllColumns: () => ColumnOption<T>[]
+  getAllColumns: () => ColumnOption<T>[];
 
   /**
    * 重置所有列
    */
-  resetColumns: () => void
+  resetColumns: () => void;
 }
 
 export function useTableColumns<T = any>(
   columnsFactory: () => ColumnOption<T>[],
 ): {
-  columnChecks: any
-  columns: any
+  columnChecks: any;
+  columns: any;
 } & DynamicColumnConfig<T> {
   const dynamicColumns = ref<ColumnOption<T>[]>(columnsFactory());
   const columnChecks = ref<ColumnOption<T>[]>(getColumnChecks(dynamicColumns.value));

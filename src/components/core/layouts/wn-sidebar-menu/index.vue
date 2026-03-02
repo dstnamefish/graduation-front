@@ -1,7 +1,7 @@
 <!-- 侧边栏菜单 -->
 <template>
   <div
-    class="flex flex-col h-screen bg-g-150 overflow-hidden transition-all duration-300"
+    class="flex flex-col h-screen bg-color-sidebar overflow-hidden transition-all duration-300"
     v-if="showLeftMenu"
     :style="{ width: getMenuOpenWidth }"
   >
@@ -14,7 +14,7 @@
         :size="28"
         class="mr-2.5"
       />
-      <span class="text-xl font-extrabold tracking-tight text-tertiary">WellNest</span>
+      <span class="text-xl font-extrabold tracking-tight text-color-slate-800">WellNest</span>
     </div>
 
     <!-- 侧边栏菜单 -->

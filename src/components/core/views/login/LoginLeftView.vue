@@ -1,9 +1,9 @@
 <!-- 登录、注册、忘记密码左侧背景 -->
 <template>
-  <div class="flex-1 text-white relative flex-jc bg-tertiary">
+  <div class="flex-1 text-title-inverse relative flex-jc bg-surface-brand">
     <div class="brand-content flex flex-col items-center w-full pt-20">
-      <div class="flex items-center text-base mb-15 gap-3">
-        <img src="/favicon.svg" alt="Wellnest" class="h-8 w-8" />
+      <div class="flex items-center mb-15 gap-3">
+        <img src="/favicon.svg" alt="Wellnest" class="h-8 w-8"/>
         <span class="text-2xl">Wellnest</span>
       </div>
 

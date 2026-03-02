@@ -2,44 +2,93 @@
   <div class="w-full">
     <!-- Logo -->
     <div class="flex-cc flex-col mb-8">
-      <img src="/favicon.svg" alt="Logo" class="w-16 h-16 drop-shadow-sm" />
+      <img
+        src="/favicon.svg"
+        alt="Logo"
+        class="w-16 h-16 drop-shadow-sm"
+      />
     </div>
 
     <!-- 标题 -->
     <div class="text-center mb-9 space-y-2">
-      <h2 class="text-2xl font-bold tracking-tight text-t-100">
+      <h2 class="text-2xl font-bold tracking-tight text-body">
         {{ t('auth.register.title') }}
       </h2>
-      <p class="text-sm text-t-200">{{ t('auth.register.subtitle') }}</p>
+      <p class="text-sm text-muted">{{ t('auth.register.subtitle') }}</p>
     </div>
 
-    <ElForm ref="registerFormRef" :model="registerForm" :rules="registerRules" labelPosition="top" size="large">
-      <ElFormItem :label="t('auth.register.workId')" prop="username" class="mb-5">
-        <ElInput v-model="registerForm.username" :placeholder="t('auth.register.workIdPlaceholder')" />
+    <ElForm
+      ref="registerFormRef"
+      :model="registerForm"
+      :rules="registerRules"
+      labelPosition="top"
+      size="large"
+    >
+      <ElFormItem
+        :label="t('auth.register.workId')"
+        prop="username"
+        class="mb-5"
+      >
+        <ElInput
+          v-model="registerForm.username"
+          :placeholder="t('auth.register.workIdPlaceholder')"
+        />
       </ElFormItem>
 
-      <ElFormItem :label="t('auth.register.email')" prop="email" class="mb-5">
-        <ElInput v-model="registerForm.email" :placeholder="t('auth.register.emailPlaceholder')" />
+      <ElFormItem
+        :label="t('auth.register.email')"
+        prop="email"
+        class="mb-5"
+      >
+        <ElInput
+          v-model="registerForm.email"
+          :placeholder="t('auth.register.emailPlaceholder')"
+        />
       </ElFormItem>
 
-      <ElFormItem :label="t('auth.register.password')" prop="password" class="mb-5">
-        <ElInput v-model="registerForm.password" type="password" :placeholder="t('auth.register.passwordPlaceholder')" showPassword />
+      <ElFormItem
+        :label="t('auth.register.password')"
+        prop="password"
+        class="mb-5"
+      >
+        <ElInput
+          v-model="registerForm.password"
+          type="password"
+          :placeholder="t('auth.register.passwordPlaceholder')"
+          showPassword
+        />
       </ElFormItem>
 
-      <ElFormItem :label="t('auth.register.confirmPassword')" prop="confirmPassword" class="mb-8">
-        <ElInput v-model="registerForm.confirmPassword" type="password" :placeholder="t('auth.register.confirmPasswordPlaceholder')" showPassword />
+      <ElFormItem
+        :label="t('auth.register.confirmPassword')"
+        prop="confirmPassword"
+        class="mb-8"
+      >
+        <ElInput
+          v-model="registerForm.confirmPassword"
+          type="password"
+          :placeholder="t('auth.register.confirmPasswordPlaceholder')"
+          showPassword
+        />
       </ElFormItem>
 
       <ElFormItem>
-        <ElButton type="primary" class="w-full h-12" @click="handleRegister(registerFormRef)">
+        <ElButton
+          type="primary"
+          class="w-full h-12"
+          @click="handleRegister(registerFormRef)"
+        >
           {{ t('auth.register.createAccountButton') }}
         </ElButton>
       </ElFormItem>
     </ElForm>
 
-    <div class="mt-4 text-sm flex-cc gap-1 text-t-200">
+    <div class="mt-4 text-sm flex-cc gap-1 text-muted">
       <span>{{ t('auth.register.alreadyHaveAccount') }}</span>
-      <ElLink :underline="false" @click="goToLogin">
+      <ElLink
+        :underline="false"
+        @click="goToLogin"
+      >
         {{ t('auth.register.loginNow') }}
       </ElLink>
     </div>

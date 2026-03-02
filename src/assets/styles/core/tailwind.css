@@ -2,124 +2,243 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* 品牌色系 */
-  --wn-p-50: #f2fcfd;
-  --wn-p-100: #dff9fa;
-  --wn-p-200: #bff5f2;
-  --wn-p-300: #aff3f0;
-  --wn-p-400: #bef8f6;
-  --wn-p-500: #a2f2ef;
-  --wn-p-600: #8ae8e4;
-  --wn-p-700: #76d6d1;
+  /* --- 1. 中性灰 (Slate) --- */
+  --color-slate-50:  #ffffff; /* [纯白] 卡片底色、弹窗背景 */
+  --color-slate-75:  #f5f5f5; /* [中性浅灰] 推荐用于：表格表头背景、表单分组背景 */
+  --color-slate-80:  #f2f3f5; /* [浅冷灰] 推荐用于：侧边栏、搜索框、Tab 背景 */
+  --color-slate-100: #f0f0f0; /* [标准浅灰] 网页大背景、输入框填充、斑马纹 */
+  --color-slate-200: #e2e4e8; /* [极浅蓝灰] 列表分割线、弱化边框 */
+  --color-slate-300: #cbd1d9; /* [标准边框] 卡片边框、输入框默认边框 */
+  --color-slate-400: #b2b2b2; /* [纯银灰] 禁用状态文字、线性图标 */
+  --color-slate-500: #8e8e93; /* [经典中性灰] 次要信息、时间戳、说明文字 */
+  --color-slate-600: #475569; /* [深蓝灰] 副标题、强调的描述性文字 */
+  --color-slate-700: #334155; /* [正文色] 所有的段落文本 */
+  --color-slate-800: #243956; /* [核心深黛蓝] 你的品牌灵魂。用于：一级标题、主按钮背景 */
+  --color-slate-900: #1c1c1e; /* [炭黑] 悬停(Hover)加深态、深色模式下的卡片背景 */
+  --color-slate-950: #121317; /* [曜石黑] 深色模式下的网页大背景 */
 
-  /* 中性色系 */
-  --wn-n-0: #ffffff;
-  --wn-n-50: #f8fafc;
-  --wn-n-100: #f1f5f9;
-  --wn-n-150: #f0f0f0;
-  --wn-n-200: #e5e5e5;
-  --wn-n-250: #e0e0e0;
-  --wn-n-300: #e2e8f0;
-  --wn-n-400: #94a3b8;
-  --wn-n-500: #64748b;
-  --wn-n-600: #475569;
-  --wn-n-700: #2e3a52;
-  --wn-n-800: #243956;
-  --wn-n-900: #182639;
+  /* --- 2. 品牌主色 (Primary) --- */
+  --color-primary-50:  #f0f0f0; /* [灰] 侧边栏背景 */
+  --color-primary-100: #dff9fa; /* [蓝] 页面大背景 */
+  --color-primary-200: #c1f4f6; /* [青] 进度条、装饰项 */
+  --color-primary-300: #a2f2ef; /* [青] 激活态、聚焦圈 */
+  --color-primary-400: #70e4e7; /* [青] 悬停反馈 */
+  --color-primary-500: #26c1c9; /* [青] 徽章、开关、图标 */
+  --color-primary-600: #1ba0a8; /* [青] 点击反馈 */
+  --color-primary-700: #147d83; /* [青] 浅色背景文字 */
+  --color-primary-800: #0e5b60; /* [青] 图表主曲线 */
+  --color-primary-900: #083a3d; /* [青] 插画深部阴影 */
 
-  /* 错误色系 */
-  --wn-f-red-50: #fff5f4;
-  --wn-f-red-100: #ffe5e5;
-  --wn-f-red-200: #fdbbbc;
-  --wn-f-red-500: #fc4245;
-  --wn-f-red-600: #e03a3d;
+  /* --- 3. 成功色 (Success) --- */
+  --color-success-50:  #ecfdf5; /* [绿] 页面大背景 */
+  --color-success-100: #d1fae5; /* [绿] 提示框背景 */
+  --color-success-200: #a7f3d0; /* [绿] 装饰描边项 */
+  --color-success-300: #6ee7b7; /* [绿] 图表填充区 */
+  --color-success-400: #34d399; /* [绿] 悬停反馈层 */
+  --color-success-500: #10b981; /* [绿] 提交、状态图标 */
+  --color-success-600: #059669; /* [绿] 点击操作反馈 */
+  --color-success-700: #047857; /* [绿] 正文文本颜色 */
+  --color-success-800: #065f46; /* [绿] 图表统计曲线 */
+  --color-success-900: #064e3b; /* [绿] 插画暗部阴影 */
 
-  /* 功能色系 */
-  --wn-f-red: #fc4245;
-  --wn-f-green: #50f294;
-  --wn-f-yellow: #f2c150;
+  /* --- 4. 警告色 (Warning) --- */
+  --color-warning-50: #fffbeb; /* [黄] 页面背景 */
+  --color-warning-100: #fef3c7; /* [黄] 提示框背景 */
+  --color-warning-200: #fde68a; /* [黄] 装饰、边框项 */
+  --color-warning-300: #fcd34d; /* [黄] 图标、进度条 */
+  --color-warning-400: #fbbf24; /* [黄] 交互悬停反馈 */
+  --color-warning-500: #f59e0b; /* [黄] 待办、标签徽章 */
+  --color-warning-600: #d97706; /* [黄] 实体点击反馈 */
+  --color-warning-700: #b45309; /* [黄] 警示正文文本 */
+  --color-warning-800: #92400e; /* [黄] 图表警戒基线 */
+  --color-warning-900: #78350f; /* [黄] 插画暗部细节 */
 
-  /* 文字色阶 */
-  --wn-t-0: #121317;
-  --wn-t-100: #1c1c1e;
-  --wn-t-200: #8e8e93;
-  --wn-t-300: #b2b2b2;
+  /* --- 5. 危险色 (Danger) --- */
+  --color-danger-50: #fff5f5; /* [红] 错误页背景 */
+  --color-danger-100: #fff0f0; /* [红] 列表反馈色 */
+  --color-danger-200: #ffe1e1; /* [红] 提示框背景 */
+  --color-danger-300: #ffb3b3; /* [红] 描边、边界 */
+  --color-danger-400: #ff7a7a; /* [红] 悬停反馈层 */
+  --color-danger-500: #fd4344; /* [红] 删除、拦截、错误图标 */
+  --color-danger-600: #fe4145; /* [红] 实体点击反馈 */
+  --color-danger-700: #dc2626; /* [红] 警示文本颜色 */
+  --color-danger-800: #b91c1c; /* [红] 图表主曲线 */
+  --color-danger-900: #991b1b; /* [红] 插画暗部细节 */
 }
 
 /* 暗黑模式 */
 .dark {
-  --wn-p-50: #0a2a30;
-  --wn-p-100: #0f3a42;
-  --wn-p-200: #154a55;
-  --wn-p-300: #1a5a68;
-  --wn-p-400: #1f6a7b;
-  --wn-p-500: #247a8e;
-  --wn-p-600: #298aa1;
-  --wn-p-700: #2e9ab4;
+  /* --- 1. 中性灰 (Slate - Dark) --- */
+  --color-slate-50: #1c1c1e; /* [深灰] 类似于 iOS 深色卡片 */
+  --color-slate-100: #121317; /* [曜石黑] 你的核心深色基座 */
+  --color-slate-200: #2e3a52; /* [深蓝灰] 呼应品牌色的分割线 */
+  --color-slate-300: #475569; /* [中灰] 清晰的边界 */
+  --color-slate-400: #64748b; /* [沉稳灰] */
+  --color-slate-500: #94a3b8; /* [浅灰] 保证在深底上的可读性 */
+  --color-slate-600: #cbd5e1; /* [亮灰] */
+  --color-slate-700: #e2e8f0; /* [灰白] 长时间阅读不刺眼 */
+  --color-slate-800: #243956; /* [深黛蓝] 保持不变，用于底栏等 */
+  --color-slate-900: #2e3a52; /* [提亮] */
+  --color-slate-950: #ffffff; /* [纯白] 最高对比度标题 */
 
-  --wn-n-0: #182639;
-  --wn-n-50: #1a1a1a;
-  --wn-n-100: #1e1e1e;
-  --wn-n-150: #222222;
-  --wn-n-200: #262626;
-  --wn-n-250: #333333;
-  --wn-n-300: #303030;
-  --wn-n-400: #434343;
-  --wn-n-500: #8c8c8c;
-  --wn-n-600: #bfbfbf;
-  --wn-n-700: #d9d9d9;
-  --wn-n-800: #e6e6e8;
-  --wn-n-900: #ffffff;
+  /* --- 2. 品牌主色 (Primary - Dark) --- */
+  --color-primary-50: #1a202c; /* [深] 侧边栏/底栏背景 */
+  --color-primary-100: #1a2c38; /* [深青] 页面大背景的替代/选中态背景 */
+  --color-primary-200: #1e3a45; /* [暗青] 进度条槽 */
+  --color-primary-300: #2dd4bf; /* [荧光青] 对应 Tailwind Teal-400 */
+  --color-primary-400: #14b8a6; /* [标准青] 悬停 */
+  --color-primary-500: #a2f2ef; /* [品牌青] 实体图标/文字颜色  */
+  --color-primary-600: #dff9fa; /* [极亮青] 点击反馈 */
+  --color-primary-700: #ccfbf1; /* [浅青] 深色背景上的文字 */
+  --color-primary-800: #5eead4; /* [亮青] 图表主曲线 */
+  --color-primary-900: #134e4a; /* [深青] 插画阴影 */
 
-  --wn-f-red-50: #2a0a0a;
-  --wn-f-red-100: #3d1414;
-  --wn-f-red-200: #5a1f1f;
-  --wn-f-red-500: #ff5252;
-  --wn-f-red-600: #ff6b6b;
+  /* --- 3. 成功色 (Success - Dark) --- */
+  --color-success-50: #052e16; /* [深绿] 极深背景 */
+  --color-success-100: #064e3b; /* [暗绿] 提示框背景 */
+  --color-success-200: #065f46; /* [装饰] */
+  --color-success-300: #10b981; /* [亮绿] 图表填充 */
+  --color-success-400: #34d399; /* [高亮] */
+  --color-success-500: #10b981; /* [标准绿] 图标 */
+  --color-success-600: #34d399; /* [反馈] */
+  --color-success-700: #d1fae5; /* [浅绿] 文字 (反转) */
+  --color-success-800: #6ee7b7; /* [荧光绿] 图表曲线 */
+  --color-success-900: #022c22;
 
-  --wn-t-0: #ffffff;
-  --wn-t-100: #e5e5ea;
-  --wn-t-200: #8e8e93;
-  --wn-t-300: #48484a;
+  /* --- 4. 警告色 (Warning - Dark) --- */
+  --color-warning-50: #451a03; /* [深褐] 极深背景 */
+  --color-warning-100: #78350f; /* [暗橙] 提示框背景 */
+  --color-warning-200: #92400e;
+  --color-warning-300: #f59e0b; /* [金] 图标 */
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b; /* [金] 徽章 */
+  --color-warning-600: #fbbf24;
+  --color-warning-700: #fef3c7; /* [浅黄] 文字 (反转) */
+  --color-warning-800: #fcd34d; /* [亮黄] 图表 */
+  --color-warning-900: #451a03;
+
+  /* --- 5. 危险色 (Danger - Dark) --- */
+  --color-danger-50: #450a0a; /* [深红] 极深背景 (Red-950) */
+  --color-danger-100: #7f1d1d; /* [暗红] 提示框/列表反馈 (Red-900) */
+  --color-danger-200: #991b1b;
+  --color-danger-300: #f87171; /* [亮红] 描边 */
+  --color-danger-400: #ef4444;
+  --color-danger-500: #ef4444; /* [红] 图标 */
+  --color-danger-600: #fca5a5;
+  --color-danger-700: #fee2e2; /* [浅红] 文字 (反转) */
+  --color-danger-800: #f87171; /* [亮红] 图表 */
+  --color-danger-900: #450a0a;
 }
 
 /* ==================== Tailwind 配置中心 (Theme) ==================== */
 @theme {
-  /* Box Color (Light: white / Dark: black) */
-  --color-box: var(--wn-n-0);
+  /* --- 1. 基础表面与层级 (Canvas & Surfaces) --- */
+  --color-background: var(--color-slate-100); /* [灰] 页面全局底色 */
+  --color-foreground: var(--color-slate-950); /* [黑] 默认文字颜色 */
 
-  /* 主题颜色 */
-  --color-primary: var(--wn-p-500);
-  --color-secondary: var(--wn-p-100);
-  --color-tertiary: var(--wn-n-800);
+  --color-surface-bg: var(--color-slate-100); /* [灰] 输入框背景 */
 
-  /* 文本颜色 */
-  --color-t-0: var(--wn-t-0); /* 纯黑/白文字 */
-  --color-t-100: var(--wn-t-100); /* 一级文字 */
-  --color-t-200: var(--wn-t-200); /* 二级文字 */
-  --color-t-300: var(--wn-t-300); /* 失效文字 */
+  /* 通用容器表面 */
+  --color-surface: var(--color-slate-50); /* [白] 卡片、弹窗背景 */
+  --color-surface-sunken: var(--color-slate-100); /* [灰] 嵌入式、收缩层背景 */
+  --color-overlay: var(--color-slate-800); /* [蓝] 遮罩层背景 */
+  --color-surface-brand: var(--color-slate-800); /* [蓝] 品牌展示页面 */
 
-  /* 灰度阶梯*/
-  --color-g-0: var(--wn-n-0);
-  --color-g-50: var(--wn-n-50);
-  --color-g-100: var(--wn-n-100);
-  --color-g-150: var(--wn-n-150);
-  --color-g-200: var(--wn-n-200);
-  --color-g-250: var(--wn-n-250);
-  --color-g-300: var(--wn-n-300);
-  --color-g-400: var(--wn-n-400);
-  --color-g-500: var(--wn-n-500);
-  --color-g-600: var(--wn-n-600);
-  --color-g-700: var(--wn-n-700);
-  --color-g-800: var(--wn-n-800);
-  --color-g-900: var(--wn-n-900);
+  /* 组件交互表面 (Search / Select / Fields) */
+  /* 情况 A: 亮色场 (White Scenario) */
+  --color-field: var(--color-slate-50); /* [白] 输入框、选择器底色 */
+  --color-field-hover: var(--color-slate-100); /* [灰] 亮色组件悬停态 */
+  --color-field-active: var(--color-slate-200); /* [灰] 亮色组件点按态 */
 
-  /* 边框颜色 */
-  --color-br: var(--wn-n-250);
+  /* 情况 B: 浅灰场 (Muted Scenario - 常用于搜索栏) */
+  --color-field-muted: var(--color-slate-100); /* [灰] 搜索栏、弱化底色 */
+  --color-field-muted-hover: var(--color-slate-200); /* [灰] 灰色组件悬停态 */
+  --color-field-muted-active: var(--color-slate-300); /* [灰] 灰色组件点按态 */
 
-  /* 选中颜色 */
+  /* --- 2. 文字语义系统 (Typography) --- */
+  --color-title: var(--color-slate-950); /* [黑] 标题、核心数据 */
+  --color-body: var(--color-slate-700); /* [灰] 正文文本 */
+  --color-muted: var(--color-slate-500); /* [灰] 辅助、说明文字 */
+  --color-placeholder: var(--color-slate-400); /* [灰] 禁用、占位文字 */
+  --color-link: var(--color-primary-700); /* [青] 链接文字 */
+  --color-title-inverse: var(--color-slate-50); /* [白] 反色标题 */
 
-  /* 激活颜色 */
+  /* 主行动 (Solid) */
+  --color-primary: var(--color-slate-800); /* [蓝] 主按钮背景 */
+  --color-primary-foreground: var(--color-slate-50); /* [白] 主按钮文字 */
+  --color-primary-hover: var(--color-slate-900); /* [黑] 主按钮悬停 */
+
+  /* 次行动 (Outline/Ghost) */
+  --color-secondary: var(--color-slate-50); /* [白] 次按钮背景 */
+  --color-secondary-foreground: var(--color-slate-800); /* [蓝] 次按钮文字 */
+  --color-secondary-border: var(--color-slate-300); /* [灰] 次按钮边框 */
+  --color-secondary-hover: var(--color-slate-100); /* [灰] 次按钮悬停 */
+
+  /* 品牌重点 (Accent) */
+  --color-accent: var(--color-primary-100); /* [青] 强调背景 */
+  --color-accent-foreground: var(--color-primary-700); /* [青] 强调文字 */
+  --color-ghost-hover: var(--color-primary-100); /* [青] 幽灵悬停 */
+
+  /* --- 4. 表单与控制边界 (Forms & Boundaries) --- */
+  --color-border: var(--color-slate-200); /* [灰] 通用分割线 */
+  --color-border-strong: var(--color-slate-300); /* [灰] 输入框、重色边框 */
+  --color-input: var(--color-slate-50); /* [白] 输入框底色 */
+  --color-ring: var(--color-primary-300); /* [青] 聚焦光圈 */
+
+  /* --- 5. 状态反馈 (Status Feedback) --- */
+  /* 错误/危险 */
+  --color-destructive: var(--color-danger-500); /* [红] 危险主体 */
+  --color-destructive-foreground: #ffffff; /* [白] 危险反色 */
+  --color-destructive-subtle: var(--color-danger-50); /* [红] 危险浅底 */
+  --color-destructive-text: var(--color-danger-700); /* [红] 危险文字 */
+
+  /* 成功 */
+  --color-success: var(--color-success-500); /* [绿] 成功主体 */
+  --color-success-foreground: #ffffff; /* [白] 成功反色 */
+  --color-success-subtle: var(--color-success-50); /* [绿] 成功浅底 */
+  --color-success-text: var(--color-success-700); /* [绿] 成功文字 */
+
+  /* 警告 */
+  --color-warning: var(--color-warning-500); /* [黄] 警告主体 */
+  --color-warning-foreground: #ffffff; /* [白] 警告反色 */
+  --color-warning-subtle: var(--color-warning-50); /* [黄] 警告浅底 */
+  --color-warning-text: var(--color-warning-700); /* [黄] 警告文字 */
+
+  /* --- 6. 交互全状态 (Interaction Feedback) --- */
+  /* 点击响应 (Active/Pressed) */
+  --color-active: var(--color-slate-900); /* [黑] 强实体、按钮点击态 */
+  --color-active-brand: var(--color-primary-600); /* [青] 品牌实体点击反馈 */
+  --color-active-soft: var(--color-slate-200); /* [灰] 幽灵项、浅表项点击 */
+
+  /* 聚焦响应 (Focus/Keyboard) */
+  --color-focus-ring: var(--color-primary-300); /* [青] 键盘聚焦光圈 */
+  --color-focus-border: var(--color-primary-500); /* [青] 输入聚焦边界 */
+  --color-focus-item: var(--color-primary-50); /* [灰] 选择项聚焦背景 */
+
+  /* 禁用状态 (Disabled) */
+  --color-disabled: var(--color-slate-100); /* [灰] 禁用背景 */
+  --color-disabled-border: var(--color-slate-200); /* [灰] 禁用线 */
+  --color-disabled-text: var(--color-slate-400); /* [灰] 禁用文字 */
+
+  /* --- 7. 容器组件场景 (Component Specific) --- */
+  /* 表格 (Table) */
+  --color-table-header: var(--color-slate-100); /* [灰] 表头背景 */
+  --color-table-hover: var(--color-primary-50); /* [灰] 行悬停 */
+  --color-table-border: var(--color-slate-200); /* [灰] 单元格边框 */
+
+  /* 侧边栏 (Sidebar) */
+  --color-sidebar: var(--color-slate-80); /* [浅冷灰] 侧边栏背景 */
+  --color-sidebar-active: var(--color-slate-100); /* [灰] 选中项底色 */
+  --color-sidebar-text: var(--color-slate-700); /* [灰] 导航文本 */
+
+  --color-tab-bg-muted: var(--color-slate-80); /* [浅冷灰] 选项卡默认底色 */
+
+  /* 图表与数据 (Charts & Data) */
+  --color-chart-1: var(--color-slate-800); /* [蓝] 主数据序列 */
+  --color-chart-2: var(--color-primary-500); /* [青] 辅数据序列 */
+  --color-chart-3: var(--color-success-500); /* [绿] 成功态序列 */
+  --color-chart-4: var(--color-warning-500); /* [黄] 警告态序列 */
+  --color-chart-5: var(--color-danger-500); /* [红] 危险态序列 */
 }
 
 /* ==================== 实用类 (Utilities) ==================== */
@@ -176,9 +295,5 @@
 
   .c-p {
     @apply cursor-pointer;
-  }
-
-  .border-br {
-    @apply border border-br;
   }
 }

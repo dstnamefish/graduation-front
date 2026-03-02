@@ -1,31 +1,63 @@
 <!-- 侧边栏子菜单设置 -->
 <template>
-  <template v-for="(item, idx) in filteredMenuItems" :key="getUniqueKey(item, idx)">
+  <template
+    v-for="(item, idx) in filteredMenuItems"
+    :key="getUniqueKey(item, idx)"
+  >
     <!-- 有子菜单 -->
-    <ElSubMenu v-if="hasChildren(item)" :index="item.path || item.meta.title" :level="level">
+    <ElSubMenu
+      v-if="hasChildren(item)"
+      :index="item.path || item.meta.title"
+      :level="level"
+    >
       <template #title>
         <div class="flex items-center w-full">
           <div class="flex-cc w-5 h-5 mr-2.5 shrink-0">
-            <WnSvgIcon :icon="item.meta.icon" :size="18" />
+            <WnSvgIcon
+              :icon="item.meta.icon"
+              :size="18"
+            />
           </div>
           <span class="text-sm">{{ formatMenuTitle(item.meta.title) }}</span>
-          <div v-if="item.meta.showBadge" class="ml-2 w-1.5 h-1.5 bg-f-red rounded-full ring-2 ring-white" />
+          <div
+            v-if="item.meta.showBadge"
+            class="ml-2 w-1.5 h-1.5 bg-color-destructive rounded-full ring-2 ring-white"
+          />
         </div>
       </template>
-      <SidebarSubmenu :list="item.children" :isMobile="isMobile" :level="level + 1" :theme="theme" @close="closeMenu" />
+      <SidebarSubmenu
+        :list="item.children"
+        :isMobile="isMobile"
+        :level="level + 1"
+        :theme="theme"
+        @close="closeMenu"
+      />
     </ElSubMenu>
 
     <!-- 无子菜单 -->
-    <ElMenuItem v-else :index="isExternalLink(item) ? undefined : item.path || item.meta.title" @click="goPage(item)">
+    <ElMenuItem
+      v-else
+      :index="isExternalLink(item) ? undefined : item.path || item.meta.title"
+      @click="goPage(item)"
+    >
       <div class="flex-ic w-full">
         <div class="flex-cc w-5 h-5 mr-2.5 shrink-0">
-          <WnSvgIcon :icon="item.meta.icon" :size="18" />
+          <WnSvgIcon
+            :icon="item.meta.icon"
+            :size="18"
+          />
         </div>
         <span class="text-sm truncate">{{ formatMenuTitle(item.meta.title) }}</span>
-        <div v-if="item.meta.showBadge" class="ml-auto w-5 h-5 rounded-full bg-error flex-cc text-[10px] text-white font-bold">
+        <div
+          v-if="item.meta.showBadge"
+          class="ml-auto w-5 h-5 rounded-full bg-color-destructive flex-cc text-[10px] text-white font-bold"
+        >
           {{ item.meta.badgeValue || '1' }}
         </div>
-        <div v-if="item.meta.showTextBadge" class="ml-auto px-2 py-0.5 rounded bg-primary/20 text-primary text-[10px] font-bold uppercase tracking-wider">
+        <div
+          v-if="item.meta.showTextBadge"
+          class="ml-auto px-2 py-0.5 rounded bg-color-accent text-color-accent-foreground text-[10px] font-bold uppercase tracking-wider"
+        >
           {{ item.meta.showTextBadge }}
         </div>
       </div>

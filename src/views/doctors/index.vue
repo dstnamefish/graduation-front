@@ -1,8 +1,8 @@
 <!-- 医生列表页面 -->
 <template>
-  <div class="bg-g-150 h-full rounded-2xl flex flex-col overflow-hidden">
+  <div class="bg-surface-sunken h-full rounded-2xl flex flex-col overflow-hidden">
     <!-- 表头 -->
-    <WnTableHeader class="shrink-0">
+    <WnTableHeader class="shrink-0 p-6">
       <template #left>
         <WnSearchBarInline
           v-model="searchModel"
@@ -12,14 +12,12 @@
       </template>
 
       <template #right>
-        <ElButton @click="handleAddDoctor">
-          <WnSvgIcon
-            icon="local-common/add"
-            :size="18"
-            class="text-white"
-          />
-          <span>Add Doctor</span>
-        </ElButton>
+        <WnButton
+          mode="add"
+          @click="handleAddDoctor"
+        >
+          Add Doctor
+        </WnButton>
       </template>
     </WnTableHeader>
 
@@ -58,7 +56,7 @@
         <template #availabilityStatus="{ value }">
           <div
             :class="[
-              'status-badge inline-flex items-center px-4 py-1.5 rounded-lg text-[11px] font-bold border transition-all duration-300',
+              ' inline-flex items-center px-3 py-1 rounded-lg border',
               statusClassMap[value as keyof typeof statusClassMap],
             ]"
           >
@@ -67,26 +65,26 @@
         </template>
 
         <template #action="{ row }">
-          <div class="flex items-center gap-2 justify-center">
+          <div class="flex items-center gap-2">
             <button
-              class="p-2 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/5 transition-colors"
+              class="action-btn edit-btn"
               title="Edit"
               @click="handleEdit(row)"
             >
               <WnSvgIcon
-                icon="solar:pen-bold"
+                icon="local-common/edit"
                 :size="18"
               />
             </button>
             <button
-              class="p-2 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+              class="action-btn delete-btn"
               title="Delete"
               @click="handleDelete(row)"
             >
               <WnSvgIcon
-                icon="solar:trash-bin-trash-bold"
+                icon="local-common/trash"
                 :size="18"
-              />
+            />
             </button>
           </div>
         </template>
@@ -97,7 +95,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, h, watch } from 'vue';
-import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
 import { getMockDoctors } from '@/mock/doctors';
 import WnSearchBarInline, {
   type SearchFormItem,
@@ -120,8 +117,8 @@ const searchModel = reactive({
 });
 
 const statusClassMap = {
-  'Available': 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100',
-  'On Leave': 'bg-rose-50 text-rose-600 border-rose-100 hover:bg-rose-100',
+  'Available': 'bg-secondary border-primary text-tertiary text-sm',
+  'On Leave': 'bg-error border-error text-error',
 };
 
 const handlePaginationChange = (type: 'size' | 'current', val: number) => {
@@ -139,6 +136,7 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'query',
     type: 'input',
+    background: 'var(--color-field)',
     props: {
       placeholder: 'Search name, age, ID, etc',
       style: { width: '320px' },
@@ -151,6 +149,7 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'department',
     type: 'select',
+    background: 'var(--color-field)',
     props: {
       placeholder: 'Department',
       options: departments.value.map((d) => ({ label: d, value: d })),
@@ -164,6 +163,7 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'specialty',
     type: 'select',
+    background: 'var(--color-field)',
     props: {
       placeholder: 'Specialist',
       options: specialists.value.map((s) => ({ label: s, value: s })),
@@ -177,6 +177,7 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'status',
     type: 'select',
+    background: 'var(--color-field)',
     props: {
       placeholder: 'Status',
       options: [
@@ -192,7 +193,6 @@ const searchItems = computed<SearchFormItem[]>(() => [
   },
 ]);
 
-// Data
 const allData = ref<DoctorItem[]>([]);
 const tableData = ref<DoctorItem[]>([]);
 const pagination = reactive({
@@ -205,28 +205,22 @@ const departments = computed(() => [...new Set(allData.value.map((d) => d.depart
 const specialists = computed(() => [...new Set(allData.value.map((d) => d.specialty))]);
 
 const columns: ColumnOption[] = [
-  { label: 'Name', prop: 'name', minWidth: 110, useSlot: true, sortable: true },
-  { label: 'ID', prop: 'doctorCode', width: 170, sortable: true },
+  { label: 'Name', prop: 'name', minWidth: 180, useSlot: true, sortable: true },
+  { label: 'ID', prop: 'doctorCode', minWidth: 140, sortable: true },
   { label: 'Department', prop: 'departmentName', minWidth: 160, sortable: true },
-  { label: 'Specialist', prop: 'specialty', minWidth: 160, sortable: true },
-  { label: 'Total Patients', prop: 'totalPatients', width: 140, sortable: true },
-  {
-    label: "Today's Appointment",
-    prop: 'todayAppointments',
-    width: 160,
-    sortable: true,
-  },
+  { label: 'Specialist', prop: 'specialty', minWidth: 180, sortable: true },
+  { label: 'Total Patients', prop: 'totalPatients', minWidth: 150, sortable: true },
+  { label: "Today's Appointment", prop: 'todayAppointments', minWidth: 180, sortable: true },
   {
     label: 'Availability Status',
     prop: 'availabilityStatus',
-    width: 160,
+    width: 200,
     useSlot: true,
     sortable: true,
   },
-  { label: 'Action', prop: 'action', width: 100, align: 'center', useSlot: true },
+  { label: 'Action', prop: 'action', width: 180, useSlot: true },
 ];
 
-// Methods
 const fetchData = async () => {
   loading.value = true;
   await new Promise((resolve) => setTimeout(resolve, 500));

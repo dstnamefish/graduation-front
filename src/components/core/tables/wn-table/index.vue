@@ -1,7 +1,9 @@
+<!-- 统一表格组件 -->
 <template>
   <div
     class="flex flex-col h-full overflow-hidden"
     :class="{ 'is-empty': isEmpty }"
+    :style="tableThemeStyles"
   >
     <div
       class="flex-1 min-h-0 relative"
@@ -9,7 +11,7 @@
     >
       <ElTable
         ref="elTableRef"
-        v-loading="!!loading"
+        v-loading="!!props.loading"
         v-bind="{
           ...$attrs,
           ...tableProps,
@@ -21,10 +23,9 @@
         }"
       >
         <template
-          v-for="col in columns"
+          v-for="col in props.columns"
           :key="col.prop || col.type"
         >
-          <!-- 渲染全局序号列 -->
           <ElTableColumn
             v-if="col.type === 'globalIndex'"
             v-bind="{ ...col }"
@@ -34,46 +35,30 @@
             </template>
           </ElTableColumn>
 
-          <!-- 渲染展开行 -->
-          <ElTableColumn
-            v-else-if="col.type === 'expand'"
-            v-bind="cleanColumnProps(col)"
-          >
-            <template #default="{ row }">
-              <component :is="col.formatter ? col.formatter(row) : null" />
-            </template>
-          </ElTableColumn>
-
-          <!-- 渲染普通列 -->
           <ElTableColumn
             v-else
             v-bind="cleanColumnProps(col)"
           >
-            <!-- 渲染表头（支持自定义插槽与排序图标） -->
             <template
               v-if="(col.useHeaderSlot && col.prop) || col.sortable"
-              #header="headerScope"
+              #header="ms"
             >
-              <div class="inline-flex items-center w-full group wn-table-header-cell max-w-full">
-                <!-- 优先渲染自定义头部插槽 -->
+              <div class="inline-flex items-center w-full group max-w-full">
                 <slot
                   v-if="col.useHeaderSlot && col.prop"
                   :name="col.headerSlotName || `${col.prop}-header`"
-                  v-bind="{ ...headerScope, prop: col.prop, label: col.label }"
+                  v-bind="{ ...ms, prop: col.prop, label: col.label }"
                 >
                   {{ col.label }}
                 </slot>
-                <!-- 默认只渲染文本 -->
                 <span
                   v-else
                   class="truncate"
                 >
                   {{ col.label }}
                 </span>
-
-                <!-- 渲染自定义排序图标 -->
                 <div
-                  v-if="col.sortable || headerScope.column.sortable"
+                  v-if="col.sortable || ms.column.sortable"
                   class="flex flex-col items-center justify-center ml-1.5 shrink-0"
                 >
                   <WnSvgIcon
@@ -81,9 +66,9 @@
                     :size="14"
                     class="-mb-1 transition-colors duration-200"
                     :class="
-                      headerScope.column.order === 'ascending'
-                        ? 'text-(--wn-p-500)'
-                        : 'text-(--wn-t-300) group-hover:text-(--wn-t-200)'
+                      ms.column.order === 'ascending'
+                        ? 'text-color-primary-500'
+                        : 'text-muted group-hover:text-color-text-sub'
                     "
                   />
                   <WnSvgIcon
@@ -91,16 +76,14 @@
                     :size="14"
                     class="-mt-1 transition-colors duration-200"
                     :class="
-                      headerScope.column.order === 'descending'
-                        ? 'text-(--wn-p-500)'
-                        : 'text-(--wn-t-300) group-hover:text-(--wn-t-200)'
+                      ms.column.order === 'descending'
+                        ? 'text-color-primary-500'
+                        : 'text-color-text-muted group-hover:text-color-text-sub'
                     "
                   />
                 </div>
               </div>
             </template>
-
-            <!-- 渲染内容 -->
             <template
               v-if="col.useSlot && col.prop"
               #default="slotScope"
@@ -125,47 +108,42 @@
         </template>
 
         <template #empty>
-          <div v-if="loading"></div>
+          <div v-if="props.loading"></div>
           <ElEmpty
             v-else
-            :description="emptyText"
+            :description="props.emptyText"
             :image-size="120"
           />
         </template>
       </ElTable>
     </div>
 
-    <!-- 分页器容器 -->
+    <!-- 分页容器 -->
     <div
-      class="flex flex-wrap items-center justify-between gap-4 py-8 px-4 shrink-0"
       v-if="showPagination"
+      class="flex flex-wrap items-center justify-between gap-4 py-8 shrink-0"
+      :style="paginationThemeStyles"
     >
-      <!-- 左侧：显示信息 -->
-      <div class="flex items-center gap-2.5 text-slate-400 text-sm font-medium">
+      <div class="flex items-center gap-2.5 text-muted text-sm">
         <span>Showing</span>
-        <ElSelect
-          v-model="pageSize"
-          class="w-[85px]!"
-        >
+        <ElSelect v-model="pageSize">
           <ElOption
-            v-for="size in mergedPaginationOptions.pageSizes"
-            :key="size"
-            :label="size"
-            :value="size"
+            v-for="s in mergedPaginationOptions.pageSizes || []"
+            :key="s"
+            :label="s"
+            :value="s"
           />
         </ElSelect>
         <span>
           out of
-          <span class="text-slate-600 font-bold">{{ pagination?.total }}</span>
+          <span>{{ props.pagination?.total }}</span>
         </span>
       </div>
-
-      <!-- 右侧：分页按钮 -->
       <ElPagination
         v-bind="mergedPaginationOptions"
         layout="prev, pager, next"
-        :total="pagination?.total"
-        :disabled="loading"
+        :total="props.pagination?.total"
+        :disabled="props.loading"
         :page-size="pageSize"
         :current-page="currentPage"
         @size-change="handleSizeChange"
@@ -176,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, toRefs, useAttrs } from 'vue';
+import { ref, computed, nextTick, useAttrs, useSlots } from 'vue';
 import type { ElTable, TableProps } from 'element-plus';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import { ColumnOption } from '@/types';
@@ -210,6 +188,11 @@ interface WnTableProps extends TableProps<Record<string, any>> {
   paginationOptions?: PaginationOptions;
   emptyHeight?: string;
   emptyText?: string;
+  backgroundTheme?: 'white' | 'gray';
+  headerTheme?: 'light' | 'gray';
+  headerHeight?: string | number;
+  showHeaderBorder?: boolean;
+  tableRadius?: string | number;
 }
 
 const props = withDefaults(defineProps<WnTableProps>(), {
@@ -221,14 +204,18 @@ const props = withDefaults(defineProps<WnTableProps>(), {
   size: undefined,
   emptyHeight: '100%',
   emptyText: '暂无数据',
+  backgroundTheme: 'white',
+  headerTheme: 'light',
+  headerHeight: '56px',
+  showHeaderBorder: true,
+  tableRadius: '12px',
 });
 
 const $attrs = useAttrs();
+const $slots = useSlots();
 const { width: windowWidth } = useWindowSize();
 const elTableRef = ref<InstanceType<typeof ElTable> | null>(null);
 const tableWrapperRef = ref<HTMLElement | null>(null);
-
-const { loading, columns, pagination, emptyText } = toRefs(props);
 
 const emit = defineEmits<{
   (e: 'pagination:size-change', val: number): void;
@@ -250,18 +237,30 @@ const handleCurrentChange = (val: number) => {
 };
 
 const currentPage = computed({
-  get: () => pagination.value?.current || 1,
+  get: () => props.pagination?.current || 1,
   set: (val) => handleCurrentChange(val),
 });
 
 const pageSize = computed({
-  get: () => pagination.value?.size || 10,
+  get: () => props.pagination?.size || 10,
   set: (val) => handleSizeChange(val),
 });
 
 const tableProps = computed(() => {
-  const { loading, columns, pagination, paginationOptions, emptyHeight, emptyText, ...rest } =
-    props;
+  const {
+    loading,
+    columns,
+    pagination,
+    paginationOptions,
+    emptyHeight,
+    emptyText,
+    backgroundTheme,
+    headerTheme,
+    headerHeight,
+    showHeaderBorder,
+    tableRadius,
+    ...rest
+  } = props;
   return rest;
 });
 
@@ -300,17 +299,17 @@ const isEmpty = computed(() => (props.data as any[])?.length === 0);
 const { height: wrapperHeight } = useElementSize(tableWrapperRef);
 
 const tableInternalHeight = computed(() => {
-  if (isEmpty.value && !loading.value) return props.emptyHeight;
+  if (isEmpty.value && !props.loading) return props.emptyHeight;
   if (props.height) return props.height;
   return wrapperHeight.value > 0 ? `${wrapperHeight.value}px` : '100%';
 });
 
 const headerCellStyle = computed(() => ({
-  background: 'var(--default-box-color)',
+  background: 'var(--table-header-bg, var(--color-slate-950))',
   ...(props.headerCellStyle || {}),
 }));
 
-const showPagination = computed(() => !!pagination.value && !isEmpty.value);
+const showPagination = computed(() => !!props.pagination && !isEmpty.value);
 
 const cleanColumnProps = (col: ColumnOption) => {
   const columnProps = { ...col };
@@ -322,10 +321,31 @@ const cleanColumnProps = (col: ColumnOption) => {
 };
 
 const getGlobalIndex = (index: number) => {
-  if (!pagination.value) return index + 1;
-  const { current, size } = pagination.value;
+  if (!props.pagination) return index + 1;
+  const { current, size } = props.pagination;
   return (current - 1) * size + index + 1;
 };
+
+const tableThemeStyles = computed(() => ({
+  '--table-radius':
+    typeof props.tableRadius === 'number' ? `${props.tableRadius}px` : props.tableRadius,
+  '--table-header-bg':
+    props.headerTheme === 'gray' ? 'var(--color-slate-75)' : 'var(--color-slate-50)',
+  '--table-header-height':
+    typeof props.headerHeight === 'number' ? `${props.headerHeight}px` : props.headerHeight,
+  '--table-header-border': props.showHeaderBorder ? '1px solid var(--color-slate-200)' : 'none',
+  '--table-row-hover-bg': 'var(--color-primary-50)',
+  '--table-row-active-bg': 'var(--color-primary-100)',
+}));
+
+const paginationThemeStyles = computed(() => {
+  const isWhite = props.backgroundTheme === 'white';
+  return {
+    '--background-color': isWhite ? 'var(--color-slate-50)' : 'var(--color-slate-100)',
+    '--background-color-hover': isWhite ? 'var(--color-slate-100)' : 'var(--color-slate-200)',
+    '--background-color-focus': '#ffffff',
+  };
+});
 
 defineExpose({ scrollToTop, elTableRef });
 </script>

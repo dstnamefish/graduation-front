@@ -12,7 +12,7 @@
       <!-- 路由信息调试 -->
       <div
         v-if="isOpenRouteInfo === 'true'"
-        class="px-2 py-1.5 mb-3 text-sm text-g-500 bg-g-200 border-full-d rounded-md"
+        class="px-2 py-1.5 mb-3 text-sm text-color-slate-500 bg-color-slate-200 border-full-d rounded-md"
       >
         router meta：{{ route.meta }}
       </div>
@@ -61,7 +61,7 @@
     <Teleport to="body">
       <div
         v-show="showTransitionMask"
-        class="fixed top-0 left-0 z-2000 w-screen h-screen pointer-events-none bg-box"
+        class="fixed top-0 left-0 z-2000 w-screen h-screen pointer-events-none bg-color-surface"
       />
     </Teleport>
   </div>

@@ -13,7 +13,7 @@
     </div>
 
     <!-- 右侧区域 -->
-    <div class="flex shrink-0 items-center gap-4">
+    <div class="flex shrink-0 items-center gap-4 bg-red">
       <!-- 通知 -->
       <WnNotification />
       <!-- 主题切换 -->

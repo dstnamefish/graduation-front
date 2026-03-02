@@ -1,6 +1,6 @@
 <!-- 国际化组件 -->
 <template>
-  <div class="language-widget">
+  <div>
     <ElDropdown
       trigger="hover"
       @command="changeLanguage"
@@ -22,7 +22,7 @@
               <WnSvgIcon
                 v-if="locale === item.value"
                 icon="local-common/tick"
-                class="text-t-0!"
+                class="text-color-text-main!"
               />
             </div>
           </ElDropdownItem>

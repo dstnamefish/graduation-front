@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-10 w-10 inline-flex items-center justify-center bg-g-150! hover:bg-g-200! text-t-0 rounded-xl! overflow-hidden c-p outline-none! select-none transition-all duration-300"
+    class="h-10 w-10 inline-flex items-center justify-center bg-field-muted! hover:bg-field-muted-hover! text-title rounded-xl! overflow-hidden c-p outline-none! select-none transition-all duration-300"
     :class="{ 'rounded-full!': props.circle }"
   >
     <WnSvgIcon

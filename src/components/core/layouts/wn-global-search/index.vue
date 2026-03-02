@@ -340,7 +340,6 @@ onUnmounted(() => {
   >
     <!-- 搜索输入框 -->
     <ElInput
-      class="global-search-input"
       v-model.trim="searchValue"
       :placeholder="$t('common.placeholder') + ' (Ctrl+K)'"
       @focus="openDropdown"
@@ -519,9 +518,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-:deep(.global-search-input .el-input__wrapper) {
-  background-color: var(--wn-n-150) !important;
-}
 
 .dropdown-enter-active,
 .dropdown-leave-active {

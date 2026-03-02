@@ -1,16 +1,43 @@
 <!-- 面包屑导航 -->
 <template>
-  <nav class="max-lg:hidden!" aria-label="breadcrumb">
+  <nav
+    class="max-lg:hidden!"
+    aria-label="breadcrumb"
+  >
     <ul class="flex items-center h-full">
-      <li v-for="(item, index) in breadcrumbItems" :key="item.path" class="flex items-center">
+      <li
+        v-for="(item, index) in breadcrumbItems"
+        :key="item.path"
+        class="flex items-center"
+      >
         <!-- 面包屑选择器 (三元表达式判断是否可点击，前者为最后一项，后者为不是最后一项) -->
-        <div :class="isClickable(item, index) ? 'c-p py-1 px-2 rounded-md hover:bg-g-100 transition-colors group' : ''"@click="handleBreadcrumbClick(item, index)">
-          <span :class="['text-xl font-extrabold block tracking-tight transition-colors ',isLastItem(index) ? ' text-t-0' : 'text-t-200 group-hover:text-t-100']">
-          {{ formatMenuTitle(item.meta?.title as string) }}
-        </span>
+        <div
+          :class="
+            isClickable(item, index)
+              ? 'c-p py-1 px-2 rounded-md hover:bg-color-slate-100 transition-colors group'
+              : ''
+          "
+          @click="handleBreadcrumbClick(item, index)"
+        >
+          <span
+            :class="[
+              'text-xl font-extrabold block tracking-tight transition-colors ',
+              isLastItem(index)
+                ? ' text-color-text-main'
+                : 'text-color-text-sub group-hover:text-color-text-body',
+            ]"
+          >
+            {{ formatMenuTitle(item.meta?.title as string) }}
+          </span>
         </div>
         <!-- 分隔符（非最后一项且存在标题时显示） -->
-        <div v-if="!isLastItem(index) && item.meta?.title" class="mx-2 text-xl font-extrabold text-t-300" aria-hidden="true">/</div>
+        <div
+          v-if="!isLastItem(index) && item.meta?.title"
+          class="mx-2 text-xl font-extrabold text-color-text-muted"
+          aria-hidden="true"
+        >
+          /
+        </div>
       </li>
     </ul>
   </nav>

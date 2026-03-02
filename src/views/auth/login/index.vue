@@ -8,10 +8,10 @@
 
     <!-- 标题 -->
     <div class="text-center mb-9 space-y-2">
-      <h2 class="text-2xl font-bold tracking-tight text-t-100">
+      <h2 class="text-2xl font-bold tracking-tight text-title">
         {{ t('auth.login.title') }}
       </h2>
-      <p class="text-sm text-t-200">
+      <p class="text-sm text-muted">
         {{ t('auth.login.subtitle') }}
       </p>
     </div>
@@ -30,7 +30,7 @@
       <div class="flex-cb mb-8">
         <div class="flex-ic gap-2">
           <ElCheckbox v-model="loginForm.remember" class="mr-0!" />
-          <span class="text-sm text-t-200 cursor-pointer select-none" @click="loginForm.remember = !loginForm.remember">
+          <span class="text-sm text-muted cursor-pointer select-none" @click="loginForm.remember = !loginForm.remember">
             {{ t('auth.login.rememberMe') }}
           </span>
         </div>
@@ -48,7 +48,7 @@
     </ElForm>
 
     <!-- 注册 -->
-    <div class="mt-4 text-sm flex-cc gap-1 text-t-200">
+    <div class="mt-4 text-sm flex-cc gap-1 text-muted">
       <span>{{ t('auth.login.noAccount') }}</span>
       <ElLink :underline="false" @click="goToRegister">
         {{ t('auth.login.registerNow') }}

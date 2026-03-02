@@ -7,9 +7,13 @@ export const inventoryRoutes: AppRouteRecord[] = [
   {
     component: '/inventory',
     meta: {
+      headerBar: {
+        globalSearch: false,
+      },
       icon: 'local-menu/inventory',
       keepAlive: false,
       roles: ['ADMIN'],
+      fixedHeight: true,
       title: 'menus.inventory.title',
     },
     name: 'Inventory',
