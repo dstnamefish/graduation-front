@@ -5,11 +5,15 @@ import { AppRouteRecord } from '@/types/router';
  */
 export const patientsRoutes: AppRouteRecord[] = [
   {
-    component: '/patients/list',
+    component: '/patients',
     meta: {
+      headerBar: {
+        globalSearch: false,
+      },
       icon: 'local-menu/patients',
       keepAlive: false,
       roles: ['ADMIN'],
+      fixedHeight: true,
       title: 'menus.patients.title',
     },
     name: 'Patients',

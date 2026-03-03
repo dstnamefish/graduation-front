@@ -1,4 +1,128 @@
 <!-- 库存管理页面 -->
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { ElMessage } from 'element-plus';
+import WnSearchBarInline, {
+  type SearchFormItem,
+} from '@/components/core/forms/Wn-search-bar/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
+import { getMockInventory, type InventoryItem } from '@/mock/inventory';
+import { getStatusClass, getStatusDotClass } from '@/utils';
+import { useTable } from '@/hooks/core/useTable';
+import type { ColumnOption } from '@/types';
+
+defineOptions({ name: 'Inventory' });
+
+const tableRef = ref();
+
+/**
+ * 模拟后端 API 请求
+ */
+const mockApiFn = async (params: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 600));
+
+  const allMockData = getMockInventory();
+  const { query, category, status, current, size } = params;
+  const lowerQuery = (query || '').toLowerCase();
+
+  const filtered = allMockData.filter(
+    (item) =>
+      (!category || item.category === category) &&
+      (!status || item.availability === status) &&
+      (!query ||
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.itemCode.toLowerCase().includes(lowerQuery) ||
+        item.category.toLowerCase().includes(lowerQuery)),
+  );
+
+  return {
+    records: filtered.slice((current - 1) * size, current * size),
+    total: filtered.length,
+    current,
+    size,
+  };
+};
+
+const {
+  loading,
+  data: tableData,
+  pagination,
+  searchParams: searchModel,
+  handleCurrentChange,
+  handleSizeChange,
+  getData: handleSearch,
+} = useTable({
+  core: {
+    apiFn: mockApiFn,
+    apiParams: {
+      query: '',
+      category: '',
+      status: '',
+    },
+    immediate: true,
+  },
+});
+
+// 搜索项配置 - 现在使用 icon 属性简化
+const searchItems = computed<SearchFormItem[]>(() => [
+  {
+    key: 'category',
+    type: 'select',
+    props: {
+      placeholder: 'All Category',
+      options: categories.value.map((c) => ({ label: c, value: c })),
+      style: { width: '160px' },
+    },
+  },
+  {
+    key: 'status',
+    type: 'select',
+    props: {
+      placeholder: 'All Status',
+      options: [
+        { label: 'Available', value: 'Available' },
+        { label: 'Low', value: 'Low' },
+        { label: 'Out of Stock', value: 'Out of Stock' },
+      ],
+      style: { width: '160px' },
+    },
+  },
+  {
+    key: 'query',
+    type: 'input',
+    icon: 'local-common/search',
+    props: {
+      placeholder: 'Search item, etc',
+      style: { width: '320px' },
+    },
+  },
+]);
+
+const categories = computed(() => {
+  return [...new Set(getMockInventory().map((item) => item.category))];
+});
+
+// 表格列配置
+const columns: ColumnOption[] = [
+  { type: 'selection' as const, width: 60, align: 'center' },
+  { label: 'Image', prop: 'image', width: 100, useSlot: true, align: 'center' },
+  { label: 'Item', prop: 'item', minWidth: 220, useSlot: true, sortable: true },
+  { label: 'Category', prop: 'category', minWidth: 160, sortable: true },
+  { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
+  { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true },
+  { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true },
+  { label: 'Action', prop: 'action', width: 180, useSlot: true },
+];
+
+const handleAddItem = () => {
+  ElMessage.success('Add Item dialog opened');
+};
+
+const handleReorder = (row: InventoryItem) => {
+  ElMessage.info(`Reordering ${row.name}`);
+};
+</script>
+
 <template>
   <div class="h-full flex flex-col">
     <!-- 表头 -->
@@ -7,7 +131,7 @@
         <WnSearchBarInline
           v-model="searchModel"
           :items="searchItems"
-          background-theme="gray"
+          search-bar-background="gray"
           @keyup.enter="handleSearch"
         />
       </template>
@@ -15,10 +139,11 @@
       <template #right>
         <div class="flex items-center gap-4">
           <div
-            class="w-11 h-11 rounded-xl bg-white border border-slate-100 flex-cc cursor-pointer hover:bg-slate-50 transition-colors shadow-sm"
+            class="w-9 h-9 flex-cc cursor-pointer bg-accent rounded-xl hover:opacity-80 transition-opacity"
+            title="Table Settings"
           >
             <WnSvgIcon
-              icon="solar:settings-linear"
+              icon="local-table/slider"
               :size="20"
               class="text-slate-500"
             />
@@ -42,9 +167,10 @@
         :columns="columns"
         header-theme="white"
         :border="true"
-        background-theme="gray"
-        @pagination:size-change="handlePaginationChange('size', $event)"
-        @pagination:current-change="handlePaginationChange('current', $event)"
+        :show-header-border="false"
+        pagination-background="gray"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
         <!-- 图片插槽 -->
         <template #image="{ row }">
@@ -75,15 +201,15 @@
           </div>
         </template>
 
-        <!-- 状态/库存状态插槽 -->
+        <!-- 状态/库存状态插槽 - 使用 getStatusDotClass 简化 -->
         <template #availability="{ value }">
           <div
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium"
-            :class="statusClassMap[value as keyof typeof statusClassMap]"
+            :class="getStatusClass(value as string)"
           >
             <span
               class="w-1.5 h-1.5 rounded-full"
-              :class="statusDotMap[value as keyof typeof statusDotMap]"
+              :class="getStatusDotClass(value as string)"
             ></span>
             {{ value }}
           </div>
@@ -114,177 +240,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, reactive, onMounted, computed, h, watch } from 'vue';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
-import { getMockInventory, type InventoryItem } from '@/mock/inventory';
-import type { ColumnOption } from '@/types';
-import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
-import { ElMessage } from 'element-plus';
-
-defineOptions({ name: 'Inventory' });
-
-const tableRef = ref();
-const loading = ref(false);
-
-const searchModel = reactive({
-  query: '',
-  category: '',
-  status: '',
-});
-
-const statusClassMap = {
-  'Available': 'bg-teal-50/50 border-teal-100 text-teal-600',
-  'Low': 'bg-orange-50/50 border-orange-100 text-orange-600',
-  'Out of Stock': 'bg-slate-100/50 border-slate-200 text-slate-500',
-};
-
-const statusDotMap = {
-  'Available': 'bg-teal-500',
-  'Low': 'bg-orange-500',
-  'Out of Stock': 'bg-slate-400',
-};
-
-// Search Items configuration
-const searchItems = computed<SearchFormItem[]>(() => [
-  {
-    key: 'category',
-    type: 'select',
-    props: {
-      placeholder: 'All Category',
-      options: categories.value.map((c) => ({ label: c, value: c })),
-      style: { width: '160px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
-    },
-  },
-  {
-    key: 'status',
-    type: 'select',
-    props: {
-      placeholder: 'All Status',
-      options: [
-        { label: 'Available', value: 'Available' },
-        { label: 'Low', value: 'Low' },
-        { label: 'Out of Stock', value: 'Out of Stock' },
-      ],
-      style: { width: '160px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
-    },
-  },
-  {
-    key: 'query',
-    type: 'input',
-    props: {
-      placeholder: 'Search item, etc',
-      style: { width: '320px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-common/search', size: 18 })]),
-    },
-  },
-]);
-
-// Table Data State
-const allData = ref<InventoryItem[]>([]);
-const tableData = ref<InventoryItem[]>([]);
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0,
-});
-
-const categories = computed(() => [...new Set(allData.value.map((item) => item.category))]);
-
-// Columns Configuration
-const columns: ColumnOption[] = [
-  { type: 'selection', width: 60, align: 'center' },
-  { label: 'Image', prop: 'image', width: 100, useSlot: true, align: 'center' },
-  { label: 'Item', prop: 'item', minWidth: 220, useSlot: true, sortable: true },
-  { label: 'Category', prop: 'category', minWidth: 160, sortable: true },
-  { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
-  { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true, align: 'center' },
-  { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true, align: 'center' },
-  { label: 'Action', prop: 'action', width: 180, useSlot: true, align: 'center' },
-];
-
-const fetchData = async () => {
-  loading.value = true;
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
-  try {
-    const data = getMockInventory();
-    allData.value = data;
-    applyFilters();
-  } catch (error) {
-    console.error('Failed to fetch inventory:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const applyFilters = () => {
-  const { query, category, status } = searchModel;
-  const lowerQuery = query.toLowerCase();
-
-  const filtered = allData.value.filter(
-    (item) =>
-      (!category || item.category === category) &&
-      (!status || item.availability === status) &&
-      (!query ||
-        item.name.toLowerCase().includes(lowerQuery) ||
-        item.itemCode.toLowerCase().includes(lowerQuery) ||
-        item.category.toLowerCase().includes(lowerQuery)),
-  );
-
-  pagination.total = filtered.length;
-  const start = (pagination.current - 1) * pagination.size;
-  tableData.value = filtered.slice(start, start + pagination.size);
-};
-
-const handleSearch = () => {
-  pagination.current = 1;
-  applyFilters();
-};
-
-const handlePaginationChange = (type: 'size' | 'current', val: number) => {
-  if (type === 'size') {
-    pagination.size = val;
-    pagination.current = 1;
-  } else {
-    pagination.current = val;
-  }
-  applyFilters();
-};
-
-// 监听搜索条件变化
-watch(
-  () => [searchModel.category, searchModel.status, searchModel.query],
-  () => {
-    handleSearch();
-  },
-  { deep: false },
-);
-
-const handleAddItem = () => {
-  ElMessage.success('Add Item dialog opened');
-};
-
-const handleReorder = (row: InventoryItem) => {
-  ElMessage.info(`Reordering ${row.name}`);
-};
-
-onMounted(() => {
-  fetchData();
-});
-</script>

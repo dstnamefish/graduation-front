@@ -3,9 +3,9 @@
 
 :root {
   /* --- 1. 中性灰 (Slate) --- */
-  --color-slate-50:  #ffffff; /* [纯白] 卡片底色、弹窗背景 */
-  --color-slate-75:  #f5f5f5; /* [中性浅灰] 推荐用于：表格表头背景、表单分组背景 */
-  --color-slate-80:  #f2f3f5; /* [浅冷灰] 推荐用于：侧边栏、搜索框、Tab 背景 */
+  --color-slate-50: #ffffff; /* [纯白] 卡片底色、弹窗背景 */
+  --color-slate-75: #f5f5f5; /* [中性浅灰] 推荐用于：表格表头背景、表单分组背景 */
+  --color-slate-80: #f2f3f5; /* [浅冷灰] 推荐用于：侧边栏、搜索框、Tab 背景 */
   --color-slate-100: #f0f0f0; /* [标准浅灰] 网页大背景、输入框填充、斑马纹 */
   --color-slate-200: #e2e4e8; /* [极浅蓝灰] 列表分割线、弱化边框 */
   --color-slate-300: #cbd1d9; /* [标准边框] 卡片边框、输入框默认边框 */
@@ -18,7 +18,7 @@
   --color-slate-950: #121317; /* [曜石黑] 深色模式下的网页大背景 */
 
   /* --- 2. 品牌主色 (Primary) --- */
-  --color-primary-50:  #f0f0f0; /* [灰] 侧边栏背景 */
+  --color-primary-50:  #f2fcfd; /* [灰] 侧边栏背景 */
   --color-primary-100: #dff9fa; /* [蓝] 页面大背景 */
   --color-primary-200: #c1f4f6; /* [青] 进度条、装饰项 */
   --color-primary-300: #a2f2ef; /* [青] 激活态、聚焦圈 */
@@ -30,7 +30,7 @@
   --color-primary-900: #083a3d; /* [青] 插画深部阴影 */
 
   /* --- 3. 成功色 (Success) --- */
-  --color-success-50:  #ecfdf5; /* [绿] 页面大背景 */
+  --color-success-50: #ecfdf5; /* [绿] 页面大背景 */
   --color-success-100: #d1fae5; /* [绿] 提示框背景 */
   --color-success-200: #a7f3d0; /* [绿] 装饰描边项 */
   --color-success-300: #6ee7b7; /* [绿] 图表填充区 */
@@ -232,6 +232,15 @@
   --color-sidebar-text: var(--color-slate-700); /* [灰] 导航文本 */
 
   --color-tab-bg-muted: var(--color-slate-80); /* [浅冷灰] 选项卡默认底色 */
+
+  /* 状态标签 (Status Badges/Tags) */
+  --color-status-success-bg: var(--color-primary-100);
+  --color-status-success-text: var(--color-slate-800);
+  --color-status-success-border: var(--color-primary-300);
+
+  --color-status-error-bg: var(--color-danger-50);
+  --color-status-error-text: var(--color-danger-600);
+  --color-status-error-border: var(--color-danger-500);
 
   /* 图表与数据 (Charts & Data) */
   --color-chart-1: var(--color-slate-800); /* [蓝] 主数据序列 */

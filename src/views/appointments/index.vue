@@ -53,40 +53,14 @@
         :pagination="pagination"
         :data="tableData"
         :columns="columns"
-        header-theme="gray"
+        header-theme="soft"
         :border="true"
-        background-theme="gray"
-        @pagination:size-change="handlePaginationChange('size', $event)"
-        @pagination:current-change="handlePaginationChange('current', $event)"
+        pagination-background="gray"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
         <template #patientName="{ row }">
-          <div class="flex items-center gap-4 py-4 cursor-pointer pl-0 group">
-            <div
-              class="w-12 h-12 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100/80 transition-all duration-300 group-hover:shadow-md group-hover:scale-105"
-            >
-              <img
-                v-if="row.patientAvatar"
-                :src="row.patientAvatar"
-                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <WnSvgIcon
-                v-else
-                icon="solar:user-bold"
-                :size="24"
-                class="text-slate-200 flex-cc h-full w-full"
-              />
-            </div>
-            <div class="flex flex-col gap-0.5">
-              <span
-                class="font-bold text-slate-800 group-hover:text-slate-900 transition-colors line-clamp-1"
-              >
-                {{ row.patientName || 'Unknown' }}
-              </span>
-              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                ID: P-{{ row.id + 1000 }}
-              </span>
-            </div>
-          </div>
+          {{ row.patientName || 'Unknown' }}
         </template>
 
         <template #appointmentDate="{ value }">
@@ -107,12 +81,16 @@
 
         <template #status="{ value }">
           <div
-            :class="[
-              'inline-flex items-center px-4 py-1.5 rounded-xl font-black text-[10px] tracking-widest uppercase border transition-all duration-300',
-              statusClassMap[value],
-            ]"
+            class="inline-flex items-center transition-all duration-300"
+            :class="getStatusClass(String(value))"
           >
-            {{ getStatusLabel(value) }}
+            {{
+              value === AppointmentStatus.COMPLETED
+                ? 'Confirmed'
+                : value === AppointmentStatus.PENDING
+                  ? 'Pending'
+                  : 'Cancelled'
+            }}
           </div>
         </template>
 
@@ -136,55 +114,82 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch, h } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getMockAppointments } from '@/mock/appointments';
 import { AppointmentStatus, type AppointmentResponse } from '@/types/api/appointment.types';
 import type { ColumnOption } from '@/types';
-import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
+import { formatDate, formatTime, getStatusClass } from '@/utils';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSearchBarInline, {
   type SearchFormItem,
 } from '@/components/core/forms/Wn-search-bar/index.vue';
+import { useTable } from '@/hooks/core/useTable';
 
 defineOptions({ name: 'Appointments' });
 
-// State
 const tableRef = ref();
-const loading = ref(false);
-const searchModel = reactive({
-  query: '',
-  date: '',
-});
-const activeStatus = ref<number | null>(null);
 const activeTab = ref('all');
-const allData = ref<AppointmentResponse[]>([]);
-const tableData = ref<AppointmentResponse[]>([]);
-const pagination = reactive({ current: 1, size: 10, total: 0 });
 
-const statusClassMap: Record<number, string> = {
-  [AppointmentStatus.COMPLETED]: 'bg-[#E6FFFB] border-[#B5F5EC] text-[#13C2C2]',
-  [AppointmentStatus.PENDING]: 'bg-[#FFF7E6] border-[#FFE7BA] text-[#FAAD14]',
-  [AppointmentStatus.CANCELLED]: 'bg-[#F5F5F5] border-[#D9D9D9] text-[#8C8C8C]',
-};
+/**
+ * 模拟后端 API 请求
+ */
+const mockApiFn = async (params: any) => {
+  await new Promise((r) => setTimeout(r, 600));
 
-const getStatusLabel = (status: number) => {
-  const map: Record<number, string> = {
-    [AppointmentStatus.PENDING]: 'Pending',
-    [AppointmentStatus.COMPLETED]: 'Confirmed',
-    [AppointmentStatus.CANCELLED]: 'Cancelled',
+  const allMockData = getMockAppointments();
+  const { query, date, status, current, size } = params;
+
+  const filtered = allMockData.filter((item) => {
+    const matchStatus = status === null || item.status === status;
+    const matchDate = !date || item.appointmentDate === date;
+    const matchQuery =
+      !query ||
+      [item.patientName, item.doctorName, item.departmentName].some((field) =>
+        field?.toLowerCase().includes(query.toLowerCase()),
+      );
+    return matchStatus && matchDate && matchQuery;
+  });
+
+  return {
+    records: filtered.slice((current - 1) * size, current * size),
+    total: filtered.length,
+    current,
+    size,
   };
-  return map[status]?.toUpperCase() || 'UNKNOWN';
 };
 
-// Computed
-const statusCounts = computed(() => ({
-  all: allData.value.length,
-  confirmed: allData.value.filter((d) => d.status === AppointmentStatus.COMPLETED).length,
-  pending: allData.value.filter((d) => d.status === AppointmentStatus.PENDING).length,
-  cancelled: allData.value.filter((d) => d.status === AppointmentStatus.CANCELLED).length,
-}));
+const {
+  loading,
+  data: tableData,
+  pagination,
+  searchParams: searchModel,
+  handleCurrentChange,
+  handleSizeChange,
+  getData: handleSearch,
+} = useTable({
+  core: {
+    apiFn: mockApiFn,
+    apiParams: {
+      query: '',
+      date: '',
+      status: null,
+    },
+    immediate: true,
+  },
+});
+
+// Computed for Tab labels (Keep as local state for UI richness)
+const statusCounts = computed(() => {
+  const all = getMockAppointments();
+  return {
+    all: all.length,
+    confirmed: all.filter((d) => d.status === AppointmentStatus.COMPLETED).length,
+    pending: all.filter((d) => d.status === AppointmentStatus.PENDING).length,
+    cancelled: all.filter((d) => d.status === AppointmentStatus.CANCELLED).length,
+  };
+});
 
 const statusTabs = computed(() => [
   { label: 'All', value: null, count: statusCounts.value.all },
@@ -197,102 +202,40 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'query',
     type: 'input',
+    icon: 'local-common/search', // 简化
     props: {
-      placeholder: 'Search placeholder',
+      placeholder: 'Search name, doctor...',
       style: { width: '240px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-common/search', size: 18 })]),
     },
   },
   {
     key: 'date',
     type: 'date',
+    icon: 'solar:calendar-bold', // 简化
     props: {
       placeholder: 'Today',
       format: 'DD MMM YYYY',
       valueFormat: 'YYYY-MM-DD',
       class: 'w-24!',
     },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'solar:calendar-bold', size: 18 })]),
-    },
   },
 ]);
 
 const columns: ColumnOption[] = [
-  { type: 'selection', width: 60, align: 'center' },
-  { label: 'Name', prop: 'patientName', minWidth: 240, useSlot: true, sortable: true },
+  { type: 'selection' as const, width: 60, align: 'center' },
+  { label: 'Name', prop: 'patientName', minWidth: 200, useSlot: true, sortable: true },
   { label: 'Date', prop: 'appointmentDate', minWidth: 160, useSlot: true, sortable: true },
   { label: 'Time', prop: 'appointmentTime', minWidth: 130, useSlot: true, sortable: true },
-  { label: 'Doctor', prop: 'doctorName', minWidth: 220, useSlot: true, sortable: true },
+  { label: 'Doctor', prop: 'doctorName', minWidth: 200, useSlot: true, sortable: true },
   { label: 'Treatment', prop: 'departmentName', minWidth: 200, useSlot: true, sortable: true },
-  { label: 'Status', prop: 'status', width: 140, useSlot: true, align: 'center', sortable: true },
-  { label: 'Action', prop: 'action', width: 220, useSlot: true, fixed: 'right' },
+  { label: 'Status', prop: 'status', width: 140, useSlot: true, sortable: true },
+  { label: 'Action', prop: 'action', minWidth: 220, useSlot: true, fixed: 'right' },
 ];
 
-const formatDate = (date: string) => {
-  if (!date) return '';
-  const d = new Date(date);
-  return d.getDate() + ' ' + d.toLocaleString('en-US', { month: 'long' }) + ' ' + d.getFullYear();
-};
-
-const formatTime = (time: string) => {
-  if (!time) return '';
-  const [h, m] = time.split(':');
-  const hour = parseInt(h);
-  const ampm = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
-  return hour12.toString().padStart(2, '0') + ':' + m + ' ' + ampm;
-};
-
-const fetchData = async () => {
-  loading.value = true;
-  await new Promise((r) => setTimeout(r, 600));
-  allData.value = getMockAppointments();
-  applyFilters();
-  loading.value = false;
-};
-
-const applyFilters = () => {
-  const filtered = allData.value.filter((item) => {
-    const matchStatus = activeStatus.value === null || item.status === activeStatus.value;
-    const matchDate = !searchModel.date || item.appointmentDate === searchModel.date;
-    const matchQuery =
-      !searchModel.query ||
-      [item.patientName, item.doctorName, item.departmentName].some((field) =>
-        field?.toLowerCase().includes(searchModel.query.toLowerCase()),
-      );
-    return matchStatus && matchDate && matchQuery;
-  });
-
-  pagination.total = filtered.length;
-  const start = (pagination.current - 1) * pagination.size;
-  tableData.value = filtered.slice(start, start + pagination.size);
-};
-
 const handleTabUpdate = (name: any) => {
-  activeStatus.value = name === 'all' ? null : Number(name);
-  pagination.current = 1;
-  applyFilters();
-};
-
-const handleSearch = () => {
-  pagination.current = 1;
-  applyFilters();
-};
-
-const handleDateChange = () => {
-  pagination.current = 1;
-  applyFilters();
-};
-
-const handlePaginationChange = (type: 'size' | 'current', val: number) => {
-  pagination[type] = val;
-  if (type === 'size') pagination.current = 1;
-  applyFilters();
+  const status = name === 'all' ? null : Number(name);
+  searchModel.status = status;
+  handleSearch();
 };
 
 const handleAddAppointment = () => {
@@ -316,12 +259,8 @@ const handleCancel = async (row: AppointmentResponse) => {
       },
     );
     ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
-  } catch {
-    // User cancelled
-  }
+  } catch {}
 };
 
 watch([() => searchModel.query, () => searchModel.date], () => handleSearch());
-
-onMounted(() => fetchData());
 </script>

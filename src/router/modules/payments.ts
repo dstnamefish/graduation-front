@@ -7,10 +7,14 @@ export const paymentsRoutes: AppRouteRecord[] = [
   {
     component: '/payments',
     meta: {
+      headerBar:{
+        globalSearch:false
+      },
       icon: 'local-menu/payments',
       keepAlive: false,
       roles: ['ADMIN'],
       title: 'menus.payments.title',
+      fixedHeight: true,
     },
     name: 'Payments',
     path: '/payments',

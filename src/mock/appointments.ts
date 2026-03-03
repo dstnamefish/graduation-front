@@ -46,29 +46,14 @@ export const getMockAppointments = (): AppointmentResponse[] => {
   ];
 
   const doctors = [
-    {
-      name: 'Dr. Petra Winsburry',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Petra',
-    },
-    {
-      name: 'Dr. Olivia Martinez',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
-    },
-    {
-      name: 'Dr. Damian Sanchez',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Damian',
-    },
-    {
-      name: 'Dr. Chloe Harrington',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Chloe',
-    },
-    { name: 'Dr. Emily Smith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily' },
-    {
-      name: 'Dr. Samuel Thompson',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel',
-    },
-    { name: 'Dr. Sarah Johnson', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah' },
-    { name: 'Dr. Luke Harrison', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luke' },
+    { name: 'Dr. Petra Winsburry' },
+    { name: 'Dr. Olivia Martinez' },
+    { name: 'Dr. Damian Sanchez' },
+    { name: 'Dr. Chloe Harrington' },
+    { name: 'Dr. Emily Smith' },
+    { name: 'Dr. Samuel Thompson' },
+    { name: 'Dr. Sarah Johnson' },
+    { name: 'Dr. Luke Harrison' },
   ];
 
   const treatments = [
@@ -94,36 +79,23 @@ export const getMockAppointments = (): AppointmentResponse[] => {
     const name = names[Math.floor(Math.random() * names.length)];
     const treatment = treatments[Math.floor(Math.random() * treatments.length)];
 
-    // Generate a random date within the next 30 days or past 30 days
+    // 生成随机日期
     const date = new Date();
     date.setDate(date.getDate() + (Math.floor(Math.random() * 60) - 30));
     const dateStr = date.toISOString().split('T')[0];
 
-    // Generate a random time
-    const hour = Math.floor(Math.random() * 12) + 8; // 8 AM to 8 PM
-    const minute = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, 45
+    // 生成随机时间
+    const hour = Math.floor(Math.random() * 12) + 8;
+    const minute = Math.floor(Math.random() * 4) * 15;
     const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
     appointments.push({
       id: i,
       appointmentDate: dateStr,
       appointmentTime: timeStr,
-      appointmentNumber: `APT-${1000 + i}`,
       status: status,
-      checkInStatus: CheckInStatus.NOT_CHECKED,
-      callStatus: CallStatus.NOT_CALLED,
-      patientId: i,
-      doctorId: Math.floor(Math.random() * 10) + 1,
-      departmentId: Math.floor(Math.random() * 5) + 1,
-      appointmentSource: AppointmentSource.OFFLINE,
-      isOvertime: false,
-      tenantId: 1,
-      createdTime: new Date().toISOString(),
-      updatedTime: new Date().toISOString(),
       patientName: name,
-      patientAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name.replace(/ /g, '')}`,
       doctorName: doctor.name,
-      doctorAvatar: doctor.avatar,
       departmentName: treatment,
     });
   }

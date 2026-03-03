@@ -113,12 +113,12 @@ const filterSearch = (query: string) => {
   getMockPatients().forEach((pt) => {
     if (
       pt.name.toLowerCase().includes(normalizedQuery) ||
-      pt.patientCode.toLowerCase().includes(normalizedQuery)
+      pt.patientId.toLowerCase().includes(normalizedQuery)
     ) {
       results.push({
-        id: pt.patientCode,
+        id: pt.patientId,
         title: pt.name,
-        subtitle: pt.patientCode,
+        subtitle: pt.patientId,
         path: '/patients',
         icon: 'local-menu/patients',
         type: 'patient',
@@ -266,9 +266,6 @@ function deleteHistory(index: number) {
   userStore.setSearchHistory(history);
 }
 
-function clearHistory() {
-  userStore.setSearchHistory([]);
-}
 
 const handleKeydown = (event: KeyboardEvent) => {
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
@@ -389,7 +386,7 @@ onUnmounted(() => {
           <div class="flex flex-wrap gap-2.5 p-2">
             <div
               v-for="(item, index) in historyResult"
-              :key="item.path"
+              :key="item.path || item.id"
               class="group relative flex-ic c-p px-3 py-1.5 rounded-sm bg-g-150 hover:text-primary transition-all duration-300 max-w-[140px]"
               @mousedown="selectItem(item)"
               :title="item.title"
@@ -518,7 +515,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-
 .dropdown-enter-active,
 .dropdown-leave-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -1,7 +1,7 @@
 <!-- 侧边栏菜单 -->
 <template>
   <div
-    class="flex flex-col h-screen bg-color-sidebar overflow-hidden transition-all duration-300"
+    class="flex flex-col h-screen bg-sidebar overflow-hidden transition-all duration-300"
     v-if="showLeftMenu"
     :style="{ width: getMenuOpenWidth }"
   >

@@ -1,4 +1,160 @@
 <!-- 医生列表页面 -->
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { getStatusClass } from '@/utils';
+import { getMockDoctors } from '@/mock/doctors';
+import WnSearchBarInline, {
+  type SearchFormItem,
+} from '@/components/core/forms/Wn-search-bar/index.vue';
+import type { DoctorItem } from '@/types/api/doctor.types';
+import type { ColumnOption } from '@/types';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
+import { useTable } from '@/hooks/core/useTable';
+
+defineOptions({ name: 'Doctors' });
+
+const tableRef = ref();
+
+/**
+ * 模拟后端 API 请求
+ */
+const mockApiFn = async (params: any) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  const allMockData = getMockDoctors();
+  const { query, department, specialty, status, current, size } = params;
+  const lowerQuery = (query || '').toLowerCase();
+
+  const filtered = allMockData.filter(
+    (d) =>
+      (!department || d.departmentName === department) &&
+      (!specialty || d.specialty === specialty) &&
+      (!status || d.availabilityStatus === status) &&
+      (!query ||
+        d.name.toLowerCase().includes(lowerQuery) ||
+        d.doctorCode.toLowerCase().includes(lowerQuery) ||
+        d.departmentName.toLowerCase().includes(lowerQuery) ||
+        d.specialty.toLowerCase().includes(lowerQuery)),
+  );
+
+  return {
+    records: filtered.slice((current - 1) * size, current * size),
+    total: filtered.length,
+    current,
+    size,
+  };
+};
+
+const {
+  loading,
+  data: tableData,
+  pagination,
+  searchParams: searchModel,
+  handleCurrentChange,
+  handleSizeChange,
+  getData: handleSearch,
+} = useTable({
+  core: {
+    apiFn: mockApiFn,
+    apiParams: {
+      query: '',
+      department: '',
+      specialty: '',
+      status: '',
+    },
+    immediate: true,
+  },
+});
+
+const searchItems = computed<SearchFormItem[]>(() => [
+  {
+    key: 'query',
+    type: 'input',
+    icon: 'local-common/search', // 简化
+    background: 'var(--color-field)',
+    props: {
+      placeholder: 'Search name, age, ID, etc',
+      style: { width: '320px' },
+    },
+  },
+  {
+    key: 'department',
+    type: 'select',
+    props: {
+      placeholder: 'Department',
+      options: departments.value.map((d) => ({ label: d, value: d })),
+      fitInputWidth: true,
+    },
+  },
+  {
+    key: 'specialty',
+    type: 'select',
+    props: {
+      placeholder: 'Specialist',
+      options: specialists.value.map((s) => ({ label: s, value: s })),
+      fitInputWidth: true,
+    },
+  },
+  {
+    key: 'status',
+    type: 'select',
+    props: {
+      placeholder: 'Status',
+      options: [
+        { label: 'All', value: '' },
+        { label: 'Available', value: 'Available' },
+        { label: 'Unavailable', value: 'Unavailable' },
+      ],
+      fitInputWidth: true,
+    },
+  },
+]);
+
+const departments = computed(() => {
+  return [...new Set(getMockDoctors().map((d) => d.departmentName))];
+});
+const specialists = computed(() => {
+  return [...new Set(getMockDoctors().map((d) => d.specialty))];
+});
+
+const columns: ColumnOption[] = [
+  { label: 'Name', prop: 'name', minWidth: 180, useSlot: true, sortable: true },
+  { label: 'ID', prop: 'doctorCode', minWidth: 140, sortable: true },
+  { label: 'Department', prop: 'departmentName', minWidth: 160, sortable: true },
+  { label: 'Specialist', prop: 'specialty', minWidth: 180, sortable: true },
+  { label: 'Total Patients', prop: 'totalPatients', minWidth: 150, sortable: true },
+  { label: "Today's Appointment", prop: 'todayAppointments', minWidth: 180, sortable: true },
+  {
+    label: 'Availability Status',
+    prop: 'availabilityStatus',
+    width: 200,
+    useSlot: true,
+    sortable: true,
+  },
+  { label: 'Action', prop: 'action', width: 180, useSlot: true },
+];
+
+const handleAddDoctor = () => {
+  ElMessage.success('Add Doctor functionality coming soon!');
+};
+
+const handleEdit = (row: DoctorItem) => {
+  ElMessage.info(`Editing ${row.name}`);
+};
+
+const handleDelete = async (row: DoctorItem) => {
+  try {
+    await ElMessageBox.confirm(`Are you sure you want to remove ${row.name}?`, 'Delete Doctor', {
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger',
+      confirmButtonText: 'Delete',
+    });
+    ElMessage.success(`${row.name} removed successfully`);
+  } catch {}
+};
+</script>
+
 <template>
   <div class="bg-surface-sunken h-full rounded-2xl flex flex-col overflow-hidden">
     <!-- 表头 -->
@@ -8,6 +164,7 @@
           v-model="searchModel"
           :items="searchItems"
           @keyup.enter="handleSearch"
+          search-bar-background="white"
         />
       </template>
 
@@ -29,8 +186,8 @@
         :pagination="pagination"
         :data="tableData"
         :columns="columns"
-        @pagination:size-change="handlePaginationChange('size', $event)"
-        @pagination:current-change="handlePaginationChange('current', $event)"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
       >
         <template #name="{ row }">
           <div class="flex items-center gap-3.5 py-2">
@@ -55,234 +212,31 @@
 
         <template #availabilityStatus="{ value }">
           <div
-            :class="[
-              ' inline-flex items-center px-3 py-1 rounded-lg border',
-              statusClassMap[value as keyof typeof statusClassMap],
-            ]"
+            class="inline-flex items-center px-3 py-1 rounded-lg border font-medium"
+            :class="getStatusClass(value as string)"
           >
             {{ value }}
           </div>
         </template>
 
         <template #action="{ row }">
-          <div class="flex items-center gap-2">
-            <button
-              class="action-btn edit-btn"
-              title="Edit"
+          <div class="flex items-center gap-2 text-title">
+            <WnSvgIcon
+              icon="local-common/edit"
+              :size="18"
+              class="c-p  hover:text-(--color-primary-500) active:text-(--color-primary-800) transition-colors"
               @click="handleEdit(row)"
-            >
-              <WnSvgIcon
-                icon="local-common/edit"
-                :size="18"
-              />
-            </button>
-            <button
-              class="action-btn delete-btn"
-              title="Delete"
-              @click="handleDelete(row)"
-            >
-              <WnSvgIcon
-                icon="local-common/trash"
-                :size="18"
             />
-            </button>
+            <div class="w-[2px] h-4 bg-disabled-border"></div>
+            <WnSvgIcon
+              icon="local-common/trash"
+              :size="18"
+              class="c-p hover:text-(--color-danger-500) active:text-(--color-danger-600) transition-colors"
+              @click="handleDelete(row)"
+            />
           </div>
         </template>
       </WnTable>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, reactive, onMounted, computed, h, watch } from 'vue';
-import { getMockDoctors } from '@/mock/doctors';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
-import type { DoctorItem } from '@/types/api/doctor.types';
-import type { ColumnOption } from '@/types';
-import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
-
-defineOptions({ name: 'Doctors' });
-
-// State
-const tableRef = ref();
-const loading = ref(false);
-
-const searchModel = reactive({
-  query: '',
-  department: '',
-  specialty: '',
-  status: '',
-});
-
-const statusClassMap = {
-  'Available': 'bg-secondary border-primary text-tertiary text-sm',
-  'On Leave': 'bg-error border-error text-error',
-};
-
-const handlePaginationChange = (type: 'size' | 'current', val: number) => {
-  pagination[type] = val;
-  if (type === 'size') pagination.current = 1;
-  applyFilters();
-};
-
-watch(
-  () => [searchModel.department, searchModel.specialty, searchModel.status, searchModel.query],
-  () => handleSearch(),
-);
-
-const searchItems = computed<SearchFormItem[]>(() => [
-  {
-    key: 'query',
-    type: 'input',
-    background: 'var(--color-field)',
-    props: {
-      placeholder: 'Search name, age, ID, etc',
-      style: { width: '320px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-common/search', size: 16 })]),
-    },
-  },
-  {
-    key: 'department',
-    type: 'select',
-    background: 'var(--color-field)',
-    props: {
-      placeholder: 'Department',
-      options: departments.value.map((d) => ({ label: d, value: d })),
-      fitInputWidth: true,
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
-    },
-  },
-  {
-    key: 'specialty',
-    type: 'select',
-    background: 'var(--color-field)',
-    props: {
-      placeholder: 'Specialist',
-      options: specialists.value.map((s) => ({ label: s, value: s })),
-      fitInputWidth: true,
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
-    },
-  },
-  {
-    key: 'status',
-    type: 'select',
-    background: 'var(--color-field)',
-    props: {
-      placeholder: 'Status',
-      options: [
-        { label: 'Available', value: 'Available' },
-        { label: 'On Leave', value: 'On Leave' },
-      ],
-      fitInputWidth: true,
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-table/filter', size: 16 })]),
-    },
-  },
-]);
-
-const allData = ref<DoctorItem[]>([]);
-const tableData = ref<DoctorItem[]>([]);
-const pagination = reactive({
-  current: 1,
-  size: 10,
-  total: 0,
-});
-
-const departments = computed(() => [...new Set(allData.value.map((d) => d.departmentName))]);
-const specialists = computed(() => [...new Set(allData.value.map((d) => d.specialty))]);
-
-const columns: ColumnOption[] = [
-  { label: 'Name', prop: 'name', minWidth: 180, useSlot: true, sortable: true },
-  { label: 'ID', prop: 'doctorCode', minWidth: 140, sortable: true },
-  { label: 'Department', prop: 'departmentName', minWidth: 160, sortable: true },
-  { label: 'Specialist', prop: 'specialty', minWidth: 180, sortable: true },
-  { label: 'Total Patients', prop: 'totalPatients', minWidth: 150, sortable: true },
-  { label: "Today's Appointment", prop: 'todayAppointments', minWidth: 180, sortable: true },
-  {
-    label: 'Availability Status',
-    prop: 'availabilityStatus',
-    width: 200,
-    useSlot: true,
-    sortable: true,
-  },
-  { label: 'Action', prop: 'action', width: 180, useSlot: true },
-];
-
-const fetchData = async () => {
-  loading.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  try {
-    const data = getMockDoctors();
-    allData.value = data;
-    applyFilters();
-  } catch (error) {
-    console.error('Failed to fetch doctors:', error);
-    ElMessage.error('Failed to load doctor data');
-  } finally {
-    loading.value = false;
-  }
-};
-
-const applyFilters = () => {
-  const { query, department, specialty, status } = searchModel;
-  const lowerQuery = query.toLowerCase();
-
-  const filtered = allData.value.filter(
-    (d) =>
-      (!department || d.departmentName === department) &&
-      (!specialty || d.specialty === specialty) &&
-      (!status || d.availabilityStatus === status) &&
-      (!query ||
-        d.name.toLowerCase().includes(lowerQuery) ||
-        d.doctorCode.toLowerCase().includes(lowerQuery) ||
-        d.departmentName.toLowerCase().includes(lowerQuery) ||
-        d.specialty.toLowerCase().includes(lowerQuery)),
-  );
-
-  pagination.total = filtered.length;
-  const start = (pagination.current - 1) * pagination.size;
-  tableData.value = filtered.slice(start, start + pagination.size);
-};
-
-const handleSearch = () => {
-  pagination.current = 1;
-  applyFilters();
-};
-
-const handleAddDoctor = () => {
-  ElMessage.success('Add Doctor functionality coming soon!');
-};
-
-const handleEdit = (row: DoctorItem) => {
-  ElMessage.info(`Editing ${row.name}`);
-};
-
-const handleDelete = async (row: DoctorItem) => {
-  try {
-    await ElMessageBox.confirm(`Are you sure you want to remove ${row.name}?`, 'Delete Doctor', {
-      type: 'warning',
-      confirmButtonClass: 'el-button--danger',
-      confirmButtonText: 'Delete',
-    });
-    ElMessage.success(`${row.name} removed successfully`);
-  } catch {}
-};
-
-onMounted(() => {
-  fetchData();
-});
-</script>

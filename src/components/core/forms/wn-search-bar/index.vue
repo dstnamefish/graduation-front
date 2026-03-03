@@ -66,7 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue';
+import { h, computed, ref } from 'vue';
+import type { Component, VNode } from 'vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import {
   ElCascader,
   ElCheckbox,
@@ -141,6 +143,7 @@ export interface SearchFormItem {
   placeholder?: string;
   class?: string;
   background?: string;
+  icon?: string;
 }
 
 /**
@@ -153,14 +156,14 @@ export interface SearchFormItem {
  */
 interface SearchBarProps {
   items: SearchFormItem[];
-  backgroundTheme?: 'white' | 'gray';
+  searchBarBackground?: 'white' | 'soft' | 'gray';
   labelPosition?: 'left' | 'right' | 'top';
   labelWidth?: string | number;
 }
 
 const props = withDefaults(defineProps<SearchBarProps>(), {
   items: () => [],
-  backgroundTheme: 'gray',
+  searchBarBackground: 'gray',
   labelPosition: 'right',
   labelWidth: '70px',
 });
@@ -175,16 +178,34 @@ const getProps = (item: SearchFormItem) => {
   rootProps.forEach((key) => delete (props as Record<string, any>)[key]);
   return props;
 };
-
 // 获取插槽
 const getSlots = (item: SearchFormItem) => {
-  if (!item.slots) return {};
+  const slots = item.slots || {};
   const validSlots: Record<string, () => any> = {};
-  Object.entries(item.slots).forEach(([key, slotFn]) => {
+
+  // 处理显式定义的插槽
+  Object.entries(slots).forEach(([key, slotFn]) => {
     if (slotFn) {
       validSlots[key] = slotFn;
     }
   });
+
+  // 处理自定义 icon 属性 (优先级次于 slots.prefix)
+  if (item.icon && !validSlots.prefix) {
+    validSlots.prefix = () =>
+      h('div', { class: 'flex-cc' }, [
+        h(WnSvgIcon, { icon: item.icon, size: 18, class: 'text-slate-400' }),
+      ]);
+  }
+
+  // 统一设置 select 类型的默认前缀图标
+  if (item.type === 'select' && !validSlots.prefix) {
+    validSlots.prefix = () =>
+      h('div', { class: 'flex-cc' }, [
+        h(WnSvgIcon, { icon: 'local-table/filter', size: 16, class: 'text-slate-400' }),
+      ]);
+  }
+
   return validSlots;
 };
 
@@ -208,10 +229,20 @@ const visibleFormItems = computed(() => {
 });
 
 const themeStyles = computed(() => {
-  const isWhite = props.backgroundTheme === 'white';
+  const bgMap = {
+    white: 'var(--color-slate-50)',
+    soft: 'var(--color-slate-80)',
+    gray: 'var(--color-slate-100)',
+  };
+  const hoverMap = {
+    white: 'var(--color-slate-100)',
+    soft: 'var(--color-slate-100)',
+    gray: 'var(--color-slate-200)',
+  };
+
   return {
-    '--background-color': isWhite ? 'var(--color-slate-50)' : 'var(--color-slate-100)',
-    '--background-color-hover': isWhite ? 'var(--color-slate-100)' : 'var(--color-slate-200)',
+    '--background-color': bgMap[props.searchBarBackground] || bgMap.gray,
+    '--background-color-hover': hoverMap[props.searchBarBackground] || hoverMap.gray,
     '--background-color-focus': '#ffffff',
   };
 });

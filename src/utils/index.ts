@@ -9,6 +9,9 @@
 // UI 相关
 export * from './ui';
 
+// 格式化相关
+export * from './format';
+
 // 路由相关
 export * from './router';
 

@@ -46,3 +46,40 @@
 #noop {
   display: none;
 }
+
+/**
+ * 全局自定义滚动条样式
+ */
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #e2e8f0;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #cbd5e1;
+    }
+  }
+}
+
+// 适配暗黑模式
+html.dark {
+  .custom-scrollbar {
+    &::-webkit-scrollbar-thumb {
+      background: #334155;
+
+      &:hover {
+        background: #475569;
+      }
+    }
+  }
+}
