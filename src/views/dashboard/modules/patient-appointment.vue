@@ -97,7 +97,7 @@
                   />
                 </div>
               </div>
-            </th>; background: #f1f5f9
+            </th>
             <th class="pb-6"></th>
           </tr>
         </thead>

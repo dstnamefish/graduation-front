@@ -31,7 +31,6 @@ const mockApiFn = async (params: any) => {
       (!status || item.availability === status) &&
       (!query ||
         item.name.toLowerCase().includes(lowerQuery) ||
-        item.itemCode.toLowerCase().includes(lowerQuery) ||
         item.category.toLowerCase().includes(lowerQuery)),
   );
 
@@ -64,7 +63,7 @@ const {
 });
 
 // 搜索项配置 - 现在使用 icon 属性简化
-const searchItems = computed<SearchFormItem[]>(() => [
+const selectItems = computed<SearchFormItem[]>(() => [
   {
     key: 'category',
     type: 'select',
@@ -87,6 +86,9 @@ const searchItems = computed<SearchFormItem[]>(() => [
       style: { width: '160px' },
     },
   },
+]);
+
+const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'query',
     type: 'input',
@@ -106,12 +108,12 @@ const categories = computed(() => {
 const columns: ColumnOption[] = [
   { type: 'selection' as const, width: 60, align: 'center' },
   { label: 'Image', prop: 'image', width: 100, useSlot: true, align: 'center' },
-  { label: 'Item', prop: 'item', minWidth: 220, useSlot: true, sortable: true },
+  { label: 'Item', prop: 'name', minWidth: 180, sortable: true },
   { label: 'Category', prop: 'category', minWidth: 160, sortable: true },
   { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
   { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true },
   { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true },
-  { label: 'Action', prop: 'action', width: 180, useSlot: true },
+  { label: 'Action', prop: 'action', MinWidth: 180, useSlot: true },
 ];
 
 const handleAddItem = () => {
@@ -130,7 +132,7 @@ const handleReorder = (row: InventoryItem) => {
       <template #left>
         <WnSearchBarInline
           v-model="searchModel"
-          :items="searchItems"
+          :items="selectItems"
           search-bar-background="gray"
           @keyup.enter="handleSearch"
         />
@@ -138,6 +140,12 @@ const handleReorder = (row: InventoryItem) => {
 
       <template #right>
         <div class="flex items-center gap-4">
+          <WnSearchBarInline
+            v-model="searchModel"
+            :items="searchItems"
+            search-bar-background="soft"
+            @keyup.enter="handleSearch"
+          />
           <div
             class="w-9 h-9 flex-cc cursor-pointer bg-accent rounded-xl hover:opacity-80 transition-opacity"
             title="Table Settings"
@@ -145,7 +153,7 @@ const handleReorder = (row: InventoryItem) => {
             <WnSvgIcon
               icon="local-table/slider"
               :size="20"
-              class="text-slate-500"
+              class="text-muted"
             />
           </div>
           <WnButton
@@ -176,7 +184,7 @@ const handleReorder = (row: InventoryItem) => {
         <template #image="{ row }">
           <div class="flex items-center justify-center p-2">
             <div
-              class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex-cc overflow-hidden shadow-sm p-2"
+              class="w-12 h-12 rounded-xl bg-surface border border-action-border flex-cc overflow-hidden shadow-sm p-2"
             >
               <img
                 v-if="row.image"
@@ -193,23 +201,14 @@ const handleReorder = (row: InventoryItem) => {
           </div>
         </template>
 
-        <!-- Item 栏插槽 -->
-        <template #item="{ row }">
-          <div class="flex flex-col py-1">
-            <span class="font-semibold text-slate-800">{{ row.name }}</span>
-            <span class="text-xs text-slate-400">{{ row.itemCode }}</span>
-          </div>
-        </template>
-
-        <!-- 状态/库存状态插槽 - 使用 getStatusDotClass 简化 -->
         <template #availability="{ value }">
           <div
-            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium"
-            :class="getStatusClass(value as string)"
+            class="inline-flex items-center gap-2 px-1.5 py-0.5 rounded-lg border"
+            :class="getStatusClass(value as string, 'inventory')"
           >
             <span
-              class="w-1.5 h-1.5 rounded-full"
-              :class="getStatusDotClass(value as string)"
+              class="w-3 h-3 rounded-[2px]"
+              :class="getStatusDotClass(value as string, 'inventory')"
             ></span>
             {{ value }}
           </div>
@@ -217,23 +216,21 @@ const handleReorder = (row: InventoryItem) => {
 
         <!-- 操作插槽 -->
         <template #action="{ row }">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <button
-              class="w-9 h-9 flex-cc rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
-              title="View details"
+              class="w-7 h-7 flex-cc c-p rounded-lg border border-action-border hover:bg-action-hover active:bg-action-active text-action-text hover:text-action-text-hover transition-all active:scale-95"
             >
               <WnSvgIcon
-                icon="solar:eye-bold"
+                icon="local-table/view"
                 :size="18"
               />
             </button>
-            <el-button
-              size="small"
-              class="rounded-lg! font-semibold"
+            <button
+              class="px-2 py-0.5 c-p bg-action-bg hover:bg-action-hover active:bg-action-active border border-action-border text-action-text hover:text-action-text-hover active:text-action-text-active rounded-lg transition-all active:scale-95"
               @click="handleReorder(row)"
             >
               Reorder
-            </el-button>
+            </button>
           </div>
         </template>
       </WnTable>

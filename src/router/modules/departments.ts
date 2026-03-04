@@ -6,7 +6,11 @@ import { AppRouteRecord } from '@/types/router';
 export const departmentsRoutes: AppRouteRecord[] = [
   {
     component: '/departments',
+
     meta: {
+      headerBar: {
+        globalSearch: false,
+      },
       icon: 'local-menu/departments',
       keepAlive: false,
       roles: ['ADMIN'],
@@ -14,5 +18,20 @@ export const departmentsRoutes: AppRouteRecord[] = [
     },
     name: 'Departments',
     path: '/departments',
+  },
+  {
+    component: '/departments/detail',
+    meta: {
+      headerBar: {
+        globalSearch: false,
+      },
+      title: 'Department Details',
+      isHide: true,
+      activePath: '/departments',
+      roles: ['ADMIN'],
+      isDetail: true,
+    },
+    name: 'DepartmentDetail',
+    path: '/departments/:id',
   },
 ];

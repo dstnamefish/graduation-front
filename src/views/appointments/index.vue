@@ -81,29 +81,23 @@
 
         <template #status="{ value }">
           <div
-            class="inline-flex items-center transition-all duration-300"
-            :class="getStatusClass(String(value))"
+            class="inline-flex items-center px-2 py-0.5 rounded-lg border transition-all duration-300"
+            :class="getStatusClass(value, 'appointment')"
           >
-            {{
-              value === AppointmentStatus.COMPLETED
-                ? 'Confirmed'
-                : value === AppointmentStatus.PENDING
-                  ? 'Pending'
-                  : 'Cancelled'
-            }}
+            {{ getAppointmentStatusLabel(value) }}
           </div>
         </template>
 
         <template #action="{ row }">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1">
             <button
-              class="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 rounded-xl transition-all active:scale-95 border border-transparent hover:border-slate-200"
+              class="px-2 py-0.5 c-p bg-action-bg hover:bg-action-hover active:bg-action-active border border-action-border text-action-text hover:text-action-text-hover active:text-action-text-active rounded-lg transition-all active:scale-95"
               @click="handleReschedule(row)"
             >
               Reschedule
             </button>
             <button
-              class="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 rounded-xl transition-all active:scale-95 border border-transparent hover:border-slate-200"
+              class="px-2 py-0.5 c-p text-action-text hover:text-action-text-hover active:text-action-text-active"
               @click="handleCancel(row)"
             >
               Cancel
@@ -120,7 +114,13 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getMockAppointments } from '@/mock/appointments';
 import { AppointmentStatus, type AppointmentResponse } from '@/types/api/appointment.types';
 import type { ColumnOption } from '@/types';
-import { formatDate, formatTime, getStatusClass } from '@/utils';
+import {
+  formatDate,
+  formatTime,
+  getStatusClass,
+  mapAppointmentStatusToUI,
+  getAppointmentStatusLabel,
+} from '@/utils';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSearchBarInline, {
   type SearchFormItem,

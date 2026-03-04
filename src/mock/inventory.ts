@@ -1,7 +1,6 @@
 // Mock inventory data
 export interface InventoryItem {
   id: string;
-  itemCode: string;
   name: string;
   category: string;
   availability: 'Available' | 'Low' | 'Out of Stock';
@@ -13,7 +12,6 @@ export interface InventoryItem {
 export const getMockInventory = (): InventoryItem[] => [
   {
     id: '1',
-    itemCode: 'I-1001',
     name: 'Surgical Masks',
     category: 'PPE',
     availability: 'Available',
@@ -23,7 +21,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '2',
-    itemCode: 'I-1002',
     name: 'Gloves',
     category: 'PPE',
     availability: 'Low',
@@ -32,7 +29,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '3',
-    itemCode: 'I-1003',
     name: 'Hand Sanitizer',
     category: 'Sanitizer',
     availability: 'Available',
@@ -41,7 +37,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '4',
-    itemCode: 'I-1004',
     name: 'Thermometers',
     category: 'Medical Equipment',
     availability: 'Out of Stock',
@@ -50,7 +45,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '5',
-    itemCode: 'I-1005',
     name: 'Stethoscopes',
     category: 'Medical Equipment',
     availability: 'Available',
@@ -59,7 +53,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '6',
-    itemCode: 'I-1006',
     name: 'Blood Pressure Monitors',
     category: 'Medical Equipment',
     availability: 'Low',
@@ -68,7 +61,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '7',
-    itemCode: 'I-1007',
     name: 'Bandages',
     category: 'First Aid',
     availability: 'Available',
@@ -77,7 +69,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '8',
-    itemCode: 'I-1008',
     name: 'IV Fluids',
     category: 'Medical Supplies',
     availability: 'Low',
@@ -86,7 +77,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '9',
-    itemCode: 'I-1009',
     name: 'Scalpel Blades',
     category: 'Surgical Instruments',
     availability: 'Out of Stock',
@@ -95,7 +85,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '10',
-    itemCode: 'I-1010',
     name: 'Syringes',
     category: 'Medical Supplies',
     availability: 'Available',
@@ -104,7 +93,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '11',
-    itemCode: 'I-1011',
     name: 'Medical Gowns',
     category: 'PPE',
     availability: 'Available',
@@ -113,7 +101,6 @@ export const getMockInventory = (): InventoryItem[] => [
   },
   {
     id: '12',
-    itemCode: 'I-1012',
     name: 'Disinfectant Wipes',
     category: 'Sanitizer',
     availability: 'Low',

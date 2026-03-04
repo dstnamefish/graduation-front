@@ -24,18 +24,29 @@ const mockApiFn = async (params: any) => {
   await new Promise((resolve) => setTimeout(resolve, 600));
 
   const allMockData = getMockPatients();
-  const { query, treatment, status, current, size } = params;
+  const { query, treatment, status, dateRange, current, size } = params;
   const lowerQuery = (query || '').toLowerCase();
 
-  const filtered = allMockData.filter(
-    (p) =>
+  const filtered = allMockData.filter((p) => {
+    // 处理日期筛选
+    let dateMatch = true;
+    if (dateRange && dateRange.length === 2) {
+      const start = new Date(dateRange[0]).getTime();
+      const end = new Date(dateRange[1]).getTime();
+      const checkInDate = new Date(p.checkIn).getTime();
+      dateMatch = checkInDate >= start && checkInDate <= end;
+    }
+
+    return (
+      dateMatch &&
       (!treatment || treatment === 'all' || p.treatment === treatment) &&
       (!status || status === 'all' || p.status === status) &&
       (!query ||
         p.name.toLowerCase().includes(lowerQuery) ||
         p.patientId.toLowerCase().includes(lowerQuery) ||
-        p.treatment.toLowerCase().includes(lowerQuery)),
-  );
+        p.treatment.toLowerCase().includes(lowerQuery))
+    );
+  });
 
   return {
     records: filtered.slice((current - 1) * size, current * size),
@@ -60,12 +71,23 @@ const {
       query: '',
       treatment: 'all',
       status: 'all',
+      dateRange: [],
     },
     immediate: true,
   },
 });
 
 const leftSearchItems = computed<SearchFormItem[]>(() => [
+    {
+    key: 'dateRange',
+    type: 'daterange',
+    props: {
+      rangeSeparator: 'to',
+      startPlaceholder: 'Start date',
+      endPlaceholder: 'End date',
+      style: { width: '240px' },
+    },
+  },
   {
     key: 'treatment',
     type: 'select',
@@ -112,14 +134,14 @@ const rightSearchItems = computed<SearchFormItem[]>(() => [
 ]);
 
 const columns = [
-  { label: 'Name', prop: 'name', useSlot: true, minWidth: 200 },
-  { label: 'ID', prop: 'patientId', width: 90, align: 'center' },
+  { label: 'Name', prop: 'name', useSlot: true, minWidth: 120 },
+  { label: 'ID', prop: 'patientId', minWidth: 90 },
   { label: 'Age', prop: 'age', width: 90, align: 'center' },
   { label: 'Check In', prop: 'checkIn', width: 150 },
   { label: 'Treatment', prop: 'treatment', minWidth: 180 },
   { label: 'Doctor Assigned', prop: 'doctorAssigned', minWidth: 180 },
-  { label: 'Room', prop: 'room', width: 130 },
-  { label: 'Status', prop: 'status', useSlot: true, width: 130, align: 'center' },
+  { label: 'Room', prop: 'room', minWidth: 130 },
+  { label: 'Status', prop: 'status', useSlot: true, minWidth: 130 },
 ];
 
 const handleAddPatient = () => {
@@ -184,8 +206,8 @@ const handleAddPatient = () => {
         <!-- 状态列插槽 -->
         <template #status="{ value }">
           <div
-            class="status-badge"
-            :class="getStatusClass(value)"
+            class="inline-flex items-center px-1.5 py-0.5 rounded-lg border transition-all duration-300"
+            :class="getStatusClass(value, 'patient')"
           >
             {{ value }}
           </div>

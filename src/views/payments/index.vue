@@ -28,7 +28,7 @@
     <div class="flex-1 min-h-0 overflow-hidden flex flex-col">
       <WnTable
         ref="tableRef"
-        v-loading="loading"
+        v-loading="tableLoading"
         :data="tableData"
         :columns="columns"
         header-theme="soft"
@@ -38,36 +38,65 @@
         @pagination:size-change="handlePaginationChange('size', $event)"
         @pagination:current-change="handlePaginationChange('current', $event)"
       >
-        <!-- 患者姓名插槽 -->
-        <template #patientName="{ row }">
-          <div class="flex items-center gap-3">
-            <ElAvatar
-              :src="row.patientAvatar"
-              :size="32"
-              class="border border-slate-100 shadow-sm"
-            />
-            <span class="font-semibold text-slate-800">{{ row.patientName }}</span>
+        <!-- Treatment 插槽 -->
+        <template #treatment="{ row }">
+          <div class="flex flex-col py-1">
+            <span>{{ row.treatment }}</span>
+            <div class="flex items-center gap-1 mt-0.5 opacity-60">
+              <WnSvgIcon
+                icon="local-menu/departments"
+                :size="14"
+              />
+              <span class="text-[11px]">{{ row.department }}</span>
+            </div>
           </div>
         </template>
 
         <!-- 状态列插槽 -->
         <template #status="{ value }">
           <div
-            class="px-3 py-1 rounded-lg text-xs font-bold inline-block"
-            :class="getStatusClass(value)"
+            class="inline-flex items-center justify-center gap-1 px-1.5 py-0.5 rounded-lg border transition-all"
+            :class="getStatusClass(value, 'payment')"
           >
+            <WnSvgIcon
+              v-if="value === 'Paid'"
+              icon="local-status/verified"
+              :size="16"
+            />
+            <WnSvgIcon
+              v-else
+              icon="local-status/loading"
+              :size="16"
+            />
             {{ value }}
           </div>
         </template>
 
-        <!-- 金额列插槽 -->
-        <template #amount="{ value }">
-          <span class="font-bold text-slate-800">{{ formatCurrency(value) }}</span>
-        </template>
-
         <!-- 操作列插槽 -->
-        <template #action>
-          <div class="flex items-center gap-2"></div>
+        <template #action="{ row }">
+          <div class="flex items-center gap-3">
+            <button
+              class="flex items-center gap-1.5  hover:text-slate-800 transition-colors group"
+            >
+              <WnSvgIcon
+                icon="local-table/view"
+                :size="18"
+                class="group-hover:scale-110 transition-transform"
+              />
+              View
+            </button>
+            <div class="w-px h-3 bg-slate-200"></div>
+            <button
+              class="flex items-center gap-1.5 hover:text-slate-800 transition-colors group"
+            >
+              <WnSvgIcon
+                icon="local-common/edit"
+                :size="18"
+                class="group-hover:scale-110 transition-transform"
+              />
+              Edit
+            </button>
+          </div>
         </template>
       </WnTable>
     </div>
@@ -76,7 +105,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, h, watch } from 'vue';
-import { ElAvatar } from 'element-plus';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
@@ -86,11 +114,12 @@ import WnSearchBarInline, {
 import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
 import PaymentStats from './modules/PaymentStats.vue';
 import { getMockPayments, type PaymentItem } from '@/mock/payments';
-import { getStatusClass, formatCurrency } from '@/utils';
+import { getStatusClass, formatDate } from '@/utils';
 
 defineOptions({ name: 'Payments' });
 
-const loading = ref(false);
+const tableRef = ref();
+const tableLoading = ref(false);
 const allData = ref<PaymentItem[]>([]);
 const tableData = ref<PaymentItem[]>([]);
 
@@ -133,37 +162,21 @@ const filterItems = computed<SearchFormItem[]>(() => [
         { label: 'Status', value: 'all' },
         { label: 'Paid', value: 'Paid' },
         { label: 'Pending', value: 'Pending' },
-        { label: 'Overdue', value: 'Overdue' },
       ],
       fitInputWidth: true,
     },
   },
 ]);
 
-// 搜索配置
-const searchItems = computed<SearchFormItem[]>(() => [
-  {
-    key: 'query',
-    type: 'input',
-    props: {
-      placeholder: 'Search invoice ID, patient...',
-      style: { width: '280px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-common/search', size: 16 })]),
-    },
-  },
-]);
-
 // 表格列配置
 const columns = [
-  { label: 'Invoice ID', prop: 'invoiceId', width: 120, align: 'center' },
-  { label: 'Patient', prop: 'patientName', useSlot: true, minWidth: 200 },
-  { label: 'Date', prop: 'date', width: 150 },
-  { label: 'Amount', prop: 'amount', width: 150, align: 'right', useSlot: true },
-  { label: 'Status', prop: 'status', useSlot: true, width: 120, align: 'center' },
-  { label: 'Action', prop: 'action', useSlot: true, width: 120, align: 'center' },
+  { label: 'Invoice ID', prop: 'invoiceId', minWidth: 150, sortable: true },
+  { label: 'Patient Name', prop: 'patientName', minWidth: 150, sortable: true },
+  { label: 'Treatment', prop: 'treatment', useSlot: true, minWidth: 200, sortable: true },
+  { label: 'Date', prop: 'date', minWidth: 160, sortable: true },
+  { label: 'Amount', prop: 'amount', minWidth: 120, sortable: true },
+  { label: 'Status', prop: 'status', useSlot: true, minWidth: 140, sortable: true },
+  { label: 'Action', prop: 'action', useSlot: true, minWidth: 160 },
 ];
 
 const pagination = reactive({
@@ -191,7 +204,7 @@ const applyFilters = () => {
     if (dateRange && dateRange.length === 2 && dateRange[0] && dateRange[1]) {
       const pDate = new Date(p.date).getTime();
       const start = new Date(dateRange[0]).getTime();
-      const end = new Date(dateRange[1]).getTime() + 86400000 - 1; // Includes the whole end day
+      const end = new Date(dateRange[1]).getTime() + 86400000 - 1;
       matchDate = pDate >= start && pDate <= end;
     }
 
@@ -201,7 +214,8 @@ const applyFilters = () => {
       (!method || method === 'all' || p.method === method) &&
       (!query ||
         p.patientName.toLowerCase().includes(lowerQuery) ||
-        p.invoiceId.toLowerCase().includes(lowerQuery))
+        p.invoiceId.toLowerCase().includes(lowerQuery) ||
+        p.treatment.toLowerCase().includes(lowerQuery))
     );
   });
 
@@ -219,13 +233,13 @@ watch(
 );
 
 onMounted(async () => {
-  loading.value = true;
+  tableLoading.value = true;
   try {
     await new Promise((resolve) => setTimeout(resolve, 600));
     allData.value = getMockPayments();
     applyFilters();
   } finally {
-    loading.value = false;
+    tableLoading.value = false;
   }
 });
 </script>

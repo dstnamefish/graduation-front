@@ -1,10 +1,11 @@
 <!-- 顶部栏 -->
 <template>
-  <header class="flex-cb h-20 w-full px-6 select-none">
+  <header class="flex-cb h-20 w-full px-6 select-none bg-surface">
     <!-- 左侧区域 -->
     <div class="flex flex-1 items-center min-w-0 gap-4">
       <!-- 面包屑 -->
-      <WnBreadcrumb v-if="shouldShowBreadcrumb" />
+      <WnBreadcrumb v-if="shouldShowBreadcrumb && !isDetailPage" />
+      <WnBackToBefore v-if="isDetailPage" />
       <!-- 全局搜索 -->
       <WnGlobalSearch
         v-if="shouldShowGlobalSearch"
@@ -13,7 +14,7 @@
     </div>
 
     <!-- 右侧区域 -->
-    <div class="flex shrink-0 items-center gap-4 bg-red">
+    <div class="flex shrink-0 items-center gap-4">
       <!-- 通知 -->
       <WnNotification />
       <!-- 主题切换 -->
@@ -30,7 +31,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { useWindowSize } from '@vueuse/core';
 import { useSettingStore } from '@/store/modules/setting';
@@ -79,6 +80,10 @@ const isWindows = navigator.userAgent.includes('Windows');
 
 // 暗色主题状态
 const isDark = computed(() => settingStore.isDark);
+
+// 详情页状态
+const route = useRoute();
+const isDetailPage = computed(() => !!route.meta.isDetail);
 
 onMounted(() => {
   document.addEventListener('click', bodyCloseNotice);

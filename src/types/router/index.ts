@@ -47,40 +47,41 @@ import { RouteRecordRaw } from 'vue-router';
  * @property headerBar 头栏配置
  */
 export interface RouteMeta extends Record<string | number | symbol, unknown> {
-  title: string
-  icon?: string
-  showBadge?: boolean
-  showTextBadge?: string
-  isHide?: boolean
-  isHideTab?: boolean
-  link?: string
-  isIframe?: boolean
-  keepAlive?: boolean
+  title: string;
+  icon?: string;
+  showBadge?: boolean;
+  showTextBadge?: string;
+  isHide?: boolean;
+  isHideTab?: boolean;
+  link?: string;
+  isIframe?: boolean;
+  keepAlive?: boolean;
   authList?: Array<{
-    authMark: string
-    title: string
-  }>
-  isFirstLevel?: boolean
-  roles?: string[]
-  fixedTab?: boolean
-  activePath?: string
-  isFullPage?: boolean
-  isAuthButton?: boolean
-  authMark?: string
-  parentPath?: string
+    authMark: string;
+    title: string;
+  }>;
+  isFirstLevel?: boolean;
+  roles?: string[];
+  fixedTab?: boolean;
+  activePath?: string;
+  isFullPage?: boolean;
+  isAuthButton?: boolean;
+  authMark?: string;
+  parentPath?: string;
+  isDetail?: boolean;
   headerBar?: {
-    breadcrumb?: boolean
-    chat?: boolean
-    fastEnter?: boolean
-    fullscreen?: boolean
-    globalSearch?: boolean
-    language?: boolean
-    menuButton?: boolean
-    notification?: boolean
-    refreshButton?: boolean
-    settings?: boolean
-    themeToggle?: boolean
-  }
+    breadcrumb?: boolean;
+    chat?: boolean;
+    fastEnter?: boolean;
+    fullscreen?: boolean;
+    globalSearch?: boolean;
+    language?: boolean;
+    menuButton?: boolean;
+    notification?: boolean;
+    refreshButton?: boolean;
+    settings?: boolean;
+    themeToggle?: boolean;
+  };
 }
 
 /**
@@ -88,8 +89,8 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
  * 扩展 Vue Router 的路由记录类型
  */
 export interface AppRouteRecord extends Omit<RouteRecordRaw, 'meta' | 'children' | 'component'> {
-  id?: number
-  meta: RouteMeta
-  children?: AppRouteRecord[]
-  component?: string | (() => Promise<any>)
+  id?: number;
+  meta: RouteMeta;
+  children?: AppRouteRecord[];
+  component?: string | (() => Promise<any>);
 }

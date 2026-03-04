@@ -37,7 +37,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SidebarSubmenu: typeof import('./../../components/core/layouts/Wn-sidebar-menu/widget/SidebarSubmenu.vue')['default']
-    WnBackToBefore: typeof import('./../../components/core/base/Wn-back-to-before/index.vue')['default']
+    WnBackToBefore: typeof import('./../../components/core/layouts/Wn-back-to-before/index.vue')['default']
     WnBreadcrumb: typeof import('./../../components/core/layouts/Wn-breadcrumb/index.vue')['default']
     WnButton: typeof import('./../../components/core/base/Wn-button/index.vue')['default']
     WnButtonMore: typeof import('./../../components/core/forms/Wn-button-more/index.vue')['default']

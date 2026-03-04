@@ -1,9 +1,9 @@
 ﻿<template>
-  <div class="w-full h-screen overflow-hidden bg-(--default-bg-color)">
+  <div class="w-full h-screen overflow-hidden">
     <div class="flex flex-row h-full">
       <!-- 侧边栏 -->
       <aside
-        class="shrink-0 bg-[#f5f5f6] transition-all duration-300 max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:z-30 max-lg:h-screen"
+        class="shrink-0 transition-all duration-300 max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:z-30 max-lg:h-screen"
       >
         <WnSidebarMenu />
       </aside>
@@ -20,13 +20,13 @@
 
         <!-- 滚动容器 -->
         <main class="flex-1 overflow-y-auto overflow-x-hidden pt-20 pb-16">
-          <WnPageContent class="h-full px-6 py-1" />
+          <WnPageContent class="h-full px-6 py-1 bg-surface" />
         </main>
 
         <!-- 底部固定遮盖层 -->
         <footer
           id="app-footer"
-          class="absolute bottom-0 left-0 right-0 z-[300] shrink-0 bg-white border-t border-slate-100/50"
+          class="absolute bottom-0 left-0 right-0 z-[300] shrink-0 bg-surface border-t border-slate-100/50"
         >
           <WnFooter />
         </footer>

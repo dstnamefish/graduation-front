@@ -8,21 +8,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useSettingStore } from '@/store/modules/setting';
-import { SystemThemeEnum } from '@/enums/appEnum';
+
+import { themeAnimation } from '@/utils/ui/animation';
 
 defineOptions({ name: 'WnThemeToggle' });
 
 const settingStore = useSettingStore();
 const isDark = computed(() => settingStore.isDark);
 
-const toggleTheme = () => {
-  const newTheme = isDark.value ? SystemThemeEnum.LIGHT : SystemThemeEnum.DARK;
-  settingStore.setGlopTheme(newTheme, newTheme);
-
-  if (newTheme === SystemThemeEnum.DARK) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+const toggleTheme = (e: MouseEvent) => {
+  themeAnimation(e);
 };
 </script>

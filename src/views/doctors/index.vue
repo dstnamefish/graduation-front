@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getStatusClass } from '@/utils';
+import { getStatusClass, mapDoctorStatusToUI } from '@/utils';
 import { getMockDoctors } from '@/mock/doctors';
 import WnSearchBarInline, {
   type SearchFormItem,
@@ -213,7 +213,7 @@ const handleDelete = async (row: DoctorItem) => {
         <template #availabilityStatus="{ value }">
           <div
             class="inline-flex items-center px-3 py-1 rounded-lg border font-medium"
-            :class="getStatusClass(value as string)"
+            :class="getStatusClass(value as string, 'doctor')"
           >
             {{ value }}
           </div>
@@ -224,7 +224,7 @@ const handleDelete = async (row: DoctorItem) => {
             <WnSvgIcon
               icon="local-common/edit"
               :size="18"
-              class="c-p  hover:text-(--color-primary-500) active:text-(--color-primary-800) transition-colors"
+              class="c-p hover:text-(--color-primary-500) active:text-(--color-primary-800) transition-colors"
               @click="handleEdit(row)"
             />
             <div class="w-[2px] h-4 bg-disabled-border"></div>

@@ -18,7 +18,7 @@
   --color-slate-950: #121317; /* [曜石黑] 深色模式下的网页大背景 */
 
   /* --- 2. 品牌主色 (Primary) --- */
-  --color-primary-50:  #f2fcfd; /* [灰] 侧边栏背景 */
+  --color-primary-50: #f2fcfd; /* [灰] 侧边栏背景 */
   --color-primary-100: #dff9fa; /* [蓝] 页面大背景 */
   --color-primary-200: #c1f4f6; /* [青] 进度条、装饰项 */
   --color-primary-300: #a2f2ef; /* [青] 激活态、聚焦圈 */
@@ -68,66 +68,69 @@
 
 /* 暗黑模式 */
 .dark {
-  /* --- 1. 中性灰 (Slate - Dark) --- */
-  --color-slate-50: #1c1c1e; /* [深灰] 类似于 iOS 深色卡片 */
-  --color-slate-100: #121317; /* [曜石黑] 你的核心深色基座 */
-  --color-slate-200: #2e3a52; /* [深蓝灰] 呼应品牌色的分割线 */
-  --color-slate-300: #475569; /* [中灰] 清晰的边界 */
-  --color-slate-400: #64748b; /* [沉稳灰] */
-  --color-slate-500: #94a3b8; /* [浅灰] 保证在深底上的可读性 */
-  --color-slate-600: #cbd5e1; /* [亮灰] */
-  --color-slate-700: #e2e8f0; /* [灰白] 长时间阅读不刺眼 */
-  --color-slate-800: #243956; /* [深黛蓝] 保持不变，用于底栏等 */
-  --color-slate-900: #2e3a52; /* [提亮] */
-  --color-slate-950: #ffffff; /* [纯白] 最高对比度标题 */
+  --color-slate-50: #1d1d1f;   /* [卡片/弹窗背景] 提升的海拔层，代替浅色模式的投影 */
+  --color-slate-75: #2c2c2e;   /* [容器提升层] 如表头、搜索框填充、Tab 背景 */
+  --color-slate-80: #242426;   /* [侧边栏/辅助背景] 原按钮色在这里作为辅助层，非常低调 */
+  --color-slate-100: #121317;  /* [网页大背景] 曜石黑网页底色，最低层 */
+  --color-slate-200: #3a3a3c;  /* [极弱分割线] 仅比卡片亮一点点 */
+  --color-slate-300: #48484a;  /* [标准边框] 输入框默认边框、一般边框 */
+  --color-slate-400: #636366;  /* [禁用状态文字] 极低亮度文字，线性图标 */
+  --color-slate-500: #8e8e93;  /* [次要信息] 维持中间态，用于说明文字 */
+  --color-slate-600: #aeaeb2;  /* [副标题] 亮度提升，增强可读性 */
+  --color-slate-700: #d1d1d6;  /* [正文色] **重要**：不使用纯白，使用浅灰色，避免白光刺眼，遵循 WCAG AAA标准 */
+  --color-slate-800: #f2f2f7;  /* [强调文字] 接近白色的灰，用于一级标题、强调项 */
+  --color-slate-900: #ffffff;  /* [反向纯白] 用于极端强调、强力高亮 */
+  --color-slate-950: #ffffff;  /* 极端状态使用 */
 
-  /* --- 2. 品牌主色 (Primary - Dark) --- */
-  --color-primary-50: #1a202c; /* [深] 侧边栏/底栏背景 */
-  --color-primary-100: #1a2c38; /* [深青] 页面大背景的替代/选中态背景 */
-  --color-primary-200: #1e3a45; /* [暗青] 进度条槽 */
-  --color-primary-300: #2dd4bf; /* [荧光青] 对应 Tailwind Teal-400 */
-  --color-primary-400: #14b8a6; /* [标准青] 悬停 */
-  --color-primary-500: #a2f2ef; /* [品牌青] 实体图标/文字颜色  */
-  --color-primary-600: #dff9fa; /* [极亮青] 点击反馈 */
-  --color-primary-700: #ccfbf1; /* [浅青] 深色背景上的文字 */
-  --color-primary-800: #5eead4; /* [亮青] 图表主曲线 */
-  --color-primary-900: #134e4a; /* [深青] 插画阴影 */
+  /* --- 2. 品牌主色 (Primary - 青色系) ---
+     核心逻辑：提升明度，降低饱和度，防止“发光效应”
+  */
+  --color-primary-50: #083a3d;  /* 微弱叠加层背景 */
+  --color-primary-100: #0e5b60;
+  --color-primary-200: #147d83;
+  --color-primary-300: #1ba0a8;
+  --color-primary-400: #22acb4;
+  --color-primary-500: #3edde5; /* [核心激活色] 比浅色模式更亮，用于徽章、开关、图标 */
+  --color-primary-600: #87e3e7; /* [点击操作反馈] */
+  --color-primary-700: #a2f2ef;
+  --color-primary-800: #c1f4f6;
+  --color-primary-900: #dff9fa;
 
-  /* --- 3. 成功色 (Success - Dark) --- */
-  --color-success-50: #052e16; /* [深绿] 极深背景 */
-  --color-success-100: #064e3b; /* [暗绿] 提示框背景 */
-  --color-success-200: #065f46; /* [装饰] */
-  --color-success-300: #10b981; /* [亮绿] 图表填充 */
-  --color-success-400: #34d399; /* [高亮] */
-  --color-success-500: #10b981; /* [标准绿] 图标 */
-  --color-success-600: #34d399; /* [反馈] */
-  --color-success-700: #d1fae5; /* [浅绿] 文字 (反转) */
-  --color-success-800: #6ee7b7; /* [荧光绿] 图表曲线 */
-  --color-success-900: #022c22;
+  /* --- 3. 成功色 (Success - 绿色系) --- */
+  --color-success-50: #022d1e;
+  --color-success-100: #044b32;
+  --color-success-200: #057a54;
+  --color-success-300: #069669;
+  --color-success-400: #10b981;
+  --color-success-500: #34d399; /* [提交/状态图标] */
+  --color-success-600: #6ee7b7;
+  --color-success-700: #a7f3d0; /* [成功文本] */
+  --color-success-800: #d1fae5;
+  --color-success-900: #ecfdf5;
 
-  /* --- 4. 警告色 (Warning - Dark) --- */
-  --color-warning-50: #451a03; /* [深褐] 极深背景 */
-  --color-warning-100: #78350f; /* [暗橙] 提示框背景 */
+  /* --- 4. 警告色 (Warning - 黄色系) --- */
+  --color-warning-50: #451a03;
+  --color-warning-100: #78350f;
   --color-warning-200: #92400e;
-  --color-warning-300: #f59e0b; /* [金] 图标 */
-  --color-warning-400: #fbbf24;
-  --color-warning-500: #f59e0b; /* [金] 徽章 */
+  --color-warning-300: #b45309;
+  --color-warning-400: #d97706;
+  --color-warning-500: #f59e0b; /* [待办/标签徽章] */
   --color-warning-600: #fbbf24;
-  --color-warning-700: #fef3c7; /* [浅黄] 文字 (反转) */
-  --color-warning-800: #fcd34d; /* [亮黄] 图表 */
-  --color-warning-900: #451a03;
+  --color-warning-700: #fcd34d; /* [警示文本] */
+  --color-warning-800: #fde68a;
+  --color-warning-900: #fffbeb;
 
-  /* --- 5. 危险色 (Danger - Dark) --- */
-  --color-danger-50: #450a0a; /* [深红] 极深背景 (Red-950) */
-  --color-danger-100: #7f1d1d; /* [暗红] 提示框/列表反馈 (Red-900) */
+  /* --- 5. 危险色 (Danger - 红色系) --- */
+  --color-danger-50: #450a0a;
+  --color-danger-100: #7f1d1d;
   --color-danger-200: #991b1b;
-  --color-danger-300: #f87171; /* [亮红] 描边 */
-  --color-danger-400: #ef4444;
-  --color-danger-500: #ef4444; /* [红] 图标 */
-  --color-danger-600: #fca5a5;
-  --color-danger-700: #fee2e2; /* [浅红] 文字 (反转) */
-  --color-danger-800: #f87171; /* [亮红] 图表 */
-  --color-danger-900: #450a0a;
+  --color-danger-300: #b91c1c;
+  --color-danger-400: #dc2626;
+  --color-danger-500: #f87171; /* [删除/拦截/错误图标] */
+  --color-danger-600: #fb7185;
+  --color-danger-700: #fecaca; /* [错误文本] */
+  --color-danger-800: #fee2e2;
+  --color-danger-900: #fef2f2;
 }
 
 /* ==================== Tailwind 配置中心 (Theme) ==================== */
@@ -162,6 +165,15 @@
   --color-placeholder: var(--color-slate-400); /* [灰] 禁用、占位文字 */
   --color-link: var(--color-primary-700); /* [青] 链接文字 */
   --color-title-inverse: var(--color-slate-50); /* [白] 反色标题 */
+
+  /* --- 3. action系统 (Actions) --- */
+  --color-action-bg: var(--color-slate-100); /* [白] 按钮背景 */
+  --color-action-hover: var(--color-slate-200); /* [灰] 按钮悬停 */
+  --color-action-active: var(--color-slate-300); /* [灰] 按钮点按 */
+  --color-action-border: var(--color-slate-100); /* [灰] 按钮边框 */
+  --color-action-text: var(--color-slate-600); /* [灰] 按钮文字 */
+  --color-action-text-hover: var(--color-slate-700); /* [灰] 按钮文字 */
+  --color-action-text-active: var(--color-slate-800); /* [灰] 按钮文字 */
 
   /* 主行动 (Solid) */
   --color-primary: var(--color-slate-800); /* [蓝] 主按钮背景 */
@@ -233,14 +245,57 @@
 
   --color-tab-bg-muted: var(--color-slate-80); /* [浅冷灰] 选项卡默认底色 */
 
-  /* 状态标签 (Status Badges/Tags) */
-  --color-status-success-bg: var(--color-primary-100);
-  --color-status-success-text: var(--color-slate-800);
-  --color-status-success-border: var(--color-primary-300);
+  /* 状态标签 - 医生 (Doctor Status) */
+  --color-doctor-available-bg: var(--color-primary-100);
+  --color-doctor-available-text: var(--color-slate-800);
+  --color-doctor-available-border: var(--color-primary-300);
+  --color-doctor-unavailable-bg: var(--color-danger-50);
+  --color-doctor-unavailable-text: var(--color-danger-600);
+  --color-doctor-unavailable-border: var(--color-danger-500);
 
-  --color-status-error-bg: var(--color-danger-50);
-  --color-status-error-text: var(--color-danger-600);
-  --color-status-error-border: var(--color-danger-500);
+  /* 状态标签 - 库存 (Inventory Status) */
+  --color-inventory-available-bg: var(--color-primary-100);
+  --color-inventory-available-text: var(--color-slate-950);
+  --color-inventory-available-border: var(--color-primary-100);
+
+  --color-inventory-low-bg: var(--color-danger-200);
+  --color-inventory-low-text: var(--color-slate-950);
+  --color-inventory-low-border: var(--color-danger-200);
+
+  --color-inventory-out-bg: var(--color-slate-100);
+  --color-inventory-out-text: var(--color-slate-950);
+  --color-inventory-out-border: var(--color-slate-100);
+
+  /* 状态标签 - 支付 (Payment Status) */
+  --color-payment-paid-bg: var(--color-primary-100);
+  --color-payment-paid-text: var(--color-slate-800);
+  --color-payment-paid-border: var(--color-primary-100);
+
+  --color-payment-pending-bg: var(--color-danger-200);
+  --color-payment-pending-text: var(--color-danger-500);
+  --color-payment-pending-border: var(--color-danger-200);
+
+  /* 状态标签 - 患者 (Patient Status) */
+  --color-patient-active-bg: var(--color-slate-800);
+  --color-patient-active-text: var(--color-slate-50);
+  --color-patient-active-border: var(--color-slate-800);
+  --color-patient-new-bg: var(--color-primary-300);
+  --color-patient-new-text: var(--color-slate-950);
+  --color-patient-new-border: var(--color-primary-300);
+  --color-patient-inactive-bg: var(--color-danger-500);
+  --color-patient-inactive-text: var(--color-slate-50);
+  --color-patient-inactive-border: var(--color-danger-500);
+
+  /* 状态标签 - 预约 (Appointment Status) */
+  --color-appointment-confirmed-bg: var(--color-primary-300);
+  --color-appointment-confirmed-text: var(--color-slate-950);
+  --color-appointment-confirmed-border: var(--color-primary-300);
+  --color-appointment-pending-bg: var(--color-danger-200);
+  --color-appointment-pending-text: var(--color-slate-950);
+  --color-appointment-pending-border: var(--color-danger-200);
+  --color-appointment-cancelled-bg: var(--color-slate-400);
+  --color-appointment-cancelled-text: var(--color-slate-950);
+  --color-appointment-cancelled-border: var(--color-slate-400);
 
   /* 图表与数据 (Charts & Data) */
   --color-chart-1: var(--color-slate-800); /* [蓝] 主数据序列 */
