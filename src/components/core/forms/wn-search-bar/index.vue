@@ -92,7 +92,6 @@ import {
 } from 'element-plus';
 import WnDatePicker from '@/components/core/forms/Wn-date-picker/index.vue';
 import WnDateRangePicker from '@/components/core/forms/Wn-date-range-picker/index.vue';
-import { cn } from '@/lib/utils';
 
 defineOptions({ name: 'WnSearchBar' });
 
