@@ -7,7 +7,7 @@
     <!-- 搜索与筛选栏 -->
     <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-        <WnSearchBarInline
+        <WnSearchBar
           v-model="searchForm"
           :items="filterItems"
           search-bar-background="gray"
@@ -32,6 +32,7 @@
         :data="tableData"
         :columns="columns"
         header-theme="soft"
+        header-radius="12px"
         :pagination="pagination"
         :showHeaderBorder="false"
         pagination-background="gray"
@@ -75,9 +76,7 @@
         <!-- 操作列插槽 -->
         <template #action="{ row }">
           <div class="flex items-center gap-3">
-            <button
-              class="flex items-center gap-1.5  hover:text-slate-800 transition-colors group"
-            >
+            <button class="flex items-center gap-1.5 hover:text-slate-800 transition-colors group">
               <WnSvgIcon
                 icon="local-table/view"
                 :size="18"
@@ -86,9 +85,7 @@
               View
             </button>
             <div class="w-px h-3 bg-slate-200"></div>
-            <button
-              class="flex items-center gap-1.5 hover:text-slate-800 transition-colors group"
-            >
+            <button class="flex items-center gap-1.5 hover:text-slate-800 transition-colors group">
               <WnSvgIcon
                 icon="local-common/edit"
                 :size="18"
@@ -108,9 +105,7 @@ import { ref, reactive, onMounted, computed, h, watch } from 'vue';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
+import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
 import PaymentStats from './modules/PaymentStats.vue';
 import { getMockPayments, type PaymentItem } from '@/mock/payments';
@@ -146,12 +141,8 @@ const filterItems = computed<SearchFormItem[]>(() => [
   },
   {
     key: 'dateRange',
-    type: 'daterange',
-    props: {
-      rangeSeparator: 'to',
-      startPlaceholder: 'Start date',
-      endPlaceholder: 'End date',
-    },
+    type: 'shadcn-daterange',
+    placeholder: 'Pick a date',
   },
   {
     key: 'status',

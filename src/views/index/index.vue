@@ -9,24 +9,27 @@
       </aside>
 
       <!-- 主体内容区域 -->
-      <div class="relative flex flex-col flex-1 min-w-0">
-        <!-- 顶部固定遮盖层 -->
+      <div class="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
+        <!-- 顶部栏：正常流 flex 子元素 -->
         <header
           id="app-header"
-          class="absolute top-0 left-0 right-0 z-[300] shrink-0 bg-white"
+          class="shrink-0 z-10 bg-surface pr-2"
         >
           <WnHeaderBar />
         </header>
 
-        <!-- 滚动容器 -->
-        <main class="flex-1 overflow-y-auto overflow-x-hidden pt-20 pb-16">
+        <!-- 滚动容器：scrollbar-gutter 始终预留滚动条空间，确保与 header/footer 对齐 -->
+        <main
+          class="flex-1 overflow-y-auto overflow-x-hidden min-h-0"
+          style="scrollbar-gutter: stable"
+        >
           <WnPageContent class="h-full px-6 py-1 bg-surface" />
         </main>
 
-        <!-- 底部固定遮盖层 -->
+        <!-- 底部栏：正常流 flex 子元素 -->
         <footer
           id="app-footer"
-          class="absolute bottom-0 left-0 right-0 z-[300] shrink-0 bg-surface border-t border-slate-100/50"
+          class="shrink-0 z-10 bg-surface border-t border-slate-100/50 pr-2"
         >
           <WnFooter />
         </footer>

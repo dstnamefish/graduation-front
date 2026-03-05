@@ -86,13 +86,15 @@ import {
   ElOption,
   ElSlider,
   ElSwitch,
-  ElTimePicker,
   ElTimeSelect,
   ElTreeSelect,
   type FormInstance,
 } from 'element-plus';
+import WnDatePicker from '@/components/core/forms/Wn-date-picker/index.vue';
+import WnDateRangePicker from '@/components/core/forms/Wn-date-range-picker/index.vue';
+import { cn } from '@/lib/utils';
 
-defineOptions({ name: 'WnSearchBarInline' });
+defineOptions({ name: 'WnSearchBar' });
 
 const componentMap = {
   input: ElInput, // 输入框
@@ -107,10 +109,11 @@ const componentMap = {
   daterange: ElDatePicker, // 日期范围选择器
   datetime: ElDatePicker, // 日期时间选择器
   datetimerange: ElDatePicker, // 日期时间范围选择器
+  shadcn-date: WnDatePicker, // 极简单选日期
+  shadcn-daterange: WnDateRangePicker, // 极简范围日期
   rate: ElRate, // 评分
   slider: ElSlider, // 滑块
   cascader: ElCascader, // 级联选择器
-  timepicker: ElTimePicker, // 时间选择器
   timeselect: ElTimeSelect, // 时间选择
   treeselect: ElTreeSelect, // 树选择器
 };

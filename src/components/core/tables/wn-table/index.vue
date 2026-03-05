@@ -1,4 +1,3 @@
-<!-- 统一表格组件 -->
 <script setup lang="ts">
 import { ref, computed, nextTick, useAttrs, useSlots } from 'vue';
 import type { ElTable, TableProps } from 'element-plus';
@@ -39,6 +38,8 @@ interface WnTableProps extends TableProps<Record<string, any>> {
   headerHeight?: string | number;
   showHeaderBorder?: boolean;
   tableRadius?: string | number;
+  headerRadius?: string | number;
+  rowKey?: string | ((row: any) => string); // [!code ++] 新增：接收 rowKey 属性
 }
 
 const props = withDefaults(defineProps<WnTableProps>(), {
@@ -55,6 +56,8 @@ const props = withDefaults(defineProps<WnTableProps>(), {
   headerHeight: '56px',
   showHeaderBorder: true,
   tableRadius: '12px',
+  headerRadius: '0px',
+  rowKey: 'id',
 });
 
 const $attrs = useAttrs();
@@ -63,14 +66,21 @@ const { width: windowWidth } = useWindowSize();
 const elTableRef = ref<InstanceType<typeof ElTable> | null>(null);
 const tableWrapperRef = ref<HTMLElement | null>(null);
 
+const emit = defineEmits<{
+  (e: 'pagination:size-change', val: number): void;
+  (e: 'pagination:current-change', val: number): void;
+  (e: 'selection-change', val: any[]): void;
+}>();
+
 // --- 勾选逻辑 ---
 const selection = ref<any[]>([]);
 const onSelectionChange = (val: any[]) => {
   selection.value = val;
+  emit('selection-change', val);
 };
 const handleRowClassName = (rowScope: { row: any; rowIndex: number }) => {
   const isSelected = selection.value.some((item) => item === rowScope.row);
-  const classes = [isSelected ? 'row-checked' : '']; // 更改类名为 row-checked 避免与 inner 冲突
+  const classes = [isSelected ? 'row-checked' : ''];
   if (props.rowClassName) {
     const customClass =
       typeof props.rowClassName === 'function' ? props.rowClassName(rowScope) : props.rowClassName;
@@ -78,11 +88,6 @@ const handleRowClassName = (rowScope: { row: any; rowIndex: number }) => {
   }
   return classes.filter(Boolean).join(' ');
 };
-
-const emit = defineEmits<{
-  (e: 'pagination:size-change', val: number): void;
-  (e: 'pagination:current-change', val: number): void;
-}>();
 
 const { scrollToTop: scrollPageToTop } = useCommon();
 const scrollToTop = () => {
@@ -121,7 +126,9 @@ const tableProps = computed(() => {
     headerHeight,
     showHeaderBorder,
     tableRadius,
-    rowClassName, // 排除掉，不进入 rest
+    headerRadius,
+    rowClassName,
+    rowKey,
     ...rest
   } = props;
   return rest;
@@ -183,14 +190,18 @@ const cleanColumnProps = (col: ColumnOption) => {
   return columnProps;
 };
 
-const getGlobalIndex = (index: number) => {
-  if (!props.pagination) return index + 1;
-  const { current, size } = props.pagination;
-  return (current - 1) * size + index + 1;
+const sortIcons = [
+  { type: 'ascending', icon: 'local-common/arrow-up', class: '-mb-1' },
+  { type: 'descending', icon: 'local-common/arrow-down', class: '-mt-1' },
+];
+
+const getSortIconClass = (currentOrder: string, expectedOrder: string) => {
+  return currentOrder === expectedOrder
+    ? 'text-accent-foreground active:text-accent-foreground'
+    : 'text-muted';
 };
 
 const tableThemeStyles = computed(() => {
-  // 映射表头背景色
   const headerBgMap: Record<string, string> = {
     gray: 'var(--color-slate-100)',
     white: 'var(--color-slate-50)',
@@ -201,11 +212,14 @@ const tableThemeStyles = computed(() => {
     '--table-radius':
       typeof props.tableRadius === 'number' ? `${props.tableRadius}px` : props.tableRadius,
     '--table-header-bg': headerBgMap[props.headerTheme] || 'var(--color-slate-50)',
+    '--table-header-radius': props.headerRadius
+      ? typeof props.headerRadius === 'number'
+        ? `${props.headerRadius}px`
+        : props.headerRadius
+      : '0px',
     '--table-header-height':
       typeof props.headerHeight === 'number' ? `${props.headerHeight}px` : props.headerHeight,
     '--table-header-border': props.showHeaderBorder ? '1px solid var(--color-slate-200)' : 'none',
-
-    // 动态边框控制：通过 border prop 三元式控制是否显示边线
     '--table-outer-border': border.value ? '1px solid var(--color-slate-200)' : 'none',
     '--table-cell-border-bottom': border.value
       ? '1px solid var(--color-slate-200)'
@@ -238,6 +252,7 @@ defineExpose({ scrollToTop, elTableRef });
       <ElTable
         ref="elTableRef"
         v-loading="!!props.loading"
+        :row-key="props.rowKey"
         v-bind="{
           ...$attrs,
           ...tableProps,
@@ -255,13 +270,10 @@ defineExpose({ scrollToTop, elTableRef });
           :key="col.prop || col.type"
         >
           <ElTableColumn
-            v-if="col.type === 'globalIndex'"
-            v-bind="{ ...col }"
-          >
-            <template #default="{ $index }">
-              <span>{{ getGlobalIndex($index) }}</span>
-            </template>
-          </ElTableColumn>
+            v-if="col.type === 'selection'"
+            v-bind="cleanColumnProps(col)"
+            :reserve-selection="true"
+          />
 
           <ElTableColumn
             v-else
@@ -279,10 +291,7 @@ defineExpose({ scrollToTop, elTableRef });
                 >
                   {{ col.label }}
                 </slot>
-                <span
-                  v-else
-                  class="truncate"
-                >
+                <span v-else>
                   {{ col.label }}
                 </span>
                 <div
@@ -290,24 +299,12 @@ defineExpose({ scrollToTop, elTableRef });
                   class="flex flex-col items-center justify-center ml-1.5 shrink-0"
                 >
                   <WnSvgIcon
-                    icon="local-common/arrow-up"
+                    v-for="sort in sortIcons"
+                    :key="sort.type"
+                    :icon="sort.icon"
                     :size="14"
-                    class="-mb-1 transition-colors duration-200"
-                    :class="
-                      ms.column.order === 'ascending'
-                        ? 'text-color-primary-500'
-                        : 'text-muted group-hover:text-color-text-sub'
-                    "
-                  />
-                  <WnSvgIcon
-                    icon="local-common/arrow-down"
-                    :size="14"
-                    class="-mt-1 transition-colors duration-200"
-                    :class="
-                      ms.column.order === 'descending'
-                        ? 'text-color-primary-500'
-                        : 'text-color-text-muted group-hover:text-color-text-sub'
-                    "
+                    class="transition-colors duration-200"
+                    :class="[sort.class, getSortIconClass(ms.column.order, sort.type)]"
                   />
                 </div>
               </div>
@@ -346,7 +343,6 @@ defineExpose({ scrollToTop, elTableRef });
       </ElTable>
     </div>
 
-    <!-- 分页容器 -->
     <div
       v-if="showPagination"
       class="flex flex-wrap items-center justify-between gap-4 py-8 shrink-0"

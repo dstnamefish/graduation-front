@@ -1,103 +1,162 @@
 ﻿<template>
-  <div class="schedule-page">
-    <!-- Header -->
+  <div
+    class="schedule-page flex flex-col h-full bg-slate-50 rounded-3xl p-6 shadow-sm border border-slate-100/50"
+  >
+    <!-- Header Area -->
     <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-4">
-        <h1 class="text-2xl font-bold text-secondary">{{ currentMonthYear }}</h1>
-        <div class="flex items-center gap-1">
-          <ElButton :icon="ArrowLeft" circle size="small" @click="prevMonth" />
-          <ElButton :icon="ArrowRight" circle size="small" @click="nextMonth" />
+      <div class="flex items-center gap-6">
+        <h1 class="text-3xl font-extrabold text-slate-800">{{ currentMonthYear }}</h1>
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shadow-inner-sm">
+          <WnIconButton
+            icon="ri:arrow-left-s-line"
+            :size="20"
+            @click="prevMonth"
+            class="!w-8 !h-8 !bg-transparent hover:!bg-white"
+          />
+          <WnIconButton
+            icon="ri:arrow-right-s-line"
+            :size="20"
+            @click="nextMonth"
+            class="!w-8 !h-8 !bg-transparent hover:!bg-white"
+          />
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="flex rounded-lg overflow-hidden border border-default-border">
+      <div class="flex items-center gap-4">
+        <div class="flex items-center bg-slate-100 p-1.5 rounded-xl shadow-inner-sm gap-1">
           <button
             v-for="view in viewOptions"
             :key="view.value"
             :class="[
-              'px-4 py-2 text-xs font-medium transition-all',
+              'px-4 py-1.5 text-[13px] font-bold rounded-lg transition-all duration-300',
               currentView === view.value
-                ? 'bg-secondary text-white'
-                : 'bg-white text-gray-500 hover:bg-gray-50'
+                ? 'bg-slate-800 text-white shadow-md'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50',
             ]"
             @click="currentView = view.value"
           >
             {{ view.label }}
           </button>
         </div>
-        <ElSelect v-model="selectedAgenda" placeholder="All Agenda" clearable class="w-32">
-          <ElOption label="All Agenda" value="" />
-          <ElOption label="Check-Up" value="checkup" />
-          <ElOption label="Surgery" value="surgery" />
-          <ElOption label="Consultation" value="consultation" />
+
+        <ElSelect
+          v-model="selectedAgenda"
+          placeholder="All Agenda"
+          clearable
+          class="w-36 custom-dark-select"
+        >
+          <ElOption
+            label="All Agenda"
+            value=""
+          />
+          <ElOption
+            label="Check-Up"
+            value="checkup"
+          />
+          <ElOption
+            label="Surgery"
+            value="surgery"
+          />
+          <ElOption
+            label="Consultation"
+            value="consultation"
+          />
         </ElSelect>
-        <ElButton type="primary" @click="handleAddSchedule">
-          <WnSvgIcon icon="solar:add-circle-bold" :size="16" class="mr-1" />
+
+        <WnButton
+          type="primary"
+          @click="handleAddSchedule"
+          class="!rounded-xl !px-5 shadow-md"
+        >
+          <WnSvgIcon
+            icon="ri:add-line"
+            :size="16"
+            class="mr-1.5"
+          />
           Add Schedule
-        </ElButton>
+        </WnButton>
       </div>
     </div>
 
-    <!-- Calendar Grid -->
-    <div class="bg-white rounded-2xl border border-default-border overflow-hidden flex-1">
+    <!-- Calendar Grid Area -->
+    <div
+      class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col flex-1 shadow-sm"
+    >
       <!-- Week Header -->
-      <div class="grid grid-cols-7 border-b border-default-border">
+      <div class="grid grid-cols-7 border-b border-slate-200 bg-slate-100">
         <div
           v-for="day in weekDays"
           :key="day"
-          class="py-3 text-center text-sm font-semibold text-gray-500 border-r border-default-border last:border-r-0"
+          class="py-3.5 text-center text-[13px] font-bold text-slate-400 border-r border-slate-200 last:border-r-0"
         >
           {{ day }}
         </div>
       </div>
 
-      <!-- Calendar Days -->
-      <div class="grid grid-cols-7 flex-1" style="min-height: 500px;">
+      <!-- Calendar Days Body -->
+      <div class="grid grid-cols-7 flex-1 min-h-[600px] auto-rows-fr">
         <div
           v-for="(day, index) in calendarDays"
           :key="index"
           :class="[
-            'p-2 border-r border-b border-default-border last:border-r-0 min-h-[120px] relative',
-            !day.isCurrentMonth && 'bg-gray-50'
+            'p-1.5 border-r border-b border-slate-200 last:border-r-0 relative flex flex-col min-h-[140px]',
+            !day.isCurrentMonth && 'bg-stripes pointer-events-none',
           ]"
         >
-          <!-- Day Number -->
-          <div class="flex items-center justify-between mb-2">
+          <!-- Date Number Overlay -->
+          <div class="flex justify-end pr-1 pt-1 mb-1">
             <span
               :class="[
-                'w-7 h-7 flex items-center justify-center text-sm font-medium rounded-full',
-                day.isToday ? 'bg-primary text-white' : 'text-gray-600',
-                !day.isCurrentMonth && 'text-gray-300'
+                'text-[11px] font-bold tracking-tight',
+                day.isToday
+                  ? 'bg-primary text-white w-5 h-5 flex items-center justify-center rounded-full'
+                  : '',
+                !day.isToday && day.fullDate.getDay() === 0 ? 'text-red-500' : '',
+                !day.isToday && day.fullDate.getDay() !== 0 && day.isCurrentMonth
+                  ? 'text-slate-600'
+                  : '',
+                !day.isCurrentMonth ? 'text-slate-300' : '',
               ]"
             >
               {{ day.date }}
             </span>
           </div>
 
-          <!-- Events -->
-          <div class="space-y-1 overflow-hidden" style="max-height: 80px;">
-            <div
-              v-for="event in day.events.slice(0, 2)"
-              :key="event.id"
-              :class="[
-                'px-2 py-1 rounded text-[10px] font-medium truncate cursor-pointer hover:opacity-80 transition-opacity',
-                event.color
-              ]"
-              @click="handleEventClick(event)"
-            >
-              <div class="flex items-center gap-1">
-                <img :src="event.avatar" class="w-4 h-4 rounded-full" />
-                <span class="truncate">{{ event.doctorName }}</span>
+          <!-- Events Overlay -->
+          <div class="flex-1 overflow-y-auto w-full no-scrollbar space-y-1">
+            <template v-if="day.isCurrentMonth">
+              <div
+                v-for="event in day.events.slice(0, 3)"
+                :key="event.id"
+                :class="[
+                  'px-2 py-1.5 rounded-lg text-left cursor-pointer transition-transform hover:scale-[1.02] border',
+                  event.color === 'mint'
+                    ? 'bg-[#a5f3e4]/80 border-[#a5f3e4] text-[#0e5b60]'
+                    : 'bg-[#c5f0f3] border-[#c5f0f3] text-[#147d83]',
+                ]"
+                @click="handleEventClick(event)"
+              >
+                <div class="font-bold text-[11px] truncate w-full">
+                  {{ event.doctorName }}
+                </div>
+                <div class="text-[10px] opacity-80 mt-0.5 leading-tight line-clamp-2">
+                  {{ event.title }}
+                </div>
+                <div class="flex items-center gap-1 mt-1.5 opacity-70">
+                  <WnSvgIcon
+                    icon="ri:time-line"
+                    :size="10"
+                  />
+                  <span class="text-[9px] font-semibold">{{ event.time }}</span>
+                </div>
               </div>
-              <div class="text-[9px] opacity-80 truncate">{{ event.title }}</div>
-            </div>
-            <div
-              v-if="day.events.length > 2"
-              class="text-[10px] text-gray-400 pl-2"
-            >
-              +{{ day.events.length - 2 }} more
-            </div>
+              <div
+                v-if="day.events.length > 3"
+                class="text-[10px] font-bold text-slate-400 pl-2 pt-1 hover:text-primary-500 cursor-pointer"
+              >
+                +{{ day.events.length - 3 }} more
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -107,14 +166,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { scheduleService } from '@/api/services';
+import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
+import WnButton from '@/components/core/base/Wn-button/index.vue';
+import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
+import { getMockScheduleEvents, type ScheduleEvent } from '@/mock/doctors-schedule';
 
 defineOptions({ name: 'DoctorsSchedule' });
 
-// State
-const currentDate = ref(new Date(2028, 6, 1)); // July 2028 as shown in screenshot
+// State - Defaulting to July 2028 as specified in design
+const currentDate = ref(new Date(2028, 6, 1));
 const currentView = ref('Month');
 const selectedAgenda = ref('');
 
@@ -125,16 +186,6 @@ const viewOptions = [
 ];
 
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-interface ScheduleEvent {
-  id: number;
-  doctorName: string;
-  avatar: string;
-  title: string;
-  time: string;
-  color: string;
-  date: Date;
-}
 
 const events = ref<ScheduleEvent[]>([]);
 
@@ -149,7 +200,6 @@ const calendarDays = computed(() => {
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-
   const days = [];
 
   // Add days from previous month
@@ -178,7 +228,7 @@ const calendarDays = computed(() => {
     });
   }
 
-  // Add days from next month to complete the grid (6 rows)
+  // Complete grid with next month days up to 42 cells total (6 rows precisely)
   const remainingDays = 42 - days.length;
   for (let i = 1; i <= remainingDays; i++) {
     const date = new Date(year, month + 1, i);
@@ -203,112 +253,34 @@ const prevMonth = () => {
   currentDate.value = new Date(
     currentDate.value.getFullYear(),
     currentDate.value.getMonth() - 1,
-    1
+    1,
   );
+  fetchSchedules();
 };
-
 const nextMonth = () => {
   currentDate.value = new Date(
     currentDate.value.getFullYear(),
     currentDate.value.getMonth() + 1,
-    1
+    1,
   );
+  fetchSchedules();
 };
-
 const fetchSchedules = async () => {
-  try {
-    const res = await scheduleService.fetchSchedules({
-      startDate: new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), 1).toISOString().split('T')[0],
-      endDate: new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 0).toISOString().split('T')[0],
-    });
-    events.value = (res.list || []).map((s: any) => ({
-      id: s.id,
-      doctorName: s.doctorName || 'Unknown Doctor',
-      avatar: s.doctorAvatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=doctor',
-      title: s.title || 'Appointment',
-      time: s.startTime || '09:00',
-      color: getRandomColor(),
-      date: new Date(s.scheduleDate),
-    }));
-  } catch {
-    events.value = getMockEvents();
-  }
-};
-
-const getRandomColor = (): string => {
-  const colors = [
-    'bg-primary/20 text-primary',
-    'bg-success/20 text-success',
-    'bg-warning/20 text-warning',
-    'bg-info/20 text-info',
-    'bg-secondary/20 text-secondary',
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+  // Using Mock Data instead of API for showcase
+  const year = currentDate.value.getFullYear();
+  const month = currentDate.value.getMonth();
+  events.value = getMockScheduleEvents(year, month);
 };
 
 const handleAddSchedule = () => {
-  ElMessage.info('Add Schedule dialog would open here');
+  ElMessage.success('Add Schedule dialog would open here');
 };
 
 const handleEventClick = (event: ScheduleEvent) => {
-  ElMessage.info(`Viewing ${event.doctorName}'s schedule: ${event.title}`);
+  ElMessage.success(`Viewing ${event.doctorName}'s schedule: ${event.title}`);
 };
 
-// Mock data
-const getMockEvents = (): ScheduleEvent[] => {
-  const year = currentDate.value.getFullYear();
-  const month = currentDate.value.getMonth();
-
-  const doctors = [
-    { name: 'Dr. John Davis', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John' },
-    { name: 'Dr. Emily Smith', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily' },
-    { name: 'Dr. Petra Winsburry', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Petra' },
-    { name: 'Dr. Michael Brown', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael' },
-    { name: 'Dr. Linda Green', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Linda' },
-  ];
-
-  const titles = [
-    'Routine Check-Up',
-    'Patient Consultation',
-    'Follow-up Visit',
-    'Acute Illness Treatment',
-    'Chronic Disease Management',
-    'Preventive Care Consultation',
-  ];
-
-  const mockEvents: ScheduleEvent[] = [];
-  let id = 1;
-
-  // Generate random events for the month
-  for (let day = 1; day <= 31; day++) {
-    const numEvents = Math.floor(Math.random() * 3);
-    for (let i = 0; i < numEvents; i++) {
-      const doctor = doctors[Math.floor(Math.random() * doctors.length)];
-      mockEvents.push({
-        id: id++,
-        doctorName: doctor.name,
-        avatar: doctor.avatar,
-        title: titles[Math.floor(Math.random() * titles.length)],
-        time: `${Math.floor(Math.random() * 8) + 8}:00`,
-        color: getRandomColor(),
-        date: new Date(year, month, day),
-      });
-    }
-  }
-
-  return mockEvents;
-};
-
-// Lifecycle
 onMounted(() => {
   fetchSchedules();
 });
 </script>
-
-<style scoped>
-.schedule-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>

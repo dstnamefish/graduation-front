@@ -1,12 +1,11 @@
 <!-- 医生列表页面 -->
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getStatusClass, mapDoctorStatusToUI } from '@/utils';
 import { getMockDoctors } from '@/mock/doctors';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
+import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import type { DoctorItem } from '@/types/api/doctor.types';
 import type { ColumnOption } from '@/types';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
@@ -14,6 +13,7 @@ import { useTable } from '@/hooks/core/useTable';
 
 defineOptions({ name: 'Doctors' });
 
+const router = useRouter();
 const tableRef = ref();
 
 /**
@@ -139,6 +139,13 @@ const handleAddDoctor = () => {
   ElMessage.success('Add Doctor functionality coming soon!');
 };
 
+const handleGoDetail = (row: DoctorItem) => {
+  router.push({
+    name: 'DoctorDetail',
+    params: { id: row.id.toString() },
+  });
+};
+
 const handleEdit = (row: DoctorItem) => {
   ElMessage.info(`Editing ${row.name}`);
 };
@@ -160,7 +167,7 @@ const handleDelete = async (row: DoctorItem) => {
     <!-- 表头 -->
     <WnTableHeader class="shrink-0 p-6">
       <template #left>
-        <WnSearchBarInline
+        <WnSearchBar
           v-model="searchModel"
           :items="searchItems"
           @keyup.enter="handleSearch"
@@ -190,23 +197,28 @@ const handleDelete = async (row: DoctorItem) => {
         @pagination:current-change="handleCurrentChange"
       >
         <template #name="{ row }">
-          <div class="flex items-center gap-3.5 py-2">
+          <div
+            class="flex items-center gap-3.5 py-2 cursor-pointer group"
+            @click="handleGoDetail(row)"
+          >
             <div
-              class="w-10 h-10 rounded-xl overflow-hidden bg-slate-50 flex-cc shrink-0 border border-slate-100 shadow-sm"
+              class="w-10 h-10 rounded-xl overflow-hidden bg-slate-50 flex-cc shrink-0 border border-slate-100 shadow-sm group-hover:border-primary-300 transition-colors duration-300"
             >
               <img
                 v-if="row.avatar"
                 :src="row.avatar"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
               <WnSvgIcon
                 v-else
                 icon="solar:user-bold"
                 :size="20"
-                class="text-slate-300"
+                class="text-slate-300 group-hover:text-primary-400 transition-colors duration-300"
               />
             </div>
-            <span class="">{{ row.name }}</span>
+            <span class="group-hover:text-primary-600 font-semibold transition-colors duration-300">
+              {{ row.name }}
+            </span>
           </div>
         </template>
 

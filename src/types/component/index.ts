@@ -48,7 +48,7 @@ export interface SearchChangeParams {
 // 表格列配置接口
 export interface ColumnOption<T = any> {
   // 列类型
-  type?: 'selection' | 'index' | 'globalIndex';
+  type?: 'selection' | 'index';
 
   // 列属性名
   prop?: string;

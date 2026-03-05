@@ -1,9 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
-    <!-- 表头 -->
     <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-        <!-- Tabs -->
         <ElTabs
           v-model="activeTab"
           @tab-change="handleTabUpdate"
@@ -29,7 +27,7 @@
       </template>
 
       <template #right>
-        <WnSearchBarInline
+        <WnSearchBar
           v-model="searchModel"
           :items="searchItems"
           @keyup.enter="handleSearch"
@@ -42,13 +40,21 @@
         >
           Add Appointment
         </WnButton>
+
+        <ElButton
+          v-if="selectedRows.length > 0"
+          type="danger"
+          @click="handleBatchCancel"
+        >
+          Batch Cancel ({{ selectedRows.length }})
+        </ElButton>
       </template>
     </WnTableHeader>
 
-    <!-- 表格内容 -->
     <div class="flex-1 min-h-0">
       <WnTable
         ref="tableRef"
+        row-key="id"
         :loading="loading"
         :pagination="pagination"
         :data="tableData"
@@ -58,6 +64,7 @@
         pagination-background="gray"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
+        @selection-change="handleSelectionChange"
       >
         <template #patientName="{ row }">
           {{ row.patientName || 'Unknown' }}
@@ -110,7 +117,8 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ref, computed, watch } from 'vue'; // 确保引入依赖
+import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
 import { getMockAppointments } from '@/mock/appointments';
 import { AppointmentStatus, type AppointmentResponse } from '@/types/api/appointment.types';
 import type { ColumnOption } from '@/types';
@@ -122,15 +130,14 @@ import {
   getAppointmentStatusLabel,
 } from '@/utils';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
+import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import { useTable } from '@/hooks/core/useTable';
 
 defineOptions({ name: 'Appointments' });
 
 const tableRef = ref();
 const activeTab = ref('all');
+const selectedRows = ref<AppointmentResponse[]>([]);
 
 /**
  * 模拟后端 API 请求
@@ -180,7 +187,6 @@ const {
   },
 });
 
-// Computed for Tab labels (Keep as local state for UI richness)
 const statusCounts = computed(() => {
   const all = getMockAppointments();
   return {
@@ -202,7 +208,7 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'query',
     type: 'input',
-    icon: 'local-common/search', // 简化
+    icon: 'local-common/search',
     props: {
       placeholder: 'Search name, doctor...',
       style: { width: '240px' },
@@ -210,14 +216,8 @@ const searchItems = computed<SearchFormItem[]>(() => [
   },
   {
     key: 'date',
-    type: 'date',
-    icon: 'solar:calendar-bold', // 简化
-    props: {
-      placeholder: 'Today',
-      format: 'DD MMM YYYY',
-      valueFormat: 'YYYY-MM-DD',
-      class: 'w-24!',
-    },
+    type: 'shadcn-date',
+    placeholder: 'Today',
   },
 ]);
 
@@ -249,7 +249,7 @@ const handleReschedule = (row: AppointmentResponse) => {
 const handleCancel = async (row: AppointmentResponse) => {
   try {
     await ElMessageBox.confirm(
-      'Are you sure you want to cancel the appointment for ' + row.patientName + '?',
+      'Are you sure you want to cancel appointment for ' + row.patientName + '?',
       'Confirm Cancellation',
       {
         type: 'warning',
@@ -259,6 +259,32 @@ const handleCancel = async (row: AppointmentResponse) => {
       },
     );
     ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
+  } catch {}
+};
+
+const handleSelectionChange = (selection: AppointmentResponse[]) => {
+  selectedRows.value = selection;
+  console.log('选中的预约:', selection);
+};
+
+const handleBatchCancel = async () => {
+  if (selectedRows.value.length === 0) return;
+
+  try {
+    await ElMessageBox.confirm(
+      `Are you sure you want to cancel ${selectedRows.value.length} appointment(s)?`,
+      'Confirm Batch Cancellation',
+      {
+        type: 'warning',
+        confirmButtonClass: 'el-button--danger',
+        confirmButtonText: 'Yes, cancel them',
+        cancelButtonText: 'No, keep them',
+      },
+    );
+    ElMessage.success(`${selectedRows.value.length} appointment(s) have been cancelled.`);
+
+    selectedRows.value = [];
+    tableRef.value?.elTableRef?.clearSelection();
   } catch {}
 };
 

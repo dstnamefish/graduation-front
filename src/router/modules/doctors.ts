@@ -8,7 +8,6 @@ export const doctorsRoutes: AppRouteRecord[] = [
     component: '/doctors',
     meta: {
       headerBar: {
-        breadcrumb: true,
         globalSearch: false,
       },
       icon: 'local-menu/doctors',
@@ -19,5 +18,21 @@ export const doctorsRoutes: AppRouteRecord[] = [
     },
     name: 'Doctors',
     path: '/doctors',
+  },
+  {
+    component: '/doctors/detail',
+    meta: {
+      headerBar: {
+        globalSearch: false,
+      },
+      isDetail: true,
+      isHide:true,
+      activePath: '/doctors',
+      keepAlive: false,
+      fixedHeight: true,
+      title: 'Doctor Detail',
+    },
+    name: 'DoctorDetail',
+    path: '/doctors/detail/:id',
   },
 ];

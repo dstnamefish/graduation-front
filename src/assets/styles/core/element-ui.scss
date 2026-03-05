@@ -57,7 +57,7 @@
   padding: 8px !important;
   border: 1px solid var(--color-slate-200) !important;
   border-radius: 12px !important;
-  background: rgb(255 255 255 / 98%) !important;
+  background: var(--color-slate-50) !important;
   backdrop-filter: blur(12px) saturate(180%);
   box-shadow:
     0 10px 15px -3px rgb(36 57 86 / 8%),
@@ -126,7 +126,7 @@
 .el-select__popper {
   border: 1px solid var(--color-slate-200) !important;
   border-radius: 12px !important;
-  background: rgb(255 255 255 / 98%) !important;
+  background: var(--color-slate-50) !important;
   backdrop-filter: blur(12px) saturate(180%);
   box-shadow:
     0 10px 15px -3px rgb(36 57 86 / 8%),
@@ -234,31 +234,67 @@
   height: 16px !important;
   border: 1px solid var(--color-slate-300) !important;
   border-radius: 4px !important;
-  background-color: var(--color-slate-50) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background-color: var(--color-slate-100) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  &::after {
+    transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) !important;
+  }
 }
 
-.el-checkbox:hover .el-checkbox__inner {
+// 悬浮状态：边框加深并增加微妙的发光感
+.el-checkbox:not(.is-disabled):hover .el-checkbox__inner {
   border-color: var(--color-slate-800) !important;
+  box-shadow: 0 0 0 3px var(--color-slate-100);
 }
 
+// 选中状态
 .el-checkbox.is-checked .el-checkbox__inner {
   border-color: var(--color-slate-800) !important;
   background-color: var(--color-slate-800) !important;
+
+  &::after {
+    border-color: var(--color-primary-300) !important;
+  }
 }
 
+.el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  border-color: var(--color-slate-800) !important;
+  background-color: var(--color-slate-800) !important;
+
+  &::before {
+    content: '' !important;
+    position: absolute !important;
+    display: block !important;
+    background-color: var(--color-primary-300) !important;
+    height: 2px !important;
+    transform: scale(0.55) !important; // 控制横杠的宽度
+    left: 0 !important;
+    right: 0 !important;
+    top: 6px !important;
+    border-radius: 1px !important;
+    transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) !important;
+  }
+
+  &::after {
+    display: none !important;
+  }
+}
+
+// 禁用状态
 .el-checkbox.is-disabled {
   .el-checkbox__inner {
-    border-color: var(--color-slate-300) !important;
-    background-color: var(--color-slate-100) !important;
+    border-color: var(--color-slate-200) !important;
+    background-color: var(--color-slate-50) !important;
+    box-shadow: none !important;
 
     &::after {
-      border-color: var(--color-slate-400) !important;
+      border-color: var(--color-slate-300) !important;
     }
   }
 
   .el-checkbox__label {
-    color: var(--color-slate-400) !important;
+    color: var(--color-slate-900) !important;
   }
 }
 
@@ -355,6 +391,7 @@
 
   border-radius: var(--table-radius, 12px) !important;
   overflow: hidden !important;
+  border-collapse: separate !important;
 
   // 隐藏 Element Plus 自带的伪元素边线和补丁元素，防止与自定义边线冲突
   &::before,
@@ -373,10 +410,18 @@
     }
   }
 
+  .el-table__header-wrapper {
+    border-radius: var(--table-header-radius, 0) !important;
+    overflow: hidden !important;
+  }
+
   th.el-table__cell {
     height: var(--table-header-height, 56px) !important;
     padding: 0 12px !important;
     border-bottom: var(--table-header-border, 1px solid var(--color-slate-200)) !important;
+
+    // 确保 th 不自带可能导致冲突的圆角
+    border-radius: 0 !important;
     font-size: 13px !important;
     font-weight: 500 !important;
     color: var(--color-slate-500) !important;
@@ -566,7 +611,7 @@
 // -------------------------------- 修改 el-pagination 组件默认 --------------------------------
 .el-pagination {
   --el-pagination-bg-color: transparent !important;
-  --el-pagination-button-bg-color: #fff !important;
+  --el-pagination-button-bg-color: var(--color-slate-50) !important;
   --el-pagination-button-width: 40px !important;
   --el-pagination-button-height: 40px !important;
   --el-pagination-item-gap: 8px !important;
@@ -592,6 +637,13 @@
       border-color: var(--color-slate-800) !important;
       color: var(--color-slate-50) !important;
       background-color: var(--color-slate-800) !important;
+    }
+
+    &.more {
+      border: none !important;
+      color: var(--color-slate-400) !important;
+      background: transparent !important;
+      cursor: default;
     }
   }
 
@@ -881,7 +933,7 @@
 .el-picker-panel {
   border: 1px solid var(--color-slate-200) !important;
   border-radius: 16px !important;
-  background: rgb(255 255 255 / 98%) !important;
+  background: var(--color-slate-50) !important;
   backdrop-filter: blur(12px) saturate(180%);
   box-shadow:
     0 10px 15px -3px rgb(36 57 86 / 8%),
@@ -925,7 +977,7 @@
     &.current:not(.disabled) .el-date-table-cell__text,
     &.start-date:not(.disabled) .el-date-table-cell__text,
     &.end-date:not(.disabled) .el-date-table-cell__text {
-      color: #fff !important;
+      color: var(--color-slate-900) !important;
       background-color: var(--color-slate-800) !important;
     }
 

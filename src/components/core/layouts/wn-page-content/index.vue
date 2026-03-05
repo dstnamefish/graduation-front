@@ -1,14 +1,7 @@
 <!-- 布局内容 -->
 <template>
-  <div
-    class="layout-content"
-    :class="{ 'overflow-auto': isFullPage }"
-    :style="containerStyle"
-  >
+  <div :style="containerStyle">
     <div id="app-content-header">
-      <!-- 节日滚动 -->
-      <ArtFestivalTextScroll v-if="!isFullPage" />
-
       <!-- 路由信息调试 -->
       <div
         v-if="isOpenRouteInfo === 'true'"
@@ -25,7 +18,7 @@
     >
       <!-- 缓存路由动画 -->
       <Transition
-        :name="showTransitionMask ? '' : actualTransition"
+        :name="actualTransition"
         mode="out-in"
         appear
       >
@@ -44,7 +37,7 @@
 
       <!-- 非缓存路由动画 -->
       <Transition
-        :name="showTransitionMask ? '' : actualTransition"
+        :name="actualTransition"
         mode="out-in"
         appear
       >
@@ -56,14 +49,6 @@
         />
       </Transition>
     </RouterView>
-
-    <!-- 全屏页面切换过渡遮罩（用于提升页面切换视觉体验） -->
-    <Teleport to="body">
-      <div
-        v-show="showTransitionMask"
-        class="fixed top-0 left-0 z-2000 w-screen h-screen pointer-events-none bg-color-surface"
-      />
-    </Teleport>
   </div>
 </template>
 <script setup lang="ts">
@@ -87,58 +72,23 @@ const { keepAliveExclude } = storeToRefs(useWorktabStore());
 
 const isRefresh = shallowRef(true);
 const isOpenRouteInfo = import.meta.env.VITE_OPEN_ROUTE_INFO;
-const showTransitionMask = ref(false);
 
 // 标记是否是首次加载（浏览器刷新）
 const isFirstLoad = ref(true);
 
-// 检查当前路由是否需要使用无基础布局模式
-const isFullPage = computed(() => route.matched.some((r) => r.meta?.isFullPage));
-const prevIsFullPage = ref(isFullPage.value);
-
-// 切换动画名称：首次加载、从全屏返回时不使用动画
+// 切换动画名称：首次加载时不使用动画
 const actualTransition = computed(() => {
   if (isFirstLoad.value) {
-    return '';
-  }
-  if (prevIsFullPage.value && !isFullPage.value) {
     return '';
   }
   return pageTransition.value;
 });
 
-// 监听全屏状态变化，显示过渡遮罩
-watch(isFullPage, (val, oldVal) => {
-  if (val !== oldVal) {
-    showTransitionMask.value = true;
-
-    // 延迟隐藏遮罩，给足时间让页面完成切换
-    setTimeout(() => {
-      showTransitionMask.value = false;
-    }, 50);
-  }
-
-  nextTick(() => {
-    prevIsFullPage.value = val;
-  });
-});
-
 const containerStyle = computed(
-  (): CSSProperties =>
-    isFullPage.value
-      ? {
-          background: 'var(--default-bg-color)',
-          height: '100vh',
-          left: 0,
-          position: 'fixed',
-          top: 0,
-          width: '100%',
-          zIndex: 2500,
-        }
-      : {
-          maxWidth: containerWidth.value,
-          height: route.meta.fixedHeight ? '100%' : 'auto',
-        },
+  (): CSSProperties => ({
+    maxWidth: containerWidth.value,
+    height: route.meta.fixedHeight ? '100%' : 'auto',
+  }),
 );
 
 const contentStyle = computed((): CSSProperties => {

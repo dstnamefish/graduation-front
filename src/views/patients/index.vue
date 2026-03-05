@@ -1,13 +1,12 @@
 <!-- 患者列表页面 -->
 <script setup lang="ts">
 import { ref, computed, h } from 'vue';
+import { useRouter } from 'vue-router';
 import { ElAvatar } from 'element-plus';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
+import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import { getMockPatients } from '@/mock/patients';
 import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
 import { getStatusClass } from '@/utils';
@@ -15,6 +14,7 @@ import { useTable } from '@/hooks/core/useTable';
 
 defineOptions({ name: 'PatientsList' });
 
+const router = useRouter();
 const tableRef = ref();
 
 /**
@@ -24,21 +24,28 @@ const mockApiFn = async (params: any) => {
   await new Promise((resolve) => setTimeout(resolve, 600));
 
   const allMockData = getMockPatients();
-  const { query, treatment, status, dateRange, current, size } = params;
+  const { query, treatment, status, dateRange, checkInDate, current, size } = params;
   const lowerQuery = (query || '').toLowerCase();
 
   const filtered = allMockData.filter((p) => {
-    // 处理日期筛选
-    let dateMatch = true;
+    // 处理范围日期筛选
+    let rangeMatch = true;
     if (dateRange && dateRange.length === 2) {
       const start = new Date(dateRange[0]).getTime();
       const end = new Date(dateRange[1]).getTime();
-      const checkInDate = new Date(p.checkIn).getTime();
-      dateMatch = checkInDate >= start && checkInDate <= end;
+      const checkInDateVal = new Date(p.checkIn).getTime();
+      rangeMatch = checkInDateVal >= start && checkInDateVal <= end;
+    }
+
+    // 处理单选日期筛选
+    let singleDateMatch = true;
+    if (checkInDate) {
+      singleDateMatch = p.checkIn === checkInDate;
     }
 
     return (
-      dateMatch &&
+      rangeMatch &&
+      singleDateMatch &&
       (!treatment || treatment === 'all' || p.treatment === treatment) &&
       (!status || status === 'all' || p.status === status) &&
       (!query ||
@@ -57,7 +64,7 @@ const mockApiFn = async (params: any) => {
 };
 
 const {
-  loading,
+  loading: tableLoading,
   data: tableData,
   pagination,
   searchParams: searchForm,
@@ -78,15 +85,15 @@ const {
 });
 
 const leftSearchItems = computed<SearchFormItem[]>(() => [
-    {
+  {
+    key: 'checkInDate',
+    type: 'shadcn-date',
+    placeholder: 'Pick a date',
+  },
+  {
     key: 'dateRange',
-    type: 'daterange',
-    props: {
-      rangeSeparator: 'to',
-      startPlaceholder: 'Start date',
-      endPlaceholder: 'End date',
-      style: { width: '240px' },
-    },
+    type: 'shadcn-daterange',
+    placeholder: 'Select Date Range',
   },
   {
     key: 'treatment',
@@ -147,13 +154,20 @@ const columns = [
 const handleAddPatient = () => {
   console.log('Add Patient Clicked');
 };
+
+const handleGoDetail = (row: any) => {
+  router.push({
+    name: 'PatientDetail',
+    params: { id: row.patientId || row.id || '1' },
+  });
+};
 </script>
 
 <template>
   <div class="h-full flex flex-col">
     <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-        <WnSearchBarInline
+        <WnSearchBar
           v-model="searchForm"
           :items="leftSearchItems"
           search-bar-background="white"
@@ -161,7 +175,7 @@ const handleAddPatient = () => {
       </template>
       <template #right>
         <div class="flex items-center gap-4">
-          <WnSearchBarInline
+          <WnSearchBar
             v-model="searchForm"
             :items="rightSearchItems"
             search-bar-background="soft"
@@ -180,7 +194,7 @@ const handleAddPatient = () => {
     <div class="flex-1 min-h-0">
       <WnTable
         ref="tableRef"
-        v-loading="loading"
+        :loading="tableLoading"
         :data="tableData"
         :columns="columns"
         header-theme="soft"
@@ -193,13 +207,16 @@ const handleAddPatient = () => {
       >
         <!-- 姓名列插槽 -->
         <template #name="{ row }">
-          <div class="flex items-center gap-3">
+          <div
+            class="flex items-center gap-3 cursor-pointer group"
+            @click="handleGoDetail(row)"
+          >
             <ElAvatar
               :src="row.avatar"
               :size="36"
-              class="border border-slate-100 shadow-sm"
+              class="border border-slate-100 group-hover:border-primary-300 transition-colors duration-300"
             />
-            <span class="font-semibold text-slate-800 tracking-tight">{{ row.name }}</span>
+            <span>{{ row.name }}</span>
           </div>
         </template>
 

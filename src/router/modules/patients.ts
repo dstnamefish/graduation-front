@@ -19,4 +19,20 @@ export const patientsRoutes: AppRouteRecord[] = [
     name: 'Patients',
     path: '/patients',
   },
+  {
+    component: '/patients/detail',
+    meta: {
+      headerBar: {
+        globalSearch: false,
+      },
+      isDetail: true,
+      isHide: true,
+      activePath: '/patients',
+      keepAlive: false,
+      fixedHeight: true,
+      title: 'Patient Detail',
+    },
+    name: 'PatientDetail',
+    path: '/patients/detail/:id',
+  },
 ];

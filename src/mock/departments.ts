@@ -1,3 +1,15 @@
+export interface TreatmentItem {
+  title: string;
+  description: string;
+}
+
+export interface TeamMemberItem {
+  id: number;
+  name: string;
+  avatar: string;
+  role: string;
+}
+
 export interface DepartmentItem {
   id: number;
   name: string;
@@ -9,6 +21,8 @@ export interface DepartmentItem {
   icon: string;
   image: string;
   teamAvatars: string[];
+  treatments: TreatmentItem[];
+  teamMembers: TeamMemberItem[];
 }
 
 /**
@@ -124,19 +138,69 @@ export const getMockDepartments = (): DepartmentItem[] => {
     },
   ];
 
-  return data.map((item, i) => ({
-    id: i + 1,
-    name: item.name,
-    code: item.name.substring(0, 2).toUpperCase(),
-    head: item.head,
-    floor: item.floor,
-    teamCount: Math.floor(Math.random() * 15) + 5,
-    description: item.description,
-    icon: 'local-menu/departments',
-    image: item.image,
-    teamAvatars: Array.from(
-      { length: 8 },
+  return data.map((item, i) => {
+    const treatments: TreatmentItem[] = [
+      {
+        title: 'Routine Check-Ups',
+        description:
+          'Regular health assessments to monitor and maintain overall health, including physical examinations, health screenings, and preventive care.',
+      },
+      {
+        title: 'Chronic Disease Management',
+        description:
+          'Comprehensive care plans for managing chronic conditions such as diabetes, hypertension, and asthma, aimed at improving quality of life and preventing complications.',
+      },
+      {
+        title: 'Acute Illness Treatment',
+        description:
+          'Prompt and effective treatment for acute illnesses such as infections, flu, and minor injuries, ensuring quick recovery and minimizing discomfort.',
+      },
+      {
+        title: 'Preventive Care',
+        description:
+          'Services aimed at preventing diseases and promoting health, including vaccinations, health education, and lifestyle counseling.',
+      },
+      {
+        title: 'Geriatric Care',
+        description:
+          'Specialized care for older adults, addressing the unique health challenges of aging and providing support for maintaining independence and quality of life.',
+      },
+    ];
+
+    const teamCount = Math.floor(Math.random() * 10) + 5;
+    const teamAvatars = Array.from(
+      { length: teamCount },
       (_, idx) => `https://api.dicebear.com/7.x/avataaars/svg?seed=Doc${i}${idx}`,
-    ),
-  }));
+    );
+
+    const roles = [
+      'Routine Check-Ups',
+      'Chronic Disease Management',
+      'Acute Illness Treatment',
+      'Preventive Care',
+      'Geriatric Care',
+    ];
+
+    const teamMembers: TeamMemberItem[] = teamAvatars.map((avatar, idx) => ({
+      id: Number(`${i + 1}${idx + 1}`),
+      name: idx === 0 ? item.head : `Dr. Specialist ${idx}`,
+      avatar,
+      role: roles[idx % roles.length],
+    }));
+
+    return {
+      id: i + 1,
+      name: item.name,
+      code: item.name.substring(0, 2).toUpperCase(),
+      head: item.head,
+      floor: item.floor,
+      teamCount,
+      description: item.description,
+      icon: 'local-menu/departments',
+      image: item.image,
+      teamAvatars,
+      treatments,
+      teamMembers,
+    };
+  });
 };

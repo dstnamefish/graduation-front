@@ -1,10 +1,7 @@
-<!-- 库存管理页面 -->
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { ElMessage } from 'element-plus';
-import WnSearchBarInline, {
-  type SearchFormItem,
-} from '@/components/core/forms/Wn-search-bar/index.vue';
+import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
+import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import { getMockInventory, type InventoryItem } from '@/mock/inventory';
 import { getStatusClass, getStatusDotClass } from '@/utils';
@@ -14,6 +11,7 @@ import type { ColumnOption } from '@/types';
 defineOptions({ name: 'Inventory' });
 
 const tableRef = ref();
+const selectedRows = ref<InventoryItem[]>([]);
 
 /**
  * 模拟后端 API 请求
@@ -113,7 +111,7 @@ const columns: ColumnOption[] = [
   { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
   { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true },
   { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true },
-  { label: 'Action', prop: 'action', MinWidth: 180, useSlot: true },
+  { label: 'Action', prop: 'action', minWidth: 180, useSlot: true }, // 修正了 MinWidth 为 minWidth
 ];
 
 const handleAddItem = () => {
@@ -123,14 +121,47 @@ const handleAddItem = () => {
 const handleReorder = (row: InventoryItem) => {
   ElMessage.info(`Reordering ${row.name}`);
 };
+
+const handleSelectionChange = (selection: InventoryItem[]) => {
+  selectedRows.value = selection;
+  console.log('选中的库存项:', selection);
+};
+
+const handleBatchReorder = () => {
+  if (selectedRows.value.length === 0) return;
+  ElMessage.success(`Reordering ${selectedRows.value.length} item(s)...`);
+  selectedRows.value = [];
+  // [!code ++] 清空 UI 层的表格勾选状态
+  tableRef.value?.elTableRef?.clearSelection();
+};
+
+const handleBatchDelete = async () => {
+  if (selectedRows.value.length === 0) return;
+
+  try {
+    await ElMessageBox.confirm(
+      `Are you sure you want to delete ${selectedRows.value.length} item(s)?`,
+      'Confirm Deletion',
+      {
+        type: 'warning',
+        confirmButtonClass: 'el-button--danger',
+        confirmButtonText: 'Yes, delete them',
+        cancelButtonText: 'No, keep them',
+      },
+    );
+    ElMessage.success(`${selectedRows.value.length} item(s) have been deleted.`);
+    selectedRows.value = [];
+    // [!code ++] 清空 UI 层的表格勾选状态
+    tableRef.value?.elTableRef?.clearSelection();
+  } catch {}
+};
 </script>
 
 <template>
   <div class="h-full flex flex-col">
-    <!-- 表头 -->
     <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-        <WnSearchBarInline
+        <WnSearchBar
           v-model="searchModel"
           :items="selectItems"
           search-bar-background="gray"
@@ -140,12 +171,29 @@ const handleReorder = (row: InventoryItem) => {
 
       <template #right>
         <div class="flex items-center gap-4">
-          <WnSearchBarInline
+          <WnSearchBar
             v-model="searchModel"
             :items="searchItems"
             search-bar-background="soft"
             @keyup.enter="handleSearch"
           />
+
+          <ElButton
+            v-if="selectedRows.length > 0"
+            type="primary"
+            @click="handleBatchReorder"
+          >
+            Batch Reorder ({{ selectedRows.length }})
+          </ElButton>
+
+          <ElButton
+            v-if="selectedRows.length > 0"
+            type="danger"
+            @click="handleBatchDelete"
+          >
+            Batch Delete ({{ selectedRows.length }})
+          </ElButton>
+
           <div
             class="w-9 h-9 flex-cc cursor-pointer bg-accent rounded-xl hover:opacity-80 transition-opacity"
             title="Table Settings"
@@ -165,10 +213,10 @@ const handleReorder = (row: InventoryItem) => {
       </template>
     </WnTableHeader>
 
-    <!-- 表格内容 -->
     <div class="flex-1 min-h-0">
       <WnTable
         ref="tableRef"
+        row-key="id"
         :loading="loading"
         :pagination="pagination"
         :data="tableData"
@@ -179,8 +227,8 @@ const handleReorder = (row: InventoryItem) => {
         pagination-background="gray"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
+        @selection-change="handleSelectionChange"
       >
-        <!-- 图片插槽 -->
         <template #image="{ row }">
           <div class="flex items-center justify-center p-2">
             <div
@@ -214,7 +262,6 @@ const handleReorder = (row: InventoryItem) => {
           </div>
         </template>
 
-        <!-- 操作插槽 -->
         <template #action="{ row }">
           <div class="flex items-center gap-2">
             <button

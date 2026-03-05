@@ -42,6 +42,8 @@ declare module 'vue' {
     WnButton: typeof import('./../../components/core/base/Wn-button/index.vue')['default']
     WnButtonMore: typeof import('./../../components/core/forms/Wn-button-more/index.vue')['default']
     WnButtonTable: typeof import('./../../components/core/forms/Wn-button-table/index.vue')['default']
+    WnDatePicker: typeof import('./../../components/core/forms/Wn-date-picker/index.vue')['default']
+    WnDateRangePicker: typeof import('./../../components/core/forms/Wn-date-range-picker/index.vue')['default']
     WnDragVerify: typeof import('./../../components/core/forms/Wn-drag-verify/index.vue')['default']
     WnExcelExport: typeof import('./../../components/core/forms/Wn-excel-export/index.vue')['default']
     WnExcelImport: typeof import('./../../components/core/forms/Wn-excel-import/index.vue')['default']

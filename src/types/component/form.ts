@@ -124,7 +124,7 @@ export interface FormEmit {
  *
  * @interface ColumnOption
  * @template T - 表格数据行类型，默认为 any
- * @property {string} [type] - 列类型，可选值：selection（选择框）、expand（展开行）、index（行索引）、globalIndex（全局索引）
+ * @property {string} [type] - 列类型，可选值：selection（选择框）、expand（展开行）、index（行索引）
  * @property {string} [prop] - 列数据属性名，用于绑定表格数据行的属性值
  * @property {string} [label] - 列标题文本，用于显示在表格表头
  * @property {string | number} [width] - 列宽度，支持像素值或百分比
@@ -135,7 +135,7 @@ export interface FormEmit {
  *
  */
 export interface ColumnOption<T = any> {
-  type?: 'selection' | 'expand' | 'index' | 'globalIndex';
+  type?: 'selection' | 'expand' | 'index';
   prop?: string;
   label?: string;
   width?: string | number;

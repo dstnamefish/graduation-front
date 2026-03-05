@@ -40,7 +40,6 @@ import { RouteRecordRaw } from 'vue-router';
  * @property roles 角色权限列表
  * @property fixedTab 是否固定标签页
  * @property activePath 激活菜单路径
- * @property isFullPage 是否为全屏页面
  * @property isAuthButton 是否为权限按钮行
  * @property authMark 权限标识
  * @property parentPath 父级路径
@@ -64,7 +63,6 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
   roles?: string[];
   fixedTab?: boolean;
   activePath?: string;
-  isFullPage?: boolean;
   isAuthButton?: boolean;
   authMark?: string;
   parentPath?: string;
