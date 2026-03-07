@@ -1,9 +1,9 @@
 /**
  * 发票模块类型定义
- * @module types/api/invoice.types
+ * @module types/api/core/invoice
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 /** 发票状态 */
 export enum InvoiceStatus {
@@ -14,7 +14,7 @@ export enum InvoiceStatus {
 }
 
 /** 发票 - 请求参数 */
-export interface CreateInvoiceRequest {
+export interface CreateInvoiceParams {
   date?: string;
   amount: number;
   invoiceNo?: string;
@@ -22,8 +22,8 @@ export interface CreateInvoiceRequest {
   appointmentId?: number;
 }
 
-/** 发票 - 更新请求 */
-export interface UpdateInvoiceRequest extends Partial<CreateInvoiceRequest> {
+/** 发票 - 更新请求参数 */
+export interface UpdateInvoiceParams extends Partial<CreateInvoiceParams> {
   id: number;
 }
 

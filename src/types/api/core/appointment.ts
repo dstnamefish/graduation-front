@@ -1,9 +1,9 @@
 /**
  * 预约模块类型定义 - 更新版
- * @module types/api/appointment.types
+ * @module types/api/core/appointment
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 // ==================== 枚举类型 ====================
 
@@ -41,7 +41,7 @@ export enum AppointmentSource {
 // ==================== 请求/响应类型 ====================
 
 /** 预约 - 创建请求参数 */
-export interface CreateAppointmentRequest {
+export interface CreateAppointmentParams {
   appointmentDate: string;
   appointmentTime: string;
   appointmentNumber?: string;
@@ -55,8 +55,8 @@ export interface CreateAppointmentRequest {
   isOvertime?: boolean;
 }
 
-/** 预约 - 更新请求 */
-export interface UpdateAppointmentRequest extends Partial<CreateAppointmentRequest> {
+/** 预约 - 更新请求参数 */
+export interface UpdateAppointmentParams extends Partial<CreateAppointmentParams> {
   id: number;
 }
 
@@ -78,7 +78,7 @@ export interface GetAppointmentParams extends Partial<PaginationParams> {
 }
 
 /** 预约 - 取消参数 */
-export interface CancelAppointmentRequest {
+export interface CancelAppointmentParams {
   cancelReason?: string;
 }
 

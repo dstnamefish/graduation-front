@@ -1,4 +1,4 @@
-import { AppointmentStatus } from '@/types/api/appointment.types';
+import { AppointmentStatus } from '@/types/api/core/appointment';
 
 /**
  * 分业务的状态样式映射表

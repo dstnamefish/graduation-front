@@ -108,8 +108,8 @@ const componentMap = {
   daterange: ElDatePicker, // 日期范围选择器
   datetime: ElDatePicker, // 日期时间选择器
   datetimerange: ElDatePicker, // 日期时间范围选择器
-  shadcn-date: WnDatePicker, // 极简单选日期
-  shadcn-daterange: WnDateRangePicker, // 极简范围日期
+  'shadcn-date': WnDatePicker, // 极简单选日期
+  'shadcn-daterange': WnDateRangePicker, // 极简范围日期
   rate: ElRate, // 评分
   slider: ElSlider, // 滑块
   cascader: ElCascader, // 级联选择器

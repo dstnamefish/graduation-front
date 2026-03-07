@@ -4,7 +4,7 @@ import {
   CallStatus,
   AppointmentSource,
   type AppointmentResponse,
-} from '@/types/api/appointment.types';
+} from '@/types/api/core/appointment';
 
 /**
  * 获取预约模拟数据

@@ -1,12 +1,12 @@
 /**
  * 医生模块类型定义
- * @module types/api/doctor.types
+ * @module types/api/core/doctor
  */
 
-import type { PaginationParams, PaginatedResponse, CommonStatus } from './common.types';
+import type { PaginationParams, PaginatedResponse, CommonStatus } from './common';
 
 /** 医生 - 请求参数 */
-export interface CreateDoctorRequest {
+export interface CreateDoctorParams {
   bio?: string;
   doctorNo: string;
   status?: number;
@@ -14,8 +14,8 @@ export interface CreateDoctorRequest {
   departmentId: number;
 }
 
-/** 医生 - 更新请求 */
-export interface UpdateDoctorRequest extends Partial<CreateDoctorRequest> {
+/** 医生 - 更新请求参数 */
+export interface UpdateDoctorParams extends Partial<CreateDoctorParams> {
   id: number;
 }
 

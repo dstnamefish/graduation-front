@@ -117,10 +117,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'; // 确保引入依赖
+import { ref, computed, watch, onMounted } from 'vue'; // 确保引入依赖
 import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
-import { getMockAppointments } from '@/mock/appointments';
-import { AppointmentStatus, type AppointmentResponse } from '@/types/api/appointment.types';
+import { appointmentService } from '@/api/core';
+import { AppointmentStatus, type AppointmentResponse, type GetAppointmentParams } from '@/types/api/core/appointment';
 import type { ColumnOption } from '@/types';
 import {
   formatDate,
@@ -140,28 +140,25 @@ const activeTab = ref('all');
 const selectedRows = ref<AppointmentResponse[]>([]);
 
 /**
- * 模拟后端 API 请求
+ * 真实 API 请求函数
  */
-const mockApiFn = async (params: any) => {
-  await new Promise((r) => setTimeout(r, 600));
+const apiFn = async (params: GetAppointmentParams & { current: number; size: number }) => {
+  const { current, size, ...queryParams } = params;
+  
+  // 处理参数映射
+  const { query, date, ...rest } = queryParams as any;
 
-  const allMockData = getMockAppointments();
-  const { query, date, status, current, size } = params;
-
-  const filtered = allMockData.filter((item) => {
-    const matchStatus = status === null || item.status === status;
-    const matchDate = !date || item.appointmentDate === date;
-    const matchQuery =
-      !query ||
-      [item.patientName, item.doctorName, item.departmentName].some((field) =>
-        field?.toLowerCase().includes(query.toLowerCase()),
-      );
-    return matchStatus && matchDate && matchQuery;
+  const response = await appointmentService.fetchAppointments({
+    page: current,
+    pageSize: size,
+    keyword: query,
+    appointmentDate: date,
+    ...rest,
   });
 
   return {
-    records: filtered.slice((current - 1) * size, current * size),
-    total: filtered.length,
+    records: response.list,
+    total: response.total,
     current,
     size,
   };
@@ -177,7 +174,7 @@ const {
   getData: handleSearch,
 } = useTable({
   core: {
-    apiFn: mockApiFn,
+    apiFn,
     apiParams: {
       query: '',
       date: '',
@@ -187,15 +184,27 @@ const {
   },
 });
 
-const statusCounts = computed(() => {
-  const all = getMockAppointments();
-  return {
-    all: all.length,
-    confirmed: all.filter((d) => d.status === AppointmentStatus.COMPLETED).length,
-    pending: all.filter((d) => d.status === AppointmentStatus.PENDING).length,
-    cancelled: all.filter((d) => d.status === AppointmentStatus.CANCELLED).length,
-  };
+const statusCounts = ref({
+  all: 0,
+  confirmed: 0,
+  pending: 0,
+  cancelled: 0,
 });
+
+const fetchStatusCounts = async () => {
+  try {
+    const counts = await appointmentService.countByStatus();
+    statusCounts.value.all = counts.reduce((acc, curr) => acc + curr.count, 0);
+    statusCounts.value.confirmed =
+      counts.find((c) => c.status === AppointmentStatus.COMPLETED)?.count || 0;
+    statusCounts.value.pending =
+      counts.find((c) => c.status === AppointmentStatus.PENDING)?.count || 0;
+    statusCounts.value.cancelled =
+      counts.find((c) => c.status === AppointmentStatus.CANCELLED)?.count || 0;
+  } catch (error) {
+    console.error('Failed to fetch status counts:', error);
+  }
+};
 
 const statusTabs = computed(() => [
   { label: 'All', value: null, count: statusCounts.value.all },
@@ -258,8 +267,16 @@ const handleCancel = async (row: AppointmentResponse) => {
         cancelButtonText: 'No, keep it',
       },
     );
+    
+    await appointmentService.cancel(row.id, { cancelReason: 'User requested cancellation' });
     ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
-  } catch {}
+    handleSearch();
+    fetchStatusCounts();
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      ElMessage.error('Failed to cancel appointment: ' + (error.message || 'Unknown error'));
+    }
+  }
 };
 
 const handleSelectionChange = (selection: AppointmentResponse[]) => {
@@ -281,12 +298,29 @@ const handleBatchCancel = async () => {
         cancelButtonText: 'No, keep them',
       },
     );
-    ElMessage.success(`${selectedRows.value.length} appointment(s) have been cancelled.`);
 
+    // 批量取消接口（循环调用示例，若后端支持批量可优化）
+    await Promise.all(
+      selectedRows.value.map((row) =>
+        appointmentService.cancel(row.id, { cancelReason: 'Batch cancellation' }),
+      ),
+    );
+
+    ElMessage.success(`${selectedRows.value.length} appointment(s) have been cancelled.`);
     selectedRows.value = [];
     tableRef.value?.elTableRef?.clearSelection();
-  } catch {}
+    handleSearch();
+    fetchStatusCounts();
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      ElMessage.error('Failed to batch cancel appointments');
+    }
+  }
 };
+
+onMounted(() => {
+  fetchStatusCounts();
+});
 
 watch([() => searchModel.query, () => searchModel.date], () => handleSearch());
 </script>

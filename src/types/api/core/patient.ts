@@ -1,20 +1,20 @@
 /**
  * 患者模块类型定义
- * @module types/api/patient.types
+ * @module types/api/core/patient
  */
 
-import type { PaginationParams, PaginatedResponse, CommonStatus } from './common.types';
+import type { PaginationParams, PaginatedResponse, CommonStatus } from './common';
 
 /** 患者 - 请求参数 */
-export interface CreatePatientRequest {
+export interface CreatePatientParams {
   homeAddress?: string;
   patientNo: string;
   status?: number;
   userId: number;
 }
 
-/** 患者 - 更新请求 */
-export interface UpdatePatientRequest extends Partial<CreatePatientRequest> {
+/** 患者 - 更新请求参数 */
+export interface UpdatePatientParams extends Partial<CreatePatientParams> {
   id: number;
 }
 

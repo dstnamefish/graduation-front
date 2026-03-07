@@ -1,14 +1,14 @@
 /**
  * 科室模块类型定义
- * @module types/api/department.types
+ * @module types/api/core/department
  */
 
-import type { PaginationParams, PaginatedResponse, CommonStatus } from './common.types';
+import type { PaginationParams, PaginatedResponse, CommonStatus } from './common';
 
 // ==================== 科室 ====================
 
 /** 科室 - 请求参数 */
-export interface CreateDepartmentRequest {
+export interface CreateDepartmentParams {
   name: string;
   description?: string;
   avatar?: string;
@@ -16,8 +16,8 @@ export interface CreateDepartmentRequest {
   status?: number;
 }
 
-/** 科室 - 更新请求 */
-export interface UpdateDepartmentRequest extends Partial<CreateDepartmentRequest> {
+/** 科室 - 更新请求参数 */
+export interface UpdateDepartmentParams extends Partial<CreateDepartmentParams> {
   id: number;
 }
 
@@ -46,14 +46,14 @@ export type DepartmentListResponse = PaginatedResponse<DepartmentResponse>;
 // ==================== 专业领域 ====================
 
 /** 专业领域 - 请求参数 */
-export interface CreateSpecialtyRequest {
+export interface CreateSpecialtyParams {
   name: string;
   description?: string;
   status?: number;
 }
 
-/** 专业领域 - 更新请求 */
-export interface UpdateSpecialtyRequest extends Partial<CreateSpecialtyRequest> {
+/** 专业领域 - 更新请求参数 */
+export interface UpdateSpecialtyParams extends Partial<CreateSpecialtyParams> {
   id: number;
 }
 

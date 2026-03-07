@@ -1,9 +1,9 @@
 /**
  * 支付模块类型定义
- * @module types/api/payment.types
+ * @module types/api/core/payment
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 /** 支付方式 */
 export enum PaymentMethod {
@@ -27,7 +27,7 @@ export enum RefundStatus {
 }
 
 /** 支付 - 请求参数 */
-export interface CreatePaymentRequest {
+export interface CreatePaymentParams {
   amount: number;
   paymentMethod: PaymentMethod;
   status?: number;
@@ -41,7 +41,7 @@ export interface GetPaymentParams extends Partial<PaginationParams> {
 }
 
 /** 退款 - 请求参数 */
-export interface RefundRequest {
+export interface RefundParams {
   refundedAmount: number;
   refundReason?: string;
 }

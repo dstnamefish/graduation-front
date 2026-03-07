@@ -1,9 +1,9 @@
 /**
  * 会话模块类型定义
- * @module types/api/conversation.types
+ * @module types/api/core/conversation
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 /** 会话类型 */
 export enum ConversationType {
@@ -18,7 +18,7 @@ export enum ConversationStatus {
 }
 
 /** 会话 - 创建请求参数 */
-export interface CreateConversationRequest {
+export interface CreateConversationParams {
   name?: string;
   type: ConversationType;
   participantIds: number[];

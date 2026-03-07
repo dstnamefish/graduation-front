@@ -5,10 +5,10 @@
 
 import request from '@/utils/http';
 import type {
-  CreateAppointmentRequest,
-  UpdateAppointmentRequest,
+  CreateAppointmentParams,
+  UpdateAppointmentParams,
   GetAppointmentParams,
-  CancelAppointmentRequest,
+  CancelAppointmentParams,
   AppointmentResponse,
   AppointmentListResponse,
   AppointmentStatsResponse,
@@ -16,7 +16,7 @@ import type {
   AppointmentDateCount,
   AppointmentDepartmentCount,
   AppointmentDoctorCount,
-} from '@/types/api';
+} from '@/types/api/core/appointment';
 
 const BASE_URL = '/api/appointment';
 
@@ -131,7 +131,7 @@ class AppointmentService {
   // ==================== 操作接口 ====================
 
   /** 创建预约 */
-  async createAppointment(data: CreateAppointmentRequest): Promise<boolean> {
+  async createAppointment(data: CreateAppointmentParams): Promise<boolean> {
     return request.post<boolean>({
       url: BASE_URL,
       data,
@@ -139,7 +139,7 @@ class AppointmentService {
   }
 
   /** 更新预约 */
-  async updateAppointment(data: UpdateAppointmentRequest): Promise<boolean> {
+  async updateAppointment(data: UpdateAppointmentParams): Promise<boolean> {
     return request.put<boolean>({
       url: BASE_URL,
       data,
@@ -175,7 +175,7 @@ class AppointmentService {
   }
 
   /** 取消预约 */
-  async cancel(id: number, data?: CancelAppointmentRequest): Promise<boolean> {
+  async cancel(id: number, data?: CancelAppointmentParams): Promise<boolean> {
     return request.put<boolean>({
       url: `${BASE_URL}/${id}/cancel`,
       params: data,

@@ -6,9 +6,11 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getStatusClass, mapDoctorStatusToUI } from '@/utils';
 import { getMockDoctors } from '@/mock/doctors';
 import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
-import type { DoctorItem } from '@/types/api/doctor.types';
+import type { DoctorItem } from '@/types/api/core/doctor';
 import type { ColumnOption } from '@/types';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
+import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
+import WnButton from '@/components/core/base/Wn-button/index.vue';
 import { useTable } from '@/hooks/core/useTable';
 
 defineOptions({ name: 'Doctors' });

@@ -1,4 +1,4 @@
-import type { DoctorItem } from '@/types/api/doctor.types';
+import type { DoctorItem } from '@/types/api/core/doctor';
 
 /**
  * 获取医生模拟数据

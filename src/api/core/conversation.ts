@@ -5,11 +5,11 @@
 
 import request from '@/utils/http';
 import type {
-  CreateConversationRequest,
+  CreateConversationParams,
   GetConversationParams,
   ConversationResponse,
   ConversationListResponse,
-} from '@/types/api/conversation.types';
+} from '@/types/api/core/conversation';
 
 const BASE_URL = '/api/conversation';
 
@@ -37,7 +37,7 @@ class ConversationService {
   }
 
   /** 创建会话 */
-  async createConversation(data: CreateConversationRequest): Promise<number> {
+  async createConversation(data: CreateConversationParams): Promise<number> {
     return request.post<number>({
       url: BASE_URL,
       params: data,

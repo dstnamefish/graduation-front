@@ -351,7 +351,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { conversationService, messageService } from '@/api/services';
+import { conversationService, messageService } from '@/api/core';
 import type { ConversationResponse, MessageResponse } from '@/types/api';
 import { ElScrollbar } from 'element-plus';
 

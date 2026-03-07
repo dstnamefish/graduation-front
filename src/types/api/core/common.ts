@@ -1,6 +1,6 @@
 /**
  * 通用 API 类型定义
- * @module types/api/common.types
+ * @module types/api/core/common
  */
 
 // ==================== 分页相关 ====================

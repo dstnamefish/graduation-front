@@ -30,14 +30,12 @@ export interface LoginResponse {
  * @property password 密码
  * @property email 邮箱
  * @property phone 手机号
- * @property confirmPassword 确认密码
  */
 export interface RegisterParams {
   username: string;
   password: string;
   email: string;
   phone: string;
-  confirmPassword: string;
 }
 
 /**

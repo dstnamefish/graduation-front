@@ -1,6 +1,11 @@
 import request from '@/utils/http';
 
-import type { LoginParams, LoginResponse, RegisterParams, RegisterResponse } from '@/types/api/core/auth';
+import type {
+  LoginParams,
+  LoginResponse,
+  RegisterParams,
+  RegisterResponse,
+} from '@/types/api/core/auth';
 
 /**
  * fetch create update remove 操作
@@ -24,7 +29,19 @@ export function fetchLogin(params: LoginParams) {
     params,
     showErrorMessage: true,
     showSuccessMessage: false,
-    url: '/ua/login',
+    url: '/api/auth/login',
+  });
+}
+
+/**
+ * 退出登录
+ * @returns 响应
+ */
+export function fetchLogout() {
+  return request.post({
+    url: '/api/auth/logout',
+    showErrorMessage: true,
+    showSuccessMessage: false,
   });
 }
 
@@ -38,6 +55,32 @@ export function fetchRegister(params: RegisterParams) {
     params,
     showErrorMessage: true,
     showSuccessMessage: true,
-    url: '/ua/register',
+    url: '/api/auth/register',
+  });
+}
+
+/**
+ * 获取当前用户信息
+ * @returns 用户信息
+ */
+export function fetchProfile() {
+  return request.get({
+    url: '/api/auth/profile',
+    showErrorMessage: true,
+    showSuccessMessage: false,
+  });
+}
+
+/**
+ * 刷新令牌
+ * @param refreshToken 刷新令牌
+ * @returns 新的访问令牌
+ */
+export function fetchRefreshToken(refreshToken: string) {
+  return request.post({
+    params: { refreshToken },
+    showErrorMessage: true,
+    showSuccessMessage: false,
+    url: '/api/auth/refresh-token',
   });
 }

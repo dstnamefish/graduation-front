@@ -2,8 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import type { UserInfo } from '@/types/api/core/user';
 import { fetchUserInfo } from '@/api/core/user';
+import { fetchLogout } from '@/api/core/auth';
+import { useUserStore } from '@/store/modules/user';
 import { useElementSize } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import ArrowDown from '@/assets/svg/common/arrow-down.svg?component';
@@ -35,11 +36,13 @@ const menuItems = [
   },
 ];
 
+// Store 引用
+const userStore = useUserStore();
+
 // 组件引用
 const userMenuPopover = ref();
 
 // 响应式数据
-const userInfo = ref<UserInfo | null>(null);
 const loading = ref(false);
 const imageError = ref(false); // 图片加载失败状态
 
@@ -64,10 +67,11 @@ const loadUserInfo = async () => {
   try {
     loading.value = true;
     imageError.value = false;
-    userInfo.value = await fetchUserInfo();
+    const data = await fetchUserInfo();
+    userStore.setUserInfo(data);
   } catch (error) {
     console.error('Failed to load user info:', error);
-    ElMessage.error('获取用户信息失败');
+    // 如果获取失败，可能是 token 失效，根据业务逻辑处理
   } finally {
     loading.value = false;
   }
@@ -100,14 +104,22 @@ const handleLogout = () => {
     confirmButtonText: t('userMenu.logout'),
     type: 'warning',
   })
-    .then(() => {
-      // 执行退出逻辑
-      ElMessage.success(t('userMenu.logoutSuccess'));
-      router.push('/auth/login');
-      userMenuPopover.value?.hide?.();
+    .then(async () => {
+      try {
+        // 调用后端退出接口
+        await fetchLogout();
+        // 执行前端退出逻辑（清除 store 状态）
+        userStore.logOut();
+        ElMessage.success(t('userMenu.logoutSuccess'));
+        userMenuPopover.value?.hide?.();
+      } catch (error) {
+        console.error('Logout failed:', error);
+        // 即使后端失败，前端通常也应该清理状态并退出
+        userStore.logOut();
+      }
     })
     .catch(() => {
-      // ElMessage.info(t('userMenu.cancelLogout'));
+      // 取消操作
     });
 };
 
@@ -142,9 +154,9 @@ onMounted(() => {
         <div class="w-7 h-7 rounded-lg flex-cc overflow-hidden">
           <!-- 优先展示后端图片 -->
           <img
-            v-if="!loading && userInfo?.avatar && !imageError"
-            :src="userInfo.avatar"
-            :alt="userInfo?.realName || userInfo?.username"
+            v-if="!loading && userStore.info?.avatar && !imageError"
+            :src="userStore.info.avatar"
+            :alt="userStore.info?.realName || userStore.info?.username"
             class="w-full h-full object-cover"
             @error="imageError = true"
           />
@@ -156,7 +168,7 @@ onMounted(() => {
 
         <!-- 用户名 -->
         <span class="text-sm text-color-text-main">
-          {{ userInfo?.realName || userInfo?.username || 'Alfredo Westervelt' }}
+          {{ userStore.info?.realName || userStore.info?.username || 'Alfredo Westervelt' }}
         </span>
 
         <!-- 下拉箭头 -->

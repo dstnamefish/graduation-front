@@ -1,9 +1,9 @@
 /**
  * 排班模块类型定义
- * @module types/api/schedule.types
+ * @module types/api/core/schedule
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 /** 排班状态 */
 export enum ScheduleStatus {
@@ -14,7 +14,7 @@ export enum ScheduleStatus {
 }
 
 /** 排班 - 请求参数 */
-export interface CreateScheduleRequest {
+export interface CreateScheduleParams {
   date: string;
   startTime: string;
   endTime: string;
@@ -24,8 +24,8 @@ export interface CreateScheduleRequest {
   doctorId: number;
 }
 
-/** 排班 - 更新请求 */
-export interface UpdateScheduleRequest extends Partial<CreateScheduleRequest> {
+/** 排班 - 更新请求参数 */
+export interface UpdateScheduleParams extends Partial<CreateScheduleParams> {
   id: number;
 }
 

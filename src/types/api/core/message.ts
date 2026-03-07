@@ -1,9 +1,9 @@
 /**
  * 消息模块类型定义
- * @module types/api/message.types
+ * @module types/api/core/message
  */
 
-import type { PaginationParams, PaginatedResponse } from './common.types';
+import type { PaginationParams, PaginatedResponse } from './common';
 
 /** 消息类型 */
 export enum MessageType {
@@ -19,7 +19,7 @@ export enum MessageSourceType {
 }
 
 /** 消息 - 请求参数 */
-export interface SendMessageRequest {
+export interface SendMessageParams {
   content: string;
   type?: MessageType;
   conversationId: number;

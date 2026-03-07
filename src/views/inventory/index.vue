@@ -1,40 +1,30 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
 import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
-import { getMockInventory, type InventoryItem } from '@/mock/inventory';
 import { getStatusClass, getStatusDotClass } from '@/utils';
 import { useTable } from '@/hooks/core/useTable';
 import type { ColumnOption } from '@/types';
+import { inventoryService } from '@/api/core/inventory';
+import type { InventoryResponse, GetInventoryParams, AvailabilityStatus } from '@/types/api';
 
 defineOptions({ name: 'Inventory' });
 
 const tableRef = ref();
-const selectedRows = ref<InventoryItem[]>([]);
+const selectedRows = ref<InventoryResponse[]>([]);
+const categories = ref<string[]>([]);
 
-/**
- * 模拟后端 API 请求
- */
-const mockApiFn = async (params: any) => {
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
-  const allMockData = getMockInventory();
-  const { query, category, status, current, size } = params;
-  const lowerQuery = (query || '').toLowerCase();
-
-  const filtered = allMockData.filter(
-    (item) =>
-      (!category || item.category === category) &&
-      (!status || item.availability === status) &&
-      (!query ||
-        item.name.toLowerCase().includes(lowerQuery) ||
-        item.category.toLowerCase().includes(lowerQuery)),
+// 真实 API 请求函数
+const apiFn = async (params: GetInventoryParams & { current: number; size: number }) => {
+  const { current, size, ...queryParams } = params;
+  const response = await inventoryService.searchInventories(
+    { page: current, pageSize: size },
+    queryParams
   );
-
   return {
-    records: filtered.slice((current - 1) * size, current * size),
-    total: filtered.length,
+    records: response.records,
+    total: response.total,
     current,
     size,
   };
@@ -50,17 +40,19 @@ const {
   getData: handleSearch,
 } = useTable({
   core: {
-    apiFn: mockApiFn,
+    apiFn,
     apiParams: {
       query: '',
       category: '',
       status: '',
+      current: 1,
+      size: 10,
     },
     immediate: true,
   },
 });
 
-// 搜索项配置 - 现在使用 icon 属性简化
+// 搜索项配置
 const selectItems = computed<SearchFormItem[]>(() => [
   {
     key: 'category',
@@ -98,10 +90,6 @@ const searchItems = computed<SearchFormItem[]>(() => [
   },
 ]);
 
-const categories = computed(() => {
-  return [...new Set(getMockInventory().map((item) => item.category))];
-});
-
 // 表格列配置
 const columns: ColumnOption[] = [
   { type: 'selection' as const, width: 60, align: 'center' },
@@ -111,28 +99,49 @@ const columns: ColumnOption[] = [
   { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
   { label: 'Qty In Stock', prop: 'stock', minWidth: 150, sortable: true },
   { label: 'Qty In Reorder', prop: 'reorder', minWidth: 150, sortable: true },
-  { label: 'Action', prop: 'action', minWidth: 180, useSlot: true }, // 修正了 MinWidth 为 minWidth
+  { label: 'Action', prop: 'action', minWidth: 180, useSlot: true },
 ];
+
+// 获取分类列表
+const fetchCategories = async () => {
+  try {
+    categories.value = await inventoryService.fetchCategories();
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+  }
+};
 
 const handleAddItem = () => {
   ElMessage.success('Add Item dialog opened');
 };
 
-const handleReorder = (row: InventoryItem) => {
-  ElMessage.info(`Reordering ${row.name}`);
+const handleReorder = async (row: InventoryResponse) => {
+  try {
+    await inventoryService.increaseStock(row.id, row.reorder || 0);
+    ElMessage.success(`Reordered ${row.name} successfully`);
+    handleSearch();
+  } catch (error) {
+    ElMessage.error(`Failed to reorder ${row.name}`);
+  }
 };
 
-const handleSelectionChange = (selection: InventoryItem[]) => {
+const handleSelectionChange = (selection: InventoryResponse[]) => {
   selectedRows.value = selection;
-  console.log('选中的库存项:', selection);
 };
 
-const handleBatchReorder = () => {
+const handleBatchReorder = async () => {
   if (selectedRows.value.length === 0) return;
-  ElMessage.success(`Reordering ${selectedRows.value.length} item(s)...`);
-  selectedRows.value = [];
-  // [!code ++] 清空 UI 层的表格勾选状态
-  tableRef.value?.elTableRef?.clearSelection();
+  
+  try {
+    const ids = selectedRows.value.map(row => row.id);
+    await inventoryService.batchReorder(ids);
+    ElMessage.success(`Reordered ${selectedRows.value.length} item(s) successfully`);
+    selectedRows.value = [];
+    tableRef.value?.elTableRef?.clearSelection();
+    handleSearch();
+  } catch (error) {
+    ElMessage.error('Failed to batch reorder items');
+  }
 };
 
 const handleBatchDelete = async () => {
@@ -149,12 +158,21 @@ const handleBatchDelete = async () => {
         cancelButtonText: 'No, keep them',
       },
     );
+    
+    const ids = selectedRows.value.map(row => row.id);
+    await inventoryService.batchDelete(ids);
     ElMessage.success(`${selectedRows.value.length} item(s) have been deleted.`);
     selectedRows.value = [];
-    // [!code ++] 清空 UI 层的表格勾选状态
     tableRef.value?.elTableRef?.clearSelection();
-  } catch {}
+    handleSearch();
+  } catch {
+    // 用户取消操作
+  }
 };
+
+onMounted(() => {
+  fetchCategories();
+});
 </script>
 
 <template>
