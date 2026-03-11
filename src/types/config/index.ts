@@ -24,7 +24,7 @@
  * @author 16518
  */
 
-import { MenuTypeEnum, SystemThemeEnum } from '@/enums/appEnum';
+import { MenuTypeEnum, SystemThemeEnum } from '@/shared/config/enums/appEnum';
 import { MenuThemeType, SystemThemeTypes } from '@/types/store';
 
 // 主题设置

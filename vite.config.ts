@@ -36,14 +36,21 @@ export default ({ mode }: { mode: string }) => {
       },
       host: true,
       warmup: {
-        clientFiles: ['./src/main.ts', './src/views/**/*.vue'],
+        clientFiles: [
+          './src/main.ts',
+          './src/app/**/*.vue',
+          './src/pages/**/*.vue',
+          './src/features/**/*.vue',
+        ],
       },
     },
     // 路径别名同步 tsconfig.json
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '@styles': fileURLToPath(new URL('./src/assets/styles', import.meta.url)),
+        '@styles': fileURLToPath(new URL('./src/shared/assets/styles', import.meta.url)),
+        '@views': fileURLToPath(new URL('./src/features', import.meta.url)),
+        '@imgs': fileURLToPath(new URL('./src/shared/assets', import.meta.url)),
       },
     },
     build: {
@@ -81,10 +88,14 @@ export default ({ mode }: { mode: string }) => {
       tsconfigPaths(),
       svgLoader(),
       tailwindcss(),
-      // 自动按需导入 API
+      // 自动按需导入 API 和 Hooks
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'vue-i18n'],
-        dirs: ['./src/hooks/**'],
+        dirs: [
+          './src/shared/lib/hooks/**',
+          './src/shared/lib/utils/**',
+          './src/features/**/composables',
+        ],
         dts: 'src/types/import/auto-imports.d.ts',
         resolvers: [ElementPlusResolver()],
         eslintrc: {
@@ -93,11 +104,11 @@ export default ({ mode }: { mode: string }) => {
           globalsPropValue: true,
         },
       }),
-      // 自动按需导入组件
+      // 自动按需导入公共组件 (以及特定的特征组件如果需要)
       Components({
         dts: 'src/types/import/components.d.ts',
         resolvers: [ElementPlusResolver()],
-        dirs: ['src/components'],
+        dirs: ['src/shared/ui', 'src/app/layouts'],
         extensions: ['vue'],
         deep: true,
       }),

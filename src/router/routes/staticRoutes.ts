@@ -1,5 +1,3 @@
-import { AppRouteRecordRaw } from '@/utils/router';
-
 import { RoutesAlias } from '../routesAlias';
 
 /**
@@ -30,33 +28,50 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   {
     children: [
       {
-        component: () => import('@views/auth/login/index.vue'),
+        component: () => import('@/features/auth/views/login/index.vue'),
         meta: { isHideTab: true, setTheme: true, title: 'menus.login.title' },
         name: 'Login',
         path: 'login',
       },
       {
-        component: () => import('@views/auth/register/index.vue'),
+        component: () => import('@/features/auth/views/register/index.vue'),
         meta: { isHideTab: true, noLogin: true, setTheme: true, title: 'menus.register.title' },
         name: 'Register',
         path: 'register',
       },
       {
-        component: () => import('@views/auth/forgot-password/index.vue'),
-        meta: { isHideTab: true, noLogin: true, setTheme: true, title: 'menus.forgotPassword.title' },
+        component: () => import('@/features/auth/views/forgot-password/index.vue'),
+        meta: {
+          isHideTab: true,
+          noLogin: true,
+          setTheme: true,
+          title: 'menus.forgotPassword.title',
+        },
         name: 'ForgotPassword',
         path: 'forgot-password',
       },
     ],
-    component: () => import('@/views/auth/moudules/auth-layout.vue'),
+    component: () => import('@/features/auth/views/moudules/auth-layout.vue'),
     name: 'Auth',
     path: '/auth',
     redirect: RoutesAlias.Login,
   },
   {
-    component: () => import('@views/exception/404/index.vue'),
+    component: () => import('@/pages/sys/exception/404/index.vue'),
     meta: { title: '404' },
     name: 'Exception404',
     path: '/:pathMatch(.*)*',
+  },
+  {
+    component: () => import('@/pages/sys/exception/500/index.vue'),
+    meta: { title: '500' },
+    name: 'Exception500',
+    path: '/exception/500',
+  },
+  {
+    component: () => import('@/pages/sys/exception/403/index.vue'),
+    meta: { title: '403' },
+    name: 'Exception403',
+    path: '/exception/403',
   },
 ];

@@ -11,7 +11,6 @@ import { ComponentLoader } from './ComponentLoader';
 import { IframeRouteManager } from './IframeRouteManager';
 
 import type { AppRouteRecord } from '@/types/router';
-import type { RouteRecordRaw } from 'vue-router';
 
 interface ConvertedRoute extends Omit<RouteRecordRaw, 'children'> {
   id?: number

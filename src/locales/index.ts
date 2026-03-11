@@ -23,9 +23,9 @@
  */
 import { createI18n } from 'vue-i18n';
 
-import { LanguageEnum } from '@/enums/appEnum';
-import { getSystemStorage } from '@/utils/storage';
-import { StorageKeyManager } from '@/utils/storage/storage-key-manager';
+import { LanguageEnum } from '@/shared/config/enums/appEnum';
+import { getSystemStorage } from '@/shared/lib/utils/storage';
+import { StorageKeyManager } from '@/shared/lib/utils/storage/storage-key-manager';
 
 // 同步导入语言文件
 import enMessages from './langs/en.json';

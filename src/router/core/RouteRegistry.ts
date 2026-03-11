@@ -12,7 +12,6 @@ import { RouteTransformer } from './RouteTransformer';
 import { RouteValidator } from './RouteValidator';
 
 import type { AppRouteRecord } from '@/types/router';
-import type { Router, RouteRecordRaw } from 'vue-router';
 
 export class RouteRegistry {
   private router: Router;

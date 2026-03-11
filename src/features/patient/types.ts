@@ -1,0 +1,57 @@
+/**
+ * 患者模块类型定义
+ * @module types/api/core/patient
+ */
+
+import type { PaginationParams, CommonStatus, PaginatedResponse } from '@/shared/types/common';
+
+/** 患者 - 请求参数 */
+export interface CreatePatientParams {
+  homeAddress?: string;
+  patientNo: string;
+  status?: number;
+  userId: number;
+}
+
+/** 患者 - 更新请求参数 */
+export interface UpdatePatientParams extends Partial<CreatePatientParams> {
+  id: number;
+}
+
+/** 患者 - 查询参数 */
+export interface GetPatientParams extends Partial<PaginationParams> {
+  patientNo?: string;
+  status?: CommonStatus;
+  query?: string;
+}
+
+/** 患者 - 响应数据 */
+export interface PatientResponse {
+  id: number;
+  homeAddress?: string;
+  patientNo: string;
+  patientId?: number;
+  age?: number;
+  checkIn?: string;
+  treatment?: string;
+  doctorAssigned?: string;
+  room?: string;
+  status: number;
+  userId: number;
+  tenantId: number;
+  createdTime: string;
+  updatedTime: string;
+  // 关联用户信息
+  nickName?: string;
+  avatar?: string;
+  gender?: number;
+  birthday?: string;
+  phone?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+}
+
+/** 患者 - 分页列表 */
+export type PatientListResponse = PaginatedResponse<PatientResponse>;

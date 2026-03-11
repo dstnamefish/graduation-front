@@ -20,7 +20,8 @@
  * @author 16518
  */
 
-import { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+
 
 /**
  * 路由元数据接口
@@ -67,6 +68,7 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
   authMark?: string;
   parentPath?: string;
   isDetail?: boolean;
+  fixedHeight?: boolean;
   headerBar?: {
     breadcrumb?: boolean;
     chat?: boolean;

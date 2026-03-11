@@ -25,26 +25,14 @@
       "@/*": [
         "src/*"
       ],
+      "@styles/*": [
+        "src/shared/assets/styles/*"
+      ],
       "@views/*": [
-        "src/views/*"
+        "src/features/*"
       ],
       "@imgs/*": [
-        "src/assets/images/*"
-      ],
-      "@icons/*": [
-        "src/assets/icons/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@stores/*": [
-        "src/store/*"
-      ],
-      "@plugins/*": [
-        "src/plugins/*"
-      ],
-      "@styles/*": [
-        "src/assets/styles/*"
+        "src/shared/assets/*"
       ]
     }
   },

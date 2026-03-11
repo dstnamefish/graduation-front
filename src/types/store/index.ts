@@ -23,9 +23,8 @@
  * @author 16518
  */
 
-import { LocationQueryRaw } from 'vue-router';
 
-import { MenuThemeEnum, SystemThemeEnum } from '@/enums/appEnum';
+import { MenuThemeEnum, SystemThemeEnum } from '@/shared/config/enums/appEnum';
 
 // 系统主题样式（light | dark）
 export interface SystemThemeType {

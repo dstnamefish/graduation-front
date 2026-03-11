@@ -13,12 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from './store/modules/user';
+import { useUserStore } from '@/entities/user/model';
 import zh from 'element-plus/es/locale/lang/zh-cn';
 import en from 'element-plus/es/locale/lang/en';
-import { systemUpgrade } from './utils/sys';
-import { toggleTransition } from './utils/ui/animation';
-import { checkStorageCompatibility } from './utils/storage';
+import { storeToRefs } from 'pinia';
+import { onBeforeMount, onMounted } from 'vue';
+import { systemUpgrade } from '@/shared/lib/utils/sys';
+import { toggleTransition } from '@/shared/lib/utils/ui/animation';
+import { checkStorageCompatibility } from '@/shared/lib/utils/storage';
 
 const userStore = useUserStore();
 const { language } = storeToRefs(userStore);

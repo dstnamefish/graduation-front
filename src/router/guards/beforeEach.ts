@@ -1,20 +1,19 @@
 import NProgress from 'nprogress';
-import { nextTick } from 'vue';
 
-import { fetchUserInfo } from '@/api/core/user';
-import { useCommon } from '@/hooks/core/useCommon';
-import { useMenuStore } from '@/store/modules/menu';
-import { useSettingStore } from '@/store/modules/setting';
-import { useUserStore } from '@/store/modules/user';
-import { isHttpError } from '@/utils/http/error';
-import { ApiStatus } from '@/utils/http/status';
-import { setWorktab } from '@/utils/navigation';
-import { setPageTitle } from '@/utils/router';
-import { loadingService } from '@/utils/ui';
+import type {
+  Router,
+  RouteLocationNormalized,
+  NavigationGuardNext,
+} from 'vue-router';
+import { fetchUserInfo } from '@/features/user/api';
+import { useMenuStore } from '@/app/store/menu';
+import { useSettingStore } from '@/app/store/setting';
+import { useUserStore } from '@/entities/user/model';
 
 import { RouteRegistry, MenuProcessor, IframeRouteManager } from '../core';
 import { staticRoutes } from '../routes/staticRoutes';
 import { RoutesAlias } from '../routesAlias';
+import { loadingService } from '@/shared/lib/utils/ui/loading';
 
 /**
  * 路由全局前置守卫模块
@@ -53,7 +52,6 @@ import { RoutesAlias } from '../routesAlias';
  * @module router/guards/beforeEach
  * @author 16518
  */
-import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 
 // 路由注册器实例
 let routeRegistry: RouteRegistry | null = null;
@@ -224,7 +222,7 @@ async function handleDynamicRoutes(
     // 1. 加载用户信息到 Store
     await loadUserInfo();
 
-    // 2. 获取菜单数据
+    // 2. 获取菜单数据（后端会根据用户权限过滤）
     const menuList = await menuProcessor.getMenuList();
 
     // 3. 验证菜单数据
@@ -253,10 +251,12 @@ async function handleDynamicRoutes(
   } catch (error) {
     console.error('[RouteGuard] 动态路由注册失败:', error);
 
-    // 401 错误：axios 拦截器已处理退出登录，取消当前导航
+    // 401 错误：执行登出并跳转到登录页
     if (isUnauthorizedError(error)) {
+      const userStore = useUserStore();
       closeLoadingAndProgress();
-      next(false);
+      userStore.logOut();
+      next({ name: 'Login', query: { redirect: to.fullPath } });
       return;
     }
 

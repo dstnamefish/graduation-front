@@ -7,15 +7,13 @@
  * @author 16518
  */
 
-import { fetchGetMenuList } from '@/api/system-manage';
-import { useAppMode } from '@/hooks/core/useAppMode';
-import { useUserStore } from '@/store/modules/user';
+import { useUserStore } from '@/entities/user/model';
 
+import { fetchUserRoutes, type RouteVO } from '@/features/system/api.menu';
+import { useAppMode } from '@/shared/lib/hooks';
 import { asyncRoutes } from '../routes/asyncRoutes';
 import { RoutesAlias } from '../routesAlias';
-
 import type { AppRouteRecord } from '@/types/router';
-
 export class MenuProcessor {
   /**
    * 获取菜单数据
@@ -39,7 +37,7 @@ export class MenuProcessor {
    */
   private async processFrontendMenu(): Promise<AppRouteRecord[]> {
     const userStore = useUserStore();
-    const roleCode = userStore.info?.roleCode;
+    const roleCode = userStore.info?.role?.code;
 
     let menuList = [...asyncRoutes];
 
@@ -55,8 +53,34 @@ export class MenuProcessor {
    * 处理后端控制模式的菜单
    */
   private async processBackendMenu(): Promise<AppRouteRecord[]> {
-    const list = await fetchGetMenuList();
-    return this.filterEmptyMenus(list);
+    const list = await fetchUserRoutes();
+    return this.filterEmptyMenus(this.mapRouteVOToAppRouteRecord(list));
+  }
+
+  private mapRouteVOToAppRouteRecord(routes: RouteVO[]): AppRouteRecord[] {
+    return routes.map((route) => {
+      const record: AppRouteRecord = {
+        name: route.name,
+        path: route.path,
+        component: route.component,
+        redirect: route.redirect,
+        meta: {
+          ...route.meta, // 核心修改：透传后端返回的所有 meta 属性
+          title: route.meta.title,
+          icon: route.meta.icon,
+          isHide: route.meta.hidden,
+          activePath: route.meta.activeMenu, 
+          keepAlive: !route.meta.noCache,
+          roles: route.meta.roles,
+        },
+      };
+
+      if (route.children && route.children.length > 0) {
+        record.children = this.mapRouteVOToAppRouteRecord(route.children);
+      }
+
+      return record;
+    });
   }
 
   /**
@@ -149,7 +173,9 @@ export class MenuProcessor {
    * 构建完整路径
    */
   private buildFullPath(path: string, parentPath: string): string {
-    if (!path) {return '';}
+    if (!path) {
+      return '';
+    }
 
     // 外部链接直接返回
     if (path.startsWith('http://') || path.startsWith('https://')) {
