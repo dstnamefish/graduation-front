@@ -1,83 +1,54 @@
 /**
- * 消息管理 API 服务
- * @module api/services/message.service
+ * 消息模块API调用
  */
 
 import request from '@/shared/lib/utils/http';
-import type {
-  SendMessageRequest,
-  GetMessageParams,
-  MessageResponse,
-  MessageListResponse,
-} from '@/types/api';
+import {
+  Conversation,
+  Message,
+  MessageForm
+} from './types';
 
-const BASE_URL = '/message';
-
-class MessageService {
-  /** 获取消息分页列表 */
-  async fetchMessages(params?: GetMessageParams): Promise<MessageListResponse> {
-    return request.get<MessageListResponse>({
-      url: `${BASE_URL}/page`,
-      params,
-    });
-  }
-
-  /** 根据会话获取消息列表 */
-  async getMessagesByConversation(conversationId: number): Promise<MessageResponse[]> {
-    return request.get<MessageResponse[]>({
-      url: `${BASE_URL}/conversation/${conversationId}`,
-    });
-  }
-
-  /** 获取消息详情 */
-  async getMessageById(id: number): Promise<MessageResponse> {
-    return request.get<MessageResponse>({
-      url: `${BASE_URL}/${id}`,
-    });
-  }
-
-  /** 发送消息 */
-  async sendMessage(data: SendMessageRequest): Promise<boolean> {
-    return request.post<boolean>({
-      url: BASE_URL,
-      params: data,
-    });
-  }
-
-  /** 标记已读 */
-  async markAsRead(id: number): Promise<boolean> {
-    return request.put<boolean>({
-      url: `${BASE_URL}/${id}/read`,
-    });
-  }
-
-  /** 批量标记已读 */
-  async batchMarkAsRead(conversationId: number): Promise<boolean> {
-    return request.put<boolean>({
-      url: `${BASE_URL}/conversation/${conversationId}/read-all`,
-    });
-  }
-
-  /** 撤回消息 */
-  async recallMessage(id: number): Promise<boolean> {
-    return request.put<boolean>({
-      url: `${BASE_URL}/${id}/recall`,
-    });
-  }
-
-  /** 删除消息 */
-  async deleteMessage(id: number): Promise<boolean> {
-    return request.del<boolean>({
-      url: `${BASE_URL}/${id}`,
-    });
-  }
-
-  /** 获取未读消息数量 */
-  async getUnreadCount(conversationId: number): Promise<number> {
-    return request.get<number>({
-      url: `${BASE_URL}/conversation/${conversationId}/unread-count`,
-    });
-  }
+/**
+ * 获取当前用户的私聊列表
+ * @returns 私聊会话列表
+ */
+export function getConversationList() {
+  return request.get<Conversation[]>({
+    url: '/conversations'
+  });
 }
 
-export const messageService = new MessageService();
+/**
+ * 发起或打开与某人的私聊
+ * @param targetUserId 目标用户ID
+ * @returns 私聊会话信息
+ */
+export function getOrCreatePrivateConversation(targetUserId: number) {
+  return request.post<Conversation>({
+    url: `/conversations/private/${targetUserId}`
+  });
+}
+
+/**
+ * 获取会话内的聊天记录
+ * @param conversationId 会话ID
+ * @returns 消息列表
+ */
+export function getMessagesByConversation(conversationId: number) {
+  return request.get<Message[]>({
+    url: `/messages/conversation/${conversationId}`
+  });
+}
+
+/**
+ * 发送新消息
+ * @param data 消息发送表单数据
+ * @returns 发送是否成功
+ */
+export function sendMessage(data: MessageForm) {
+  return request.post<boolean>({
+    data,
+    url: '/messages'
+  });
+}

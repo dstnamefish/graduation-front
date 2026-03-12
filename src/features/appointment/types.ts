@@ -1,164 +1,156 @@
-import type { PaginationParams, CommonStatus, PaginatedResponse } from '@/shared/types/common';
+/**
+ * 预约相关类型定义
+ */
 
-
-// ==================== 枚举类型 ====================
-
-/** 预约状态 */
-export enum AppointmentStatus {
-  PENDING = 1, // 待就诊
-  CONFIRMED = 2, // 已就诊
-  CANCELLED = 3, // 已取消
-}
-
-/** 签到状态 */
-export enum CheckInStatus {
-  NOT_CHECKED = 0, // 未签到
-  CHECKED = 1, // 已签到
-}
-
-/** 叫号状态 */
-export enum CallStatus {
-  NOT_CALLED = 0, // 未叫号
-  CALLED = 1, // 已叫号
-  OVERDUE = 2, // 过号
-}
-
-/** 预约来源 */
-export enum AppointmentSource {
-  OFFLINE = 0, // 线下
-  ONLINE = 1, // 线上
-  PHONE = 2, // 电话
-}
-
-// ==================== 请求/响应类型 ====================
-
-/** 预约 - 创建请求参数 */
-export interface CreateAppointmentParams {
+/**
+ * 预约基础实体
+ * @description 预约记录的核心数据模型，包含预约的基本信息和状态
+ * @property {number} id - 预约ID，记录的唯一标识
+ * @property {string} treatmentName - 诊疗项目/就诊目的
+ * @property {string} doctorName - 医生姓名
+ * @property {string} patientName - 患者姓名
+ * @property {string} appointmentDate - 预约日期，格式：yyyy-MM-dd
+ * @property {string} appointmentTime - 预约时间，格式：HH:mm
+ * @property {number} status - 预约状态码：1-待就诊、2-已完成、3-已取消、4-已爽约
+ * @property {string} statusText - 预约状态文本，直接用于前端展示
+ */
+export interface Appointment {
+  id: number;
+  treatmentName: string;
+  doctorName: string;
+  patientName: string;
   appointmentDate: string;
   appointmentTime: string;
-  appointmentNumber?: string;
-  status?: number;
-  cancelReason?: string;
-  remark?: string;
+  status: number;
+  statusText: string;
+}
+
+/**
+ * 预约创建表单
+ * @description 用于前端创建预约时提交的表单数据
+ * @property {number} patientId - 患者ID，关联到患者表的主键
+ * @property {number} doctorId - 医生ID，关联到医生表的主键
+ * @property {number} departmentId - 科室ID，关联到科室表的主键
+ * @property {string} appointmentDate - 预约日期，格式：yyyy-MM-dd
+ * @property {string} appointmentTime - 预约时间，格式：HH:mm:ss
+ * @property {number} appointmentSource - 预约来源：0-微信小程序（默认），1-APP，2-网页端，3-后台管理系统，4-电话预约
+ * @property {string} remark - 备注信息，用户填写的附加说明
+ */
+export interface AppointmentForm {
   patientId: number;
   doctorId: number;
   departmentId: number;
-  appointmentSource?: number;
-  isOvertime?: boolean;
-}
-
-/** 预约 - 更新请求参数 */
-export interface UpdateAppointmentParams extends Partial<CreateAppointmentParams> {
-  id: number;
-}
-
-/** 预约 - 查询参数（增强版，支持多条件筛选） */
-export interface GetAppointmentParams extends Partial<PaginationParams> {
-  patientId?: number;
-  doctorId?: number;
-  departmentId?: number;
-  status?: AppointmentStatus;
-  statusList?: AppointmentStatus[];
-  checkInStatus?: CheckInStatus;
-  callStatus?: CallStatus;
-  appointmentSource?: AppointmentSource;
-  date?: string;
-  query?: string;
-  isOvertime?: boolean;
-}
-
-/** 预约 - 取消参数 */
-export interface CancelAppointmentParams {
-  cancelReason?: string;
-}
-
-/** 预约 - 响应数据（增强版，包含完整关联信息） */
-export interface AppointmentResponse {
-  id: number;
   appointmentDate: string;
   appointmentTime: string;
-  appointmentNumber?: string;
-  status: AppointmentStatus;
-  cancelReason?: string;
-  checkInStatus?: CheckInStatus;
-  checkInTime?: string;
-  finishTime?: string;
+  appointmentSource?: number;
   remark?: string;
-  callTime?: string;
-  callStatus?: CallStatus;
-  actualStartTime?: string;
-  patientId?: number;
+}
+
+/**
+ * 预约快速添加表单
+ * @description 用于从日程视图快速添加预约时提交的表单数据
+ * @property {number} patientId - 患者ID，关联patient表
+ * @property {number} doctorId - 医生ID，关联doctor表
+ * @property {number} departmentId - 科室ID，关联department表
+ * @property {string} appointmentDate - 预约日期，格式：yyyy-MM-dd
+ * @property {string} appointmentTime - 预约时间，格式：HH:mm:ss
+ */
+export interface AppointmentAddForm {
+  patientId: number;
+  doctorId: number;
+  departmentId: number;
+  appointmentDate: string;
+  appointmentTime: string;
+}
+
+/**
+ * 预约分页查询参数
+ * @description 用于预约管理后台的分页查询请求
+ * @property {string} query - 综合搜索关键词，用于按患者姓名、医生姓名、预约号等模糊匹配
+ * @property {number} status - 预约状态筛选：1-待就诊、2-已完成、3-已取消
+ * @property {string} dateFilter - 日期筛选：today, week, month, custom 或具体日期范围字符串
+ * @property {number} page - 页码，默认1
+ * @property {number} size - 每页大小，默认10
+ */
+export interface AppointmentQuery {
+  query?: string;
+  status?: number;
+  dateFilter?: string;
+  page?: number;
+  size?: number;
+}
+
+/**
+ * 日程查询参数
+ * @description 用于日程视图的复杂查询，支持多维度筛选
+ * @property {string} startDate - 日历视图开始日期，格式：yyyy-MM-dd
+ * @property {string} endDate - 日历视图结束日期，格式：yyyy-MM-dd
+ * @property {number} doctorId - 医生ID筛选
+ * @property {number} departmentId - 科室ID筛选
+ * @property {number} status - 预约状态筛选：1-待就诊，2-已完成，3-已取消，4-已爽约
+ */
+export interface AgendaQuery {
+  startDate: string;
+  endDate: string;
   doctorId?: number;
   departmentId?: number;
-  appointmentSource?: AppointmentSource;
-  isOvertime?: boolean;
-  tenantId?: number;
-  createdTime?: string;
-  updatedTime?: string;
-  // 患者关联信息
-  patientName?: string;
-  patientAvatar?: string;
-  patientPhone?: string;
-  patientGender?: number;
-  // 医生关联信息
-  doctorName?: string;
-  doctorAvatar?: string;
-  doctorNo?: string;
-  doctorBio?: string;
-  // 科室关联信息
-  departmentName?: string;
-  departmentAvatar?: string;
-  departmentPhone?: string;
+  status?: number;
 }
 
-/** 预约 - 分页列表 */
-export type AppointmentListResponse = PaginatedResponse<AppointmentResponse>;
-
-/** 预约 - 统计数据（用于仪表盘） */
-export interface AppointmentStatsResponse {
-  totalAppointments: number;
-  todayAppointments: number;
-  pendingCount: number;
-  completedCount: number;
-  cancelledCount: number;
-  checkedInCount: number;
-  overdueCount: number;
-  noShowCount: number;
-  weekAppointments: number;
-  monthAppointments: number;
-  dailyGrowthRate?: number;
-  weeklyGrowthRate?: number;
-}
-
-/** 预约 - 按状态统计 */
-export interface AppointmentStatusCount {
-  status: AppointmentStatus;
-  count: number;
-}
-
-/** 预约 - 按日期统计 */
-export interface AppointmentDateCount {
+/**
+ * 日程事件
+ * @description 用于日程视图中的日历事件展示
+ * @property {number} id - 预约ID
+ * @property {string} date - 预约日期，格式：yyyy-MM-dd
+ * @property {string} time - 预约时间，格式：HH:MM AM/PM
+ * @property {string} doctorName - 医生姓名
+ * @property {string} description - 事件描述，拼接格式：症状 + 患者姓名
+ * @property {string} colorTheme - 动态颜色主题：blue（蓝色）、green（绿色）、purple（紫色）
+ * @property {number} status - 预约状态：1-待就诊，2-已完成，3-已取消，4-已爽约
+ */
+export interface AgendaEvent {
+  id: number;
   date: string;
-  total: number;
-  completed: number;
-  cancelled: number;
-}
-
-/** 预约 - 按科室统计 */
-export interface AppointmentDepartmentCount {
-  departmentId: number;
-  departmentName: string;
-  count: number;
-  todayCount: number;
-}
-
-/** 预约 - 按医生统计当天预约 */
-export interface AppointmentDoctorCount {
-  doctorId: number;
+  time: string;
   doctorName: string;
-  doctorAvatar: string;
-  departmentName: string;
-  totalCount: number;
-  completedCount: number;
-  checkedInCount: number;
+  description: string;
+  colorTheme: string;
+  status: number;
+}
+
+/**
+ * 预约分页响应
+ * @description 预约列表的分页响应数据
+ * @property {number} total - 总记录数
+ * @property {number} size - 每页大小
+ * @property {number} current - 当前页码
+ * @property {Array<Appointment>} records - 预约列表数据
+ */
+export interface AppointmentPageResponse {
+  total: number;
+  size: number;
+  current: number;
+  records: Appointment[];
+}
+
+/**
+ * 预约取消参数
+ * @description 用于取消预约的请求参数
+ * @property {number} id - 预约ID
+ * @property {string} reason - 取消原因（可选）
+ */
+export interface AppointmentCancelParams {
+  id: number;
+  reason?: string;
+}
+
+/**
+ * 患者预约查询参数
+ * @description 用于查询患者预约列表的请求参数
+ * @property {number} patientId - 患者ID
+ * @property {boolean} isUpcoming - true-待进行预约，false-历史预约
+ */
+export interface PatientAppointmentQuery {
+  patientId: number;
+  isUpcoming?: boolean;
 }

@@ -1,78 +1,46 @@
 /**
- * 发票管理 API 服务
- * @module api/services/invoice.service
+ * 账单管理 API 调用
  */
 
 import request from '@/shared/lib/utils/http';
-import type {
-  CreateInvoiceRequest,
-  UpdateInvoiceRequest,
-  GetInvoiceParams,
-  InvoiceResponse,
-  InvoiceListResponse,
-} from '@/types/api';
+import {
+  InvoiceQuery,
+  InvoiceForm,
+  Invoice,
+  InvoiceStats,
+  InvoicePageResponse
+} from './types.invoice';
 
-const BASE_URL = '/invoice';
-
-class InvoiceService {
-  /** 获取发票分页列表 */
-  async fetchInvoices(params?: GetInvoiceParams): Promise<InvoiceListResponse> {
-    return request.get<InvoiceListResponse>({
-      url: `${BASE_URL}/page`,
-      params,
-    });
-  }
-
-  /** 获取所有发票 */
-  async fetchAllInvoices(): Promise<InvoiceResponse[]> {
-    return request.get<InvoiceResponse[]>({
-      url: `${BASE_URL}/list`,
-    });
-  }
-
-  /** 获取发票详情 */
-  async getInvoiceById(id: number): Promise<InvoiceResponse> {
-    return request.get<InvoiceResponse>({
-      url: `${BASE_URL}/${id}`,
-    });
-  }
-
-  /** 获取待支付发票列表 */
-  async getPendingInvoices(): Promise<InvoiceResponse[]> {
-    return request.get<InvoiceResponse[]>({
-      url: `${BASE_URL}/pending`,
-    });
-  }
-
-  /** 创建发票 */
-  async createInvoice(data: CreateInvoiceRequest): Promise<boolean> {
-    return request.post<boolean>({
-      url: BASE_URL,
-      params: data,
-    });
-  }
-
-  /** 更新发票 */
-  async updateInvoice(data: UpdateInvoiceRequest): Promise<boolean> {
-    return request.put<boolean>({
-      url: BASE_URL,
-      params: data,
-    });
-  }
-
-  /** 标记为已支付 */
-  async markAsPaid(id: number): Promise<boolean> {
-    return request.put<boolean>({
-      url: `${BASE_URL}/${id}/paid`,
-    });
-  }
-
-  /** 删除发票 */
-  async deleteInvoice(id: number): Promise<boolean> {
-    return request.del<boolean>({
-      url: `${BASE_URL}/${id}`,
-    });
-  }
+/**
+ * 分页查询账单列表
+ * @param params 账单查询参数
+ * @returns 账单分页数据
+ */
+export function getInvoicePage(params: InvoiceQuery) {
+  return request.get<InvoicePageResponse>({
+    params,
+    url: '/billing/page'
+  });
 }
 
-export const invoiceService = new InvoiceService();
+/**
+ * 获取账单统计数据
+ * @returns 账单统计数据
+ */
+export function getInvoiceStats() {
+  return request.get<InvoiceStats>({
+    url: '/billing/stats'
+  });
+}
+
+/**
+ * 新增账单
+ * @param data 账单创建表单数据
+ * @returns 新增账单的ID
+ */
+export function addInvoice(data: InvoiceForm) {
+  return request.post<number>({
+    data,
+    url: '/billing/add'
+  });
+}
