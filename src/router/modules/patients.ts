@@ -5,7 +5,7 @@ import { AppRouteRecord } from '@/types/router';
  */
 export const patientsRoutes: AppRouteRecord[] = [
   {
-    component: '/patients',
+    component: 'features/patient/views/index',
     meta: {
       headerBar: {
         globalSearch: false,
@@ -20,7 +20,7 @@ export const patientsRoutes: AppRouteRecord[] = [
     path: '/patients',
   },
   {
-    component: '/patients/detail',
+    component: 'features/patient/views/detail/index',
     meta: {
       headerBar: {
         globalSearch: false,

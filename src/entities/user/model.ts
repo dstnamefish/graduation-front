@@ -38,8 +38,12 @@ import { resetRouterState } from '@/router/guards/beforeEach';
 import { useSettingStore } from '@/app/store/setting';
 import { useWorktabStore } from '@/app/store/worktab';
 import { useMenuStore } from '@/app/store/menu';
-
+import { storage } from '@/shared/lib/utils/storage';
+import { setPageTitle } from '@/shared/lib/utils/router';
+import * as AuthApi from '@/features/auth/api';
+import * as UserApi from '@/entities/user/api';
 import type { UserInfo } from '@/features/user/types';
+import type { RouteLocationNormalized } from 'vue-router';
 
 /**
  * 用户状态管理
@@ -142,6 +146,35 @@ export const useUserStore = defineStore(
       if (newRefreshToken) {
         refreshToken.value = newRefreshToken;
       }
+
+      // 缓存令牌到本地存储
+      storage.set('accessToken', newAccessToken);
+      if (newRefreshToken) {
+        storage.set('refreshToken', newRefreshToken);
+      }
+    };
+
+    /**
+     * 登录
+     * @param username 用户名
+     * @param password 密码
+     * @returns 登录结果
+     */
+    const login = async (username: string, password: string) => {
+      // 调用登录API
+      const tokenInfo = await AuthApi.login({ username, password });
+
+      // 设置令牌
+      setToken(tokenInfo.accessToken, tokenInfo.refreshToken);
+
+      // 设置登录状态
+      setLoginStatus(true);
+
+      // 获取用户信息
+      const userInfo = await UserApi.getCurrentUser();
+      setUserInfo(userInfo);
+
+      return tokenInfo;
     };
 
     /**
@@ -176,6 +209,10 @@ export const useUserStore = defineStore(
       // 清空刷新令牌
       refreshToken.value = '';
 
+      // 从本地存储中删除令牌
+      storage.remove('accessToken');
+      storage.remove('refreshToken');
+
       // 清空工作台已打开页面
       useWorktabStore().opened = [];
 
@@ -205,6 +242,7 @@ export const useUserStore = defineStore(
       language,
       lockPassword,
       logOut,
+      login,
       refreshToken,
       searchHistory,
       setLanguage,

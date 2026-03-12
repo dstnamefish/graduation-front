@@ -100,47 +100,55 @@
 
 <script setup lang="ts">
 import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
-import { appointmentService } from '../api';
-import { AppointmentStatus } from '../types';
-import type { AppointmentResponse, GetAppointmentParams, AppointmentListResponse } from '../types';
+import * as AppointmentApi from '../api';
+import type { Appointment, AppointmentQuery, AppointmentPageResponse, AppointmentCancelParams } from '../types';
 import {
   getStatusClass,
   getAppointmentStatusLabel,
 } from '@/shared/lib/utils/ui/status';
-import {
-  useAppointmentStats,
-  useCancelAppointment,
-  useRescheduleAppointment,
-} from '../composables/useAppointmentQuery';
 import { ColumnOption } from '@/shared/ui/types/form';
 import { SearchFormItem } from '@/shared/ui/core/forms/Wn-search-bar/index.vue';
+import { ref, computed, watch } from 'vue';
+import { useTable } from '@/shared/lib/hooks/core/useTable';
 
 defineOptions({ name: 'Appointments' });
 
 const tableRef = ref();
 const activeTab = ref('all');
-const selectedRows = ref<AppointmentResponse[]>([]);
+const selectedRows = ref<Appointment[]>([]);
 
-const apiFn = async (params: GetAppointmentParams & { current: number; size: number }): Promise<AppointmentListResponse> => {
-  const { current, size, ...queryParams } = params;
+const apiFn = async (params: any): Promise<any> => {
+  try {
+    const { current, size, query, date, status, ...rest } = params;
 
-  // 处理参数映射
-  const { query, date, ...rest } = queryParams as any;
+    // 构建查询参数
+    const queryParams: AppointmentQuery = {
+      page: current,
+      size: size,
+      query: query,
+      status: status,
+      dateFilter: date || undefined,
+      ...rest,
+    };
 
-  const response = await appointmentService.fetchAppointments({
-    page: current,
-    pageSize: size,
-    keyword: query,
-    appointmentDate: date,
-    ...rest,
-  });
+    const response = await AppointmentApi.getAppointmentPage(queryParams);
 
-  return {
-    list: response.list || [],
-    total: response.total || 0,
-    current,
-    size,
-  };
+    return {
+      data: response.records || [],
+      total: response.total || 0,
+      current: response.current,
+      size: response.size,
+    };
+  } catch (error) {
+    ElMessage.error('Failed to fetch appointments');
+    console.error('Error fetching appointments:', error);
+    return {
+      data: [],
+      total: 0,
+      current: 1,
+      size: 10,
+    };
+  }
 };
 
 const {
@@ -163,20 +171,36 @@ const {
   },
 });
 
-const { data: statsData, isPending: isStatsLoading } = useAppointmentStats();
+// 模拟统计数据
+const statsData = ref({ all: 0, confirmed: 0, pending: 0, cancelled: 0 });
+const isStatsLoading = ref(false);
 
 const statusTabs = computed(() => {
   const counts = statsData.value || { all: 0, confirmed: 0, pending: 0, cancelled: 0 };
   return [
     { label: 'All', value: null, count: counts.all },
-    { label: 'Confirmed', value: AppointmentStatus.CONFIRMED, count: counts.confirmed },
-    { label: 'Pending', value: AppointmentStatus.PENDING, count: counts.pending },
-    { label: 'Cancelled', value: AppointmentStatus.CANCELLED, count: counts.cancelled },
+    { label: 'Pending', value: 1, count: counts.pending }, // 1-待就诊
+    { label: 'Completed', value: 2, count: counts.confirmed }, // 2-已完成
+    { label: 'Cancelled', value: 3, count: counts.cancelled }, // 3-已取消
   ];
 });
 
-const { mutateAsync: cancelMutate } = useCancelAppointment();
-const handleRescheduleFn = useRescheduleAppointment();
+// 取消预约函数
+const cancelAppointment = async (id: number) => {
+  try {
+    const params: AppointmentCancelParams = { id };
+    await AppointmentApi.cancelAppointment(params);
+    return true;
+  } catch (error) {
+    ElMessage.error('Failed to cancel appointment');
+    console.error('Error canceling appointment:', error);
+    return false;
+  }
+};
+
+const handleRescheduleFn = () => {
+  ElMessage.info('Reschedule functionality coming soon!');
+};
 
 const searchItems = computed<SearchFormItem[]>(() => [
   {
@@ -201,14 +225,14 @@ const columns: ColumnOption[] = [
   { label: 'Date', prop: 'appointmentDate', minWidth: 160, sortable: true },
   { label: 'Time', prop: 'appointmentTime', minWidth: 130, sortable: true },
   { label: 'Doctor', prop: 'doctorName', minWidth: 200, sortable: true },
-  { label: 'Treatment', prop: 'departmentName', minWidth: 200, sortable: true },
+  { label: 'Treatment', prop: 'treatmentName', minWidth: 200, sortable: true },
   { label: 'Status', prop: 'status', width: 140, useSlot: true, sortable: true },
   { label: 'Action', prop: 'action', minWidth: 220, useSlot: true, fixed: 'right' },
 ];
 
 const handleTabUpdate = (name: any) => {
   const status = name === 'all' ? null : Number(name);
-  searchModel.status = status === null ? undefined : (status as AppointmentStatus);
+  searchModel.status = status === null ? undefined : status;
   handleSearch();
 };
 
@@ -216,11 +240,11 @@ const handleAddAppointment = () => {
   ElMessage.success('Add Appointment modal coming soon!');
 };
 
-const handleReschedule = (row: AppointmentResponse) => {
+const handleReschedule = (row: Appointment) => {
   handleRescheduleFn();
 };
 
-const handleCancel = async (row: AppointmentResponse) => {
+const handleCancel = async (row: Appointment) => {
   try {
     await ElMessageBox.confirm(
       'Are you sure you want to cancel appointment for ' + row.patientName + '?',
@@ -228,16 +252,18 @@ const handleCancel = async (row: AppointmentResponse) => {
       { type: 'warning', confirmButtonClass: 'el-button--danger' },
     );
 
-    await cancelMutate({ id: row.id, isBatch: false });
-    ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
-    handleSearch();
+    const success = await cancelAppointment(row.id);
+    if (success) {
+      ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
+      handleSearch();
+    }
   } catch (error: any) {
     if (error !== 'cancel') {
     }
   }
 };
 
-const handleSelectionChange = (selection: AppointmentResponse[]) => {
+const handleSelectionChange = (selection: Appointment[]) => {
   selectedRows.value = selection;
   console.log('选中的预约:', selection);
 };
@@ -257,9 +283,10 @@ const handleBatchCancel = async () => {
       },
     );
 
-    await Promise.all(selectedRows.value.map((row) => cancelMutate({ id: row.id, isBatch: true })));
+    const results = await Promise.all(selectedRows.value.map((row) => cancelAppointment(row.id)));
+    const successCount = results.filter(r => r).length;
 
-    ElMessage.success(`${selectedRows.value.length} appointment(s) have been cancelled.`);
+    ElMessage.success(`${successCount} appointment(s) have been cancelled.`);
     selectedRows.value = [];
     tableRef.value?.elTableRef?.clearSelection();
     handleSearch();

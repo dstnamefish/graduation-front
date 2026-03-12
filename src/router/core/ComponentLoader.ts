@@ -10,7 +10,7 @@ import { h, type Component } from 'vue';
 
 export class ComponentLoader {
   // 静态全局扫描所有 Vue 组件，提升路径查找性能
-  private components = import.meta.glob(['../../pages/**/*.vue', '../../features/**/*.vue']);
+  private components = import.meta.glob(['../../pages/**/*.vue', '../../features/**/views/**/*.vue']);
 
   /**
    * 按路径加载组件
@@ -42,7 +42,8 @@ export class ComponentLoader {
       paths,
     );
 
-    return this.createErrorComponent(componentPath);
+    // 4. 回退到 404 组件
+    return () => import('../../pages/sys/exception/404/index.vue');
   }
 
   /**

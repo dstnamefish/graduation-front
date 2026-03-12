@@ -185,6 +185,7 @@
     "shallowRef": true,
     "showError": true,
     "showSuccess": true,
+    "storage": true,
     "storeToRefs": true,
     "syncRef": true,
     "syncRefs": true,

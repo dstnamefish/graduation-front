@@ -10,8 +10,8 @@ import WnSearchBar, { type SearchFormItem } from '@/shared/ui/core/forms/Wn-sear
 import WnTableHeader from '@/shared/ui/core/tables/Wn-table-header/index.vue';
 import { getStatusClass } from '@/shared/lib/utils';
 import { useTable } from '@/shared/lib/hooks/core/useTable';
-import { patientService } from '@/features/patient/api';
-import type { PatientResponse } from '@/features/patient/types';
+import * as PatientApi from '@/features/patient/api';
+import type { Patient, PatientPageResponse } from '@/features/patient/types';
 
 defineOptions({ name: 'PatientsList' });
 
@@ -28,15 +28,32 @@ const {
   getData: handleSearch,
 } = useTable({
   core: {
-    apiFn: (params: any) => {
-      const queryParams = {
-        current: params.current,
-        size: params.size,
-        query: params.query,
-        status: params.status === 'all' ? undefined : params.status,
-        gender: params.gender === 'all' ? undefined : params.gender,
-      };
-      return patientService.fetchPatients(queryParams);
+    apiFn: async (params: any) => {
+      try {
+        const queryParams = {
+          page: params.current,
+          size: params.size,
+          query: params.query,
+          status: params.status === 'all' ? undefined : params.status,
+          gender: params.gender === 'all' ? undefined : params.gender,
+        };
+        const response = await PatientApi.getPatientPage(queryParams);
+        return {
+          data: response.records,
+          total: response.total,
+          current: response.current,
+          size: response.size,
+        };
+      } catch (error) {
+        ElMessage.error('Failed to fetch patients list');
+        console.error('Error fetching patients:', error);
+        return {
+          data: [],
+          total: 0,
+          current: 1,
+          size: 10,
+        };
+      }
     },
     apiParams: {
       query: '',
@@ -94,9 +111,9 @@ const rightSearchItems = computed<SearchFormItem[]>(() => [
 
 const columns = [
    { label: 'Name', prop: 'name', useSlot: true, minWidth: 120 },
-   { label: 'ID', prop: 'patientId', minWidth: 90 },
+   { label: 'ID', prop: 'patientNo', minWidth: 90 },
    { label: 'Age', prop: 'age', width: 90, align: 'center' },
-   { label: 'Check In', prop: 'checkIn', width: 150 },
+   { label: 'Check In', prop: 'checkInTime', width: 150 },
    { label: 'Treatment', prop: 'treatment', minWidth: 180 },
    { label: 'Doctor Assigned', prop: 'doctorAssigned', minWidth: 180 },
    { label: 'Room', prop: 'room', minWidth: 130 },

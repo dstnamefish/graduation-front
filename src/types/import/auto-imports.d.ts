@@ -164,6 +164,7 @@ declare global {
   const shallowRef: typeof import('vue')['shallowRef']
   const showError: typeof import('../../shared/lib/utils/http/error')['showError']
   const showSuccess: typeof import('../../shared/lib/utils/http/error')['showSuccess']
+  const storage: typeof import('../../shared/lib/utils/storage/storage-util')['storage']
   const storeToRefs: typeof import('pinia')['storeToRefs']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']

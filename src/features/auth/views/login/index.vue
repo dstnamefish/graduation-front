@@ -60,7 +60,6 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import { fetchLogin } from '@/features/auth/api';
 import { RoutesAlias } from '@/router/routesAlias';
 import { useUserStore } from '@/entities/user/model';
 
@@ -99,13 +98,7 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
   await formEl.validate(async (valid) => {
     if (valid) {
       try {
-        const res = await fetchLogin({
-          password: loginForm.password,
-          username: loginForm.username,
-        });
-
-        userStore.setToken(res.accessToken, res.refreshToken);
-        userStore.setLoginStatus(true);
+        await userStore.login(loginForm.username, loginForm.password);
 
         if (!loginForm.remember) {
           loginForm.remember = true;
