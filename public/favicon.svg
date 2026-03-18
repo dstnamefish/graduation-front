@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="-10 -10 120 120"
+     role="img" aria-label="icon">
+  <defs>
+    <clipPath id="roundClip">
+      <rect x="0" y="0" width="100" height="100" rx="20" ry="20" />
+    </clipPath>
+  </defs>
+  <!-- 背景圆角方块 -->
+  <rect x="0" y="0" width="100" height="100" rx="20" ry="20" fill="#243956" />
+  <!-- 四个角的浅青弧 -->
+  <g clip-path="url(#roundClip)" fill="#a2f2ef  " aria-hidden="true">
+    <circle cx="0"   cy="0"   r="35" />
+    <circle cx="100" cy="0"   r="35" />
+    <circle cx="0"   cy="100" r="35" />
+    <circle cx="100" cy="100" r="35" />
+  </g>
+  <!-- 中心小圆 -->
+  <circle cx="50" cy="50" r="12" fill="#a2f2ef" />
+</svg>

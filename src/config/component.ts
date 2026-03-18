@@ -1,0 +1,32 @@
+/**
+ * 全局组件配置
+ * @module config/component
+ * @description 用于管理应用中的全局组件，如设置面板、搜索、锁屏等
+ */
+
+/** 全局组件配置接口 */
+export interface GlobalComponentConfig {
+  /** 组件名称 */
+  name: string;
+  /** 组件标识 */
+  key: string;
+  /** 组件 */
+  component: any;
+  /** 是否启用 */
+  enabled?: boolean;
+  /** 组件描述 */
+  description?: string;
+}
+
+/** 全局组件配置列表 */
+export const globalComponentsConfig: GlobalComponentConfig[] = [];
+
+/** 获取启用的全局组件 */
+export const getEnabledGlobalComponents = () => {
+  return globalComponentsConfig.filter((config) => config.enabled !== false);
+};
+
+/** 根据key获取组件配置 */
+export const getGlobalComponentByKey = (key: string) => {
+  return globalComponentsConfig.find((config) => config.key === key);
+};
