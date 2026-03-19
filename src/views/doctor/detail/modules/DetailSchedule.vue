@@ -2,7 +2,7 @@
   <div class="h-full flex flex-col bg-surface rounded-3xl p-6 xl:p-8 border border-border overflow-hidden">
     <!-- 头部区域 -->
     <div class="flex items-center justify-between mb-6 shrink-0">
-      <h3 class="text-base font-bold text-title">Schedule</h3>
+      <h3 class="text-base font-bold text-title">{{ t('doctors.schedule.title') }}</h3>
       <WnIconButton icon="ri:more-line" :size="20" class="text-muted shrink-0" />
     </div>
 
@@ -27,7 +27,7 @@
 
     <!-- 当前日期摘要 -->
     <p class="text-[11px] font-bold text-muted mb-4 shrink-0 px-2 tracking-wide">
-      {{ schedule.length }} schedules today
+      {{ schedule.length }} {{ t('doctors.schedule.schedulesToday') }}
     </p>
 
     <!-- 可滚动的日程列表 -->
@@ -53,10 +53,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { AppointmentSchedule } from '@/types/api/doctor';
 import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
 
 defineOptions({ name: 'DetailSchedule' });
+
+const { t } = useI18n();
 
 const props = defineProps<{
   schedule: AppointmentSchedule[];

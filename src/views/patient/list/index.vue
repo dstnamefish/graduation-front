@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, h, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { ElAvatar, ElMessage } from 'element-plus';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
-import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import WnSearchBar, { type SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
+import type { ColumnConfig } from '@/components/core/forms/Wn-column-setting/index.vue';
 import { getStatusClass } from '@/utils';
 import { formatDate } from '@/utils/format/date';
 import { useTable } from '@/hooks/core/useTable';
@@ -18,11 +18,10 @@ import { resolveLocalizedText } from '@/utils/i18n';
 defineOptions({ name: 'PatientsList' });
 
 const router = useRouter();
-const tableRef = ref();
-const { locale } = useI18n();
+const { t, locale } = useI18n();
 const treatmentOptions = ref<{ label: string; value: string }[]>([]);
 const treatmentSelectOptions = computed(() => [
-  { label: 'All Treatments', value: undefined },
+  { label: t('patients.status.all'), value: '' },
   ...treatmentOptions.value,
 ]);
 
@@ -101,27 +100,32 @@ const {
   },
 });
 
-const patientStatusOptions = [
-  { label: 'Active', value: 1 },
-  { label: 'New Patient', value: 2 },
-  { label: 'Inactive', value: 0 },
-];
+const patientStatusOptions = computed(() => [
+  { label: t('patients.status.inpatient'), value: 1 },
+  { label: t('patients.status.outpatient'), value: 2 },
+  { label: t('patients.status.discharged'), value: 0 },
+]);
 
 const getPatientStatusLabel = (status: number): string => {
   const statusMap: Record<number, string> = {
-    1: 'Active',
-    2: 'New Patient',
-    0: 'Inactive',
+    1: t('patients.status.inpatient'),
+    2: t('patients.status.outpatient'),
+    0: t('patients.status.discharged'),
   };
   return statusMap[status] || 'Unknown';
 };
 
 const leftSearchItems = computed<SearchFormItem[]>(() => [
   {
+    key: 'dateRange',
+    type: 'shadcn-daterange',
+    placeholder: t('patients.dateRange.start'),
+  },
+  {
     key: 'treatment',
     type: 'select',
     props: {
-      placeholder: 'All Treatments',
+      placeholder: t('patients.status.all'),
       options: treatmentSelectOptions.value,
       fitInputWidth: true,
     },
@@ -130,11 +134,8 @@ const leftSearchItems = computed<SearchFormItem[]>(() => [
     key: 'status',
     type: 'select',
     props: {
-      placeholder: 'All Status',
-      options: [
-        { label: 'All Status', value: undefined },
-        ...patientStatusOptions,
-      ],
+      placeholder: t('patients.status.all'),
+      options: [{ label: t('patients.status.all'), value: '' }, ...patientStatusOptions.value],
       fitInputWidth: true,
     },
   },
@@ -145,22 +146,55 @@ const rightSearchItems = computed<SearchFormItem[]>(() => [
     key: 'query',
     type: 'input',
     props: {
-      placeholder: 'Search name, phone, patient ID...',
+      placeholder: t('patients.searchPlaceholder'),
       style: { width: '320px' },
     },
   },
 ]);
 
-const columns = [
-   { label: 'Name', prop: 'name', useSlot: true, minWidth: 120 },
-   { label: 'ID', prop: 'patientNo', minWidth: 90 },
-   { label: 'Age', prop: 'age', minWidth: 90 },
-   { label: 'Check In', prop: 'checkInTime', useSlot: true, minWidth: 150 },
-   { label: 'Treatment', prop: 'treatment', minWidth: 180 },
-   { label: 'Doctor Assigned', prop: 'doctorAssigned', minWidth: 180 },
-   { label: 'Room', prop: 'room', minWidth: 130 },
-   { label: 'Status', prop: 'status', useSlot: true, minWidth: 130 },
- ];
+const baseColumns = computed(() => [
+  { label: t('patients.table.patientName'), prop: 'name', useSlot: true, minWidth: 120 },
+  { label: t('patients.table.patientId'), prop: 'patientNo', minWidth: 90 },
+  { label: t('patients.table.age'), prop: 'age', minWidth: 90 },
+  { label: t('patients.table.checkInTime'), prop: 'checkInTime', useSlot: true, minWidth: 150 },
+  { label: t('patients.table.latestTreatment'), prop: 'treatment', minWidth: 180 },
+  { label: t('patients.table.doctorName'), prop: 'doctorAssigned', minWidth: 180 },
+  { label: t('patients.table.treatmentDate'), prop: 'room', minWidth: 130 },
+  { label: t('patients.table.status'), prop: 'status', useSlot: true, minWidth: 130 },
+]);
+
+const columnSettings = ref<ColumnConfig[]>([]);
+
+const initColumnSettings = () => {
+  columnSettings.value = [
+    { prop: 'name', label: t('patients.table.patientName'), visible: true },
+    { prop: 'patientNo', label: t('patients.table.patientId'), visible: true },
+    { prop: 'age', label: t('patients.table.age'), visible: true },
+    { prop: 'checkInTime', label: t('patients.table.checkInTime'), visible: true },
+    { prop: 'treatment', label: t('patients.table.latestTreatment'), visible: true },
+    { prop: 'doctorAssigned', label: t('patients.table.doctorName'), visible: true },
+    { prop: 'room', label: t('patients.table.treatmentDate'), visible: true },
+    { prop: 'status', label: t('patients.table.status'), visible: true },
+  ];
+};
+
+initColumnSettings();
+
+const columns = computed(() => {
+  const visibleProps = new Set(
+    columnSettings.value.filter((col) => col.visible).map((col) => col.prop),
+  );
+  const orderedProps = columnSettings.value.map((col) => col.prop);
+
+  return orderedProps
+    .filter((prop) => visibleProps.has(prop))
+    .map((prop) => baseColumns.value.find((col) => col.prop === prop))
+    .filter(Boolean);
+});
+
+const handleColumnSettingsChange = (newSettings: ColumnConfig[]) => {
+  columnSettings.value = newSettings;
+};
 
 const handleAddPatient = () => {
   ElMessage.info('Add Patient functionality coming soon!');
@@ -189,29 +223,31 @@ watch(
   <div class="h-full flex flex-col">
     <WnTableHeader class="shrink-0 pb-6">
       <template #left>
-      <div class="flex flex-col gap-2">
-        <WnSearchBar
-          v-slot:default
-          v-model="searchForm"
-          :items="leftSearchItems"
-          search-bar-background="white"
-        />
-      </div>
-      </template>
-      <template #right>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col gap-2">
           <WnSearchBar
             v-model="searchForm"
-            :items="rightSearchItems"
-            search-bar-background="soft"
-            @keyup.enter="handleSearch"
-          />
-          <WnButton
-            mode="add"
-            label="Add Patient"
-            @click="handleAddPatient"
+            :items="leftSearchItems"
+            search-bar-background="white"
           />
         </div>
+      </template>
+      <template #right>
+        <WnSearchBar
+          v-model="searchForm"
+          :items="rightSearchItems"
+          :column-config="columnSettings"
+          search-bar-background="soft"
+          @keyup.enter="handleSearch"
+          @column-change="handleColumnSettingsChange"
+        >
+          <template #action>
+            <WnButton
+              mode="add"
+              :label="t('patients.addPatient')"
+              @click="handleAddPatient"
+            />
+          </template>
+        </WnSearchBar>
       </template>
     </WnTableHeader>
 
@@ -245,7 +281,12 @@ watch(
 
         <template #checkInTime="{ value }">
           <span v-if="value">{{ formatDate(value) }}</span>
-          <span v-else class="text-gray-400">-</span>
+          <span
+            v-else
+            class="text-gray-400"
+          >
+            -
+          </span>
         </template>
 
         <template #status="{ value }">

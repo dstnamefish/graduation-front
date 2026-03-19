@@ -24,8 +24,9 @@
           <div
             v-if="day.isCurrentMonth && day.events.length > 2"
             class="text-xs font-bold text-slate-400 hover:text-title cursor-pointer mt-0.5 transition-colors"
+            @click.stop="handleMoreClick(day.fullDate)"
           >
-            +{{ day.events.length - 2 }} more
+            +{{ day.events.length - 2 }} {{ t('doctorSchedule.more') }}
           </div>
           <div v-else></div>
 
@@ -33,7 +34,7 @@
             :class="[
               'w-6 h-6 shrink-0 flex-cc rounded-lg text-sm font-medium leading-6',
               day.fullDate.getDay() === 0 && !day.isToday ? 'text-destructive' : 'text-foreground',
-              day.isToday ? 'bg-overlay text-white' : '',
+              day.isToday ? 'bg-overlay text-title-inverse' : '',
               !day.isCurrentMonth ? 'text-muted' : '',
             ]"
           >
@@ -41,27 +42,27 @@
           </span>
         </div>
 
-        <div class="flex-1 overflow-hidden w-full flex flex-col gap-1 px-0.5">
+        <div class="flex-1 overflow-y-auto w-full flex flex-col gap-1 px-0.5 relative scrollbar-hide">
           <template v-if="day.isCurrentMonth">
             <div
               v-for="(event, eventIndex) in day.events.slice(0, 2)"
               :key="event.id"
               :class="[
-                'px-2 py-1.5 rounded-lg text-left cursor-pointer flex flex-col',
+                'px-2 py-1.5 rounded-lg text-left cursor-pointer flex flex-col shrink-0',
                 getAlternatingColorClass(eventIndex),
               ]"
               @click="$emit('event-click', event)"
             >
-              <div class="text-foreground font-semibold text-sm w-full">
+              <div class="text-foreground font-semibold text-sm w-full truncate">
                 {{ event.doctorName }}
               </div>
               <div
                 v-if="day.events.length === 1"
-                class="text-sm mt-0.5 text-muted"
+                class="text-sm mt-0.5 text-muted truncate"
               >
                 {{ event.type }}
               </div>
-              <div class="text-sm text-body mt-0.5">
+              <div class="text-sm text-body mt-0.5 truncate">
                 {{ event.time }}
               </div>
             </div>
@@ -74,9 +75,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ScheduleEvent } from '@/types/api/doctor-schedule';
 
 defineOptions({ name: 'ScheduleMonthView' });
+
+const { t } = useI18n();
 
 const props = defineProps<{
   currentDate: Date;
@@ -84,8 +88,9 @@ const props = defineProps<{
   selectedAgenda: string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'event-click', event: ScheduleEvent): void;
+  (e: 'view-change', view: 'Day', date: Date): void;
 }>();
 
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -132,6 +137,10 @@ const getEventsForDate = (date: Date): ScheduleEvent[] => {
     return e.date.toDateString() === date.toDateString();
   });
 };
+
+const handleMoreClick = (date: Date) => {
+  emit('view-change', 'Day', date);
+};
 </script>
 
 <style scoped>
@@ -143,5 +152,18 @@ const getEventsForDate = (date: Date): ScheduleEvent[] => {
     var(--color-slate-100) 20px,
     var(--color-slate-100) 20px
   );
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.event-card {
+  transition: all 0.2s ease;
 }
 </style>

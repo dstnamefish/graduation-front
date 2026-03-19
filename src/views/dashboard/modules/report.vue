@@ -1,48 +1,49 @@
 <template>
-  <div class="p-6 rounded-3xl border-2 border-[#e7e7e9] w-full">
+  <div class="p-6 rounded-3xl border border-border w-full bg-surface">
     <div class="flex justify-between items-center mb-8">
       <div class="flex flex-col gap-0.5">
-        <h2 class="text-2xl font-bold text-slate-900">Report</h2>
+        <h2 class="text-2xl font-bold text-title">Report</h2>
       </div>
       <button
-        class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-95"
+        class="text-placeholder hover:bg-surface-bg p-2 rounded-xl transition-all active:scale-95"
       >
         <WnSvgIcon
-          icon="local-system/more"
+          icon="hugeicons:more-horizontal"
           :size="20"
         />
       </button>
     </div>
 
-    <div class="max-h-[480px] overflow-y-auto custom-scrollbar">
+    <div class="max-h-[480px] overflow-y-auto">
       <div class="flex flex-col gap-3">
         <div
           v-for="item in dashboardReports"
           :key="item.id"
-          class="group flex items-center p-3 rounded-2xl cursor-pointer bg-[#f5f5f5] border border-transparent"
+          class="group flex items-center p-3 rounded-2xl cursor-pointer bg-card border border-transparent"
         >
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors bg-[#a2f2ef]"
+            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors bg-accent-background text-title"
           >
             <WnSvgIcon
               :icon="getReportIcon(item.iconType)"
-              :size="20"
+              :size="32"
             />
           </div>
 
           <div class="flex-1 ml-3 mr-2 min-w-0">
-            <h4 class="text-sm text-slate-900">
+            <h4 class="text-sm font-medium text-title">
               {{ item.title }}
             </h4>
-            <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
-              <span class="w-1 h-1 bg-slate-200 rounded-full"></span>
+            <p class="text-xs text-muted mt-0.5 flex items-center gap-1.5">
+              <span class="w-1 h-1 bg-border rounded-full"></span>
               {{ item.time }}
             </p>
           </div>
 
           <WnSvgIcon
-            icon="local-directions/chevron-right"
+            icon="hugeicons:arrow-right-01"
             :size="16"
+            class="text-placeholder group-hover:text-action-text"
           />
         </div>
       </div>
@@ -80,11 +81,11 @@ const dashboardReports = ref<ReportItem[]>([
 
 const getReportIcon = (type: ReportType) => {
   const map: Record<ReportType, string> = {
-    cleaning: 'local-business/cleaning',
-    maintenance: 'local-system/maintenance',
-    restock: 'local-actions/restock',
-    issue: 'local-status/issue',
-    transport: 'local-business/transport'
+    cleaning: 'mingcute:brush-3-line',
+    maintenance: 'si:wrench-line',
+    restock: 'lucide:layers-plus',
+    issue: 'lucide:alert-octagon',
+    transport: 'ph:ambulance-light'
   };
   return map[type];
 };

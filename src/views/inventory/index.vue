@@ -2,10 +2,11 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElMessage, ElButton } from 'element-plus';
-import type { ColumnOption } from '@/components/types/form';
+import type { ColumnOption } from '@/types/component/form';
 import { getStatusClass, getStatusDotClass } from '@/utils';
 import { fetchPage, fetchCategories } from '@/api/inventory';
-import type { Inventory, InventoryQuery } from '@/types/inventory';
+import type { Inventory, InventoryQuery } from '@/types/api/inventory';
+import type { ColumnConfig } from '@/components/core/forms/Wn-column-setting/index.vue';
 
 defineOptions({ name: 'Inventory' });
 
@@ -14,7 +15,7 @@ const selectedRows = ref<Inventory[]>([]);
 const { t, locale } = useI18n();
 const categoryOptions = ref<{ label: string; value: number }[]>([]);
 const categorySelectOptions = computed(() => [
-  { label: t('inventory.filter.allCategories', 'All Categories'), value: undefined },
+  { label: t('inventory.filter.allCategories'), value: undefined },
   ...categoryOptions.value,
 ]);
 
@@ -79,7 +80,7 @@ const selectItems = computed(() => [
     key: 'categoryId',
     type: 'select',
     props: {
-      placeholder: t('inventory.filter.category', 'All Categories'),
+      placeholder: t('inventory.filter.category'),
       options: categorySelectOptions.value,
       fitInputWidth: true,
     },
@@ -88,11 +89,11 @@ const selectItems = computed(() => [
     key: 'availabilityStatus',
     type: 'select',
     props: {
-      placeholder: t('inventory.filter.status', 'All Status'),
+      placeholder: t('inventory.filter.status'),
       options: [
-        { label: t('inventory.filter.available', 'Available'), value: 'Available' },
-        { label: t('inventory.filter.low', 'Low'), value: 'Low' },
-        { label: t('inventory.filter.outOfStock', 'Out of Stock'), value: 'Out of Stock' },
+        { label: t('inventory.filter.available'), value: 'Available' },
+        { label: t('inventory.filter.low'), value: 'Low' },
+        { label: t('inventory.filter.outOfStock'), value: 'Out of Stock' },
       ],
       fitInputWidth: true,
     },
@@ -103,9 +104,8 @@ const searchItems = computed(() => [
   {
     key: 'query',
     type: 'input',
-    icon: 'local-actions/search',
     props: {
-      placeholder: t('inventory.filter.searchPlaceholder', 'Search item, etc'),
+      placeholder: t('inventory.filter.searchPlaceholder'),
       style: { width: '320px' },
     },
   },
@@ -118,16 +118,51 @@ watch(
   },
 );
 
-const columns: ColumnOption<Inventory>[] = [
+const baseColumns = computed<ColumnOption<Inventory>[]>(() => [
   { type: 'selection' as const, width: 60, align: 'center' },
-  { label: 'Image', prop: 'image', width: 100, useSlot: true, align: 'center' },
-  { label: 'Item', prop: 'name', minWidth: 180, sortable: true },
-  { label: 'Category', prop: 'categoryName', minWidth: 160, sortable: true },
-  { label: 'Availability', prop: 'availability', width: 180, useSlot: true, sortable: true },
-  { label: 'Qty In Stock', prop: 'qtyInStock', minWidth: 150, sortable: true },
-  { label: 'Qty In Reorder', prop: 'qtyInReorder', minWidth: 150, sortable: true },
-  { label: 'Action', prop: 'action', minWidth: 180, useSlot: true },
-];
+  { label: t('inventory.table.image'), prop: 'image', width: 100, useSlot: true, align: 'center' },
+  { label: t('inventory.table.item'), prop: 'name', minWidth: 180, sortable: true },
+  { label: t('inventory.table.category'), prop: 'categoryName', minWidth: 160, sortable: true },
+  { label: t('inventory.table.availability'), prop: 'availability', width: 180, useSlot: true, sortable: true },
+  { label: t('inventory.table.qtyInStock'), prop: 'qtyInStock', minWidth: 150, sortable: true },
+  { label: t('inventory.table.qtyInReorder'), prop: 'qtyInReorder', minWidth: 150, sortable: true },
+  { label: t('inventory.table.action'), prop: 'action', minWidth: 180, useSlot: true },
+]);
+
+const columnSettings = ref<ColumnConfig[]>([]);
+
+const initColumnSettings = () => {
+  columnSettings.value = [
+    { prop: 'image', label: t('inventory.table.image'), visible: true },
+    { prop: 'name', label: t('inventory.table.item'), visible: true },
+    { prop: 'categoryName', label: t('inventory.table.category'), visible: true },
+    { prop: 'availability', label: t('inventory.table.availability'), visible: true },
+    { prop: 'qtyInStock', label: t('inventory.table.qtyInStock'), visible: true },
+    { prop: 'qtyInReorder', label: t('inventory.table.qtyInReorder'), visible: true },
+    { prop: 'action', label: t('inventory.table.action'), visible: true },
+  ];
+};
+
+initColumnSettings();
+
+const columns = computed(() => {
+  const visibleProps = new Set(
+    columnSettings.value.filter((col) => col.visible).map((col) => col.prop),
+  );
+  const orderedProps = columnSettings.value.map((col) => col.prop);
+
+  const selectionCol = baseColumns.value.find((col) => col.type === 'selection');
+  const dataCols = orderedProps
+    .filter((prop) => visibleProps.has(prop))
+    .map((prop) => baseColumns.value.find((col) => col.prop === prop))
+    .filter(Boolean) as ColumnOption<Inventory>[];
+
+  return [selectionCol, ...dataCols] as ColumnOption<Inventory>[];
+});
+
+const handleColumnSettingsChange = (newSettings: ColumnConfig[]) => {
+  columnSettings.value = newSettings;
+};
 
 const handleAddItem = () => {
   ElMessage.success('Add Item dialog opened');
@@ -176,16 +211,26 @@ const handleBatchDelete = async () => {
           <WnSearchBar
             v-model="searchModel"
             :items="searchItems"
+            :column-config="columnSettings"
             search-bar-background="soft"
             @keyup.enter="handleSearch"
-          />
+            @column-change="handleColumnSettingsChange"
+          >
+            <template #action>
+              <WnButton
+                mode="add"
+                :label="t('inventory.addItem')"
+                @click="handleAddItem"
+              />
+            </template>
+          </WnSearchBar>
 
           <ElButton
             v-if="selectedRows.length > 0"
             type="primary"
             @click="handleBatchReorder"
           >
-            Batch Reorder ({{ selectedRows.length }})
+            {{ t('inventory.batchReorder') }} ({{ selectedRows.length }})
           </ElButton>
 
           <ElButton
@@ -193,24 +238,8 @@ const handleBatchDelete = async () => {
             type="danger"
             @click="handleBatchDelete"
           >
-            Batch Delete ({{ selectedRows.length }})
+            {{ t('inventory.batchDelete') }} ({{ selectedRows.length }})
           </ElButton>
-
-          <div
-            class="w-9 h-9 flex-cc cursor-pointer bg-accent rounded-xl hover:opacity-80 transition-opacity"
-            title="Table Settings"
-          >
-            <WnSvgIcon
-              icon="local-directions/slider"
-              :size="20"
-              class="text-muted"
-            />
-          </div>
-          <WnButton
-            mode="add"
-            label="Add Item"
-            @click="handleAddItem"
-          />
         </div>
       </template>
     </WnTableHeader>
@@ -278,7 +307,7 @@ const handleBatchDelete = async () => {
               class="px-2 py-0.5 c-p bg-action-bg hover:bg-action-hover active:bg-action-active border border-action-border text-action-text hover:text-action-text-hover active:text-action-text-active rounded-lg transition-all active:scale-95"
               @click="handleReorder(row)"
             >
-              Reorder
+              {{ t('inventory.reorder') }}
             </button>
           </div>
         </template>

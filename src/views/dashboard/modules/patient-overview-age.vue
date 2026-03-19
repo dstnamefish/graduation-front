@@ -1,19 +1,19 @@
 <template>
-  <div class="p-6 rounded-3xl border border-[#e7e7e9] w-full">
+  <div class="p-6 rounded-3xl border border-border w-full bg-surface">
     <div class="flex justify-between items-start mb-6">
       <div>
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Patient Overview</h2>
-        <p class="text-sm text-[#666] mt-1">by Age Stages</p>
+        <h2 class="text-2xl font-bold text-title tracking-tight">Patient Overview</h2>
+        <p class="text-sm text-muted mt-1">by Age Stages</p>
       </div>
 
       <button
-        class="flex items-center gap-2 text-white bg-[#233956] px-3 py-2.5 rounded-xl hover:bg-[#334155] transition-colors"
+        class="flex items-center gap-2 text-primary-foreground bg-primary px-3 py-2.5 rounded-xl hover:bg-primary-hover transition-colors"
       >
         Last 8 Days
         <WnSvgIcon
-          icon="local-directions/arrow-down"
+          icon="hugeicons:arrow-down-01"
           :size="20"
-          color="#ffffff"
+          class="text-primary-foreground"
         />
       </button>
     </div>
@@ -28,7 +28,7 @@
           class="w-3 h-3 rounded-full"
           :style="{ backgroundColor: item.color }"
         ></span>
-        <span class="text-sm text-[#666]">{{ item.name }}</span>
+        <span class="text-sm text-muted">{{ item.name }}</span>
       </div>
     </div>
 
@@ -42,7 +42,7 @@
 
 defineOptions({ name: 'PatientOverviewAge' });
 
-const { chartRef, initChart } = useChart();
+const { chartRef, initChart, isDark } = useChart();
 
 const dates = ['4 Jul', '5 Jul', '6 Jul', '7 Jul', '8 Jul', '9 Jul', '10 Jul', '11 Jul'];
 const dataChild = [85, 130, 110, 125, 90, 110, 140, 135];
@@ -50,12 +50,14 @@ const dataAdult = [45, 68, 80, 95, 68, 38, 62, 80];
 const dataElderly = [15, 18, 35, 8, 12, 48, 25, 18];
 
 const legendData = [
-  { name: 'Adult', color: '#5eead4' },
-  { name: 'Child', color: '#243956' },
-  { name: 'Elderly', color: '#dff9fa' },
+  { name: 'Child', color: 'var(--color-slate-800)' },
+  { name: 'Adult', color: 'var(--color-primary-300)' },
+  { name: 'Elderly', color: 'var(--color-primary-100)' },
 ];
 
-onMounted(() => {
+const renderChart = () => {
+  const c = (val: string) => val.startsWith('var(') ? getCssVar(val.slice(4, -1)).trim() : val;
+
   initChart({
     grid: {
       top: 30,
@@ -94,13 +96,13 @@ onMounted(() => {
         });
 
         return `
-          <div class="flex items-center justify-center min-w-[200px] p-3 rounded-xl ${radiusClass} bg-[#dff9fa]">
+          <div class="flex items-center justify-center min-w-[200px] p-3 rounded-xl ${radiusClass} bg-accent shadow-sm border border-border">
             ${data
               .map(
                 (item, index) => `
-              <div class="flex-1 flex flex-col items-center justify-center px-2 ${index < data.length - 1 ? 'border-r border-slate-400' : ''}">
-                <div class="text-sm text-slate-500">${item.name}</div>
-                <div class="text-[16px] font-extrabold text-slate-900">${item.value}</div>
+              <div class="flex-1 flex flex-col items-center justify-center px-2 ${index < data.length - 1 ? 'border-r border-border' : ''}">
+                <div class="text-sm text-placeholder">${item.name}</div>
+                <div class="font-extrabold text-title">${item.value}</div>
               </div>
             `,
               )
@@ -124,7 +126,7 @@ onMounted(() => {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#666',
+        color: c('var(--color-slate-500)'),
         fontSize: 14,
         fontWeight: 'bold',
         margin: 20,
@@ -137,12 +139,12 @@ onMounted(() => {
       interval: 40,
       splitLine: {
         lineStyle: {
-          color: ['#e7e7e9', '#e7e7e9', '#e7e7e9', '#e7e7e9', '#e7e7e9', 'transparent'],
+          color: [c('var(--color-slate-200)'), c('var(--color-slate-200)'), c('var(--color-slate-200)'), c('var(--color-slate-200)'), c('var(--color-slate-200)'), 'transparent'],
           type: 'solid',
         },
       },
       axisLabel: {
-        color: '#62748e',
+        color: c('var(--color-slate-400)'),
         fontSize: 16,
         margin: 20,
         formatter: (value: number) => {
@@ -153,19 +155,6 @@ onMounted(() => {
     },
     series: [
       {
-        name: 'Adult',
-        type: 'bar',
-        data: dataAdult,
-        barWidth: 12,
-        barGap: '20%',
-        barCategoryGap: '30%',
-        itemStyle: {
-          color: '#5eead4',
-          borderRadius: [8, 8, 0, 0],
-        },
-        z: 2,
-      },
-      {
         name: 'Child',
         type: 'bar',
         data: dataChild,
@@ -173,7 +162,20 @@ onMounted(() => {
         barGap: '20%',
         barCategoryGap: '30%',
         itemStyle: {
-          color: '#243956',
+          color: c('var(--color-slate-800)'),
+          borderRadius: [8, 8, 0, 0],
+        },
+        z: 2,
+      },
+      {
+        name: 'Adult',
+        type: 'bar',
+        data: dataAdult,
+        barWidth: 12,
+        barGap: '20%',
+        barCategoryGap: '30%',
+        itemStyle: {
+          color: c('var(--color-primary-300)'),
           borderRadius: [8, 8, 0, 0],
         },
         z: 2,
@@ -186,12 +188,20 @@ onMounted(() => {
         barGap: '20%',
         barCategoryGap: '30%',
         itemStyle: {
-          color: '#dff9fa',
+          color: c('var(--color-primary-100)'),
           borderRadius: [8, 8, 0, 0],
         },
         z: 2,
       },
     ],
   });
+};
+
+onMounted(() => {
+  renderChart();
+});
+
+watch(isDark, () => {
+  renderChart();
 });
 </script>

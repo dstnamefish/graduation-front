@@ -43,6 +43,7 @@ import { useRoute, useRouter } from 'vue-router';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import { fetchDetail } from '@/api/department';
+import { getMockDepartments } from '@/mock/departments';
 import type { DepartmentDetailResponse } from '@/types/api/department';
 
 import DetailBanner from './modules/DetailBanner.vue';
@@ -68,8 +69,15 @@ const fetchDetailData = async () => {
     const data = await fetchDetail(id);
     department.value = data;
   } catch (err) {
-    console.error('Failed to load department details:', err);
-    department.value = null;
+    console.warn('API failed, using mock data:', err);
+    const id = Number(route.params.id);
+    const mockData = getMockDepartments();
+    const found = mockData.find((d) => d.id === id);
+    if (found) {
+      department.value = found as unknown as DepartmentDetailResponse;
+    } else {
+      department.value = null;
+    }
   } finally {
     loading.value = false;
   }

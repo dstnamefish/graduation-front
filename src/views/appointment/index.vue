@@ -17,17 +17,16 @@
         />
         <WnButton
           mode="add"
-          :show-icon="false"
           @click="handleAddAppointment"
         >
-          Add Appointment
+          {{ $t('appointments.addAppointment') }}
         </WnButton>
         <ElButton
           v-if="selectedRows.length > 0"
           type="danger"
           @click="handleBatchCancel"
         >
-          Batch Cancel ({{ selectedRows.length }})
+          {{ $t('appointments.batchCancel') }} ({{ selectedRows.length }})
         </ElButton>
       </template>
     </WnTableHeader>
@@ -63,13 +62,13 @@
               class="px-2 py-0.5 c-p bg-action-bg hover:bg-action-hover active:bg-action-active border border-action-border text-action-text hover:text-action-text-hover active:text-action-text-active rounded-lg transition-all active:scale-95"
               @click="handleReschedule(row)"
             >
-              Reschedule
+              {{ $t('appointments.reschedule') }}
             </button>
             <button
               class="px-2 py-0.5 c-p text-action-text hover:text-action-text-hover active:text-action-text-active"
               @click="handleCancel(row)"
             >
-              Cancel
+              {{ $t('appointments.cancel') }}
             </button>
           </div>
         </template>
@@ -81,7 +80,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
-import * as AppointmentApi from '@/api/core/appointment';
+import * as AppointmentApi from '@/api/appointment';
 import type {
   Appointment,
   AppointmentQuery,
@@ -95,6 +94,7 @@ import { ColumnOption } from '@/types/component';
 import { SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import { useTable } from '@/hooks/core/useTable';
 import WnTabSwitch from '@/components/core/widget/Wn-tab-switch/index.vue';
+import { $t } from '@/locales';
 
 defineOptions({ name: 'Appointments' });
 
@@ -182,10 +182,10 @@ const {
 const statusTabs = computed(() => {
   const counts = statsData.value || { all: 0, confirmed: 0, pending: 0, cancelled: 0 };
   return [
-    { label: 'All', value: 'all', count: counts.all },
-    { label: 'Confirmed', value: 2, count: counts.confirmed },
-    { label: 'Pending', value: 1, count: counts.pending },
-    { label: 'Cancelled', value: 3, count: counts.cancelled },
+    { label: $t('appointments.status.all'), value: 'all', count: counts.all },
+    { label: $t('appointments.status.confirmed'), value: 2, count: counts.confirmed },
+    { label: $t('appointments.status.pending'), value: 1, count: counts.pending },
+    { label: $t('appointments.status.cancelled'), value: 3, count: counts.cancelled },
   ];
 });
 
@@ -211,22 +211,45 @@ const searchItems = computed<SearchFormItem[]>(() => [
   {
     key: 'query',
     type: 'input',
-    props: { placeholder: 'Search placeholder' },
+    props: { placeholder: $t('appointments.searchPlaceholder') },
   },
-  { key: 'date', type: 'shadcn-date', placeholder: 'Today' },
+  { key: 'date', type: 'shadcn-date' },
 ]);
 
 /** 表格列配置 */
-const columns: ColumnOption[] = [
+const columns = computed<ColumnOption[]>(() => [
   { type: 'selection' as const, minWidth: 60, align: 'center' },
-  { label: 'Name', prop: 'patientName', minWidth: 200, sortable: true },
-  { label: 'Date', prop: 'appointmentDate', minWidth: 160, useSlot: true, sortable: true },
-  { label: 'Time', prop: 'appointmentTime', minWidth: 130, useSlot: true, sortable: true },
-  { label: 'Doctor', prop: 'doctorName', minWidth: 200, sortable: true },
-  { label: 'Treatment', prop: 'treatmentName', minWidth: 200, sortable: true },
-  { label: 'Status', prop: 'status', width: 140, useSlot: true, sortable: true },
-  { label: 'Action', prop: 'action', width: 220, useSlot: true },
-];
+  { label: $t('appointments.table.name'), prop: 'patientName', minWidth: 200, sortable: true },
+  {
+    label: $t('appointments.table.date'),
+    prop: 'appointmentDate',
+    minWidth: 160,
+    useSlot: true,
+    sortable: true,
+  },
+  {
+    label: $t('appointments.table.time'),
+    prop: 'appointmentTime',
+    minWidth: 130,
+    useSlot: true,
+    sortable: true,
+  },
+  { label: $t('appointments.table.doctor'), prop: 'doctorName', minWidth: 200, sortable: true },
+  {
+    label: $t('appointments.table.treatment'),
+    prop: 'treatmentName',
+    minWidth: 200,
+    sortable: true,
+  },
+  {
+    label: $t('appointments.table.status'),
+    prop: 'status',
+    width: 140,
+    useSlot: true,
+    sortable: true,
+  },
+  { label: $t('appointments.table.action'), prop: 'action', width: 220, useSlot: true },
+]);
 
 const handleTabUpdate = (value: string | number) => {
   searchModel.status = value === 'all' ? undefined : Number(value);
@@ -244,8 +267,8 @@ const handleReschedule = (row: Appointment) => {
 const handleCancel = async (row: Appointment) => {
   try {
     await ElMessageBox.confirm(
-      'Are you sure you want to cancel appointment for ' + row.patientName + '?',
-      'Confirm Cancellation',
+      $t('appointments.confirmCancel', { patient: row.patientName }),
+      $t('appointments.cancelTitle'),
       { type: 'warning', confirmButtonClass: 'el-button--danger' },
     );
     const success = await cancelAppointment(row.id);
@@ -268,13 +291,13 @@ const handleBatchCancel = async () => {
   if (selectedRows.value.length === 0) return;
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to cancel ${selectedRows.value.length} appointment(s)?`,
-      'Confirm Batch Cancellation',
+      $t('appointments.confirmBatchCancel', { count: selectedRows.value.length }),
+      $t('appointments.batchCancelTitle'),
       {
         type: 'warning',
         confirmButtonClass: 'el-button--danger',
-        confirmButtonText: 'Yes, cancel them',
-        cancelButtonText: 'No, keep them',
+        confirmButtonText: $t('appointments.yesCancel'),
+        cancelButtonText: $t('appointments.noKeep'),
       },
     );
     const results = await Promise.all(selectedRows.value.map((row) => cancelAppointment(row.id)));

@@ -32,12 +32,12 @@
 
     <div class="flex flex-col gap-6 shrink-0 mb-8 border-t border-border pt-6">
       <section>
-        <h3 class="text-xs text-muted mb-1">Specialist</h3>
+        <h3 class="text-xs text-muted mb-1">{{ t('doctors.profile.specialist') }}</h3>
         <p class="text-sm text-body">{{ data.specialist }}</p>
       </section>
 
       <section>
-        <h3 class="text-xs text-muted mb-1">About</h3>
+        <h3 class="text-xs text-muted mb-1">{{ t('doctors.profile.about') }}</h3>
         <p class="text-sm text-body">{{ data.bio }}</p>
       </section>
     </div>
@@ -62,7 +62,7 @@
 
     <div class="flex flex-col shrink-0 border-t border-border pt-6">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="font-bold text-title">Work Experience</h3>
+        <h3 class="font-bold text-title">{{ t('doctors.profile.workExperience') }}</h3>
         <WnIconButton
           icon="ri:more-line"
           :size="20"
@@ -101,11 +101,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { DoctorProfile, WorkExperience } from '@/types/doctor';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
 
 defineOptions({ name: 'DetailProfile' });
+
+const { t } = useI18n();
 
 const props = defineProps<{
   data: DoctorProfile & { experience: WorkExperience[] };

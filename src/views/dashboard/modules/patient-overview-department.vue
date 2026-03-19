@@ -1,12 +1,12 @@
 <template>
-  <div class="p-6 rounded-2xl border border-[#e7e7e9] w-full">
+  <div class="p-6 rounded-2xl border border-border w-full bg-surface">
     <div class="flex justify-between items-start mb-4">
       <div>
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Patient Overview</h2>
-        <p class="text-sm text-[#666]">by Departments</p>
+        <h2 class="text-2xl font-bold text-title tracking-tight">Patient Overview</h2>
+        <p class="text-sm text-muted">by Departments</p>
       </div>
-      <button class="text-[#666] cursor-pointer">
-        <WnSvgIcon icon="local-system/more" :size="20" />
+      <button class="text-placeholder hover:text-action-text cursor-pointer">
+        <WnSvgIcon icon="hugeicons:more-horizontal" :size="20" />
       </button>
     </div>
 
@@ -16,11 +16,11 @@
       <div
         v-for="item in currentData"
         :key="item.name"
-        class="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 -mx-2 rounded-xl transition-colors"
+        class="flex items-center justify-between group cursor-pointer hover:bg-surface-bg p-2 -mx-2 rounded-xl transition-colors"
       >
         <div class="flex items-center gap-3">
           <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: item.color }"></span>
-          <span class="text-[#666]">{{ item.name }}</span>
+          <span class="text-muted">{{ item.name }}</span>
         </div>
         <span class="">{{ item.percentage }}%</span>
       </div>
@@ -30,6 +30,7 @@
 
 <script setup lang="ts">
 import * as echarts from 'echarts';
+import { useSettingStore } from '@/store/setting';
 
 defineOptions({ name: 'PatientOverviewDepartment' });
 
@@ -44,6 +45,7 @@ interface ChartDataItem {
 const timeOptions = ['This Day', 'This Week', 'This Month'];
 const selectedTab = ref('This Week');
 
+const settingStore = useSettingStore();
 const chartRef = ref<HTMLElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
 
@@ -51,25 +53,25 @@ let chartInstance: echarts.ECharts | null = null;
 const generateData = (type: string): ChartDataItem[] => {
   if (type === 'This Day') {
     return [
-      { name: 'Emergency', value: 12, percentage: 40, color: '#243956' },
-      { name: 'General', value: 8, percentage: 26, color: '#a2f2ef' },
-      { name: 'Internal', value: 6, percentage: 20, color: '#dff9fa' },
-      { name: 'Other', value: 4, percentage: 14, color: '#e6e6e8' },
+      { name: 'Emergency', value: 12, percentage: 40, color: 'var(--color-slate-800)' },
+      { name: 'General', value: 8, percentage: 26, color: 'var(--color-primary-300)' },
+      { name: 'Internal', value: 6, percentage: 20, color: 'var(--color-primary-100)' },
+      { name: 'Other', value: 4, percentage: 14, color: 'var(--color-slate-200)' },
     ];
   } else if (type === 'This Month') {
     return [
-      { name: 'Emergency', value: 850, percentage: 32, color: '#243956' },
-      { name: 'General', value: 720, percentage: 28, color: '#a2f2ef' },
-      { name: 'Internal', value: 640, percentage: 25, color: '#dff9fa' },
-      { name: 'Other', value: 380, percentage: 15, color: '#e6e6e8' },
+      { name: 'Emergency', value: 850, percentage: 32, color: 'var(--color-slate-800)' },
+      { name: 'General', value: 720, percentage: 28, color: 'var(--color-primary-300)' },
+      { name: 'Internal', value: 640, percentage: 25, color: 'var(--color-primary-100)' },
+      { name: 'Other', value: 380, percentage: 15, color: 'var(--color-slate-200)' },
     ];
   }
   // Default Week
   return [
-    { name: 'Emergency Medicine', value: 35, percentage: 35, color: '#243956' },
-    { name: 'General Medicine', value: 28, percentage: 28, color: '#a2f2ef' },
-    { name: 'Internal Medicine', value: 20, percentage: 20, color: '#dff9fa' },
-    { name: 'Other Departments', value: 17, percentage: 17, color: '#e6e6e8' },
+    { name: 'Emergency Medicine', value: 35, percentage: 35, color: 'var(--color-slate-800)' },
+    { name: 'General Medicine', value: 28, percentage: 28, color: 'var(--color-primary-300)' },
+    { name: 'Internal Medicine', value: 20, percentage: 20, color: 'var(--color-primary-100)' },
+    { name: 'Other Departments', value: 17, percentage: 17, color: 'var(--color-slate-200)' },
   ];
 };
 
@@ -93,6 +95,8 @@ const initChart = () => {
 const renderChart = () => {
   if (!chartInstance) return;
 
+  const c = (val: string) => val.startsWith('var(') ? getCssVar(val.slice(4, -1)).trim() : val;
+
   const option: echarts.EChartsOption = {
     tooltip: { show: false },
     graphic: [
@@ -102,7 +106,7 @@ const renderChart = () => {
         top: '38%',
         style: {
           text: 'Overall',
-          fill: '#666',
+          fill: c('var(--color-slate-500)'),
           fontSize: 16,
           fontWeight: 500,
           align: 'center',
@@ -119,7 +123,7 @@ const renderChart = () => {
               : selectedTab.value === 'This Month'
                 ? '8,420'
                 : '1,890',
-          fill: '#243956',
+          fill: c('var(--color-slate-800)'),
           fontSize: 28,
           fontWeight: 800,
           align: 'center',
@@ -139,7 +143,7 @@ const renderChart = () => {
             top: 0,
             style: {
               text: selectedTab.value,
-              fill: '#666',
+              fill: c('var(--color-slate-500)'),
               fontSize: 12,
               fontWeight: 500,
               align: 'left',
@@ -159,7 +163,7 @@ const renderChart = () => {
               ], // 定义向下箭头的折线点坐标
             },
             style: {
-              stroke: '#666',
+              stroke: c('var(--color-slate-500)'),
               lineWidth: 1.5,
               fill: 'none',
             },
@@ -182,7 +186,7 @@ const renderChart = () => {
         data: currentData.value.map((item) => ({
           value: item.value,
           name: item.name,
-          itemStyle: { color: item.color },
+          itemStyle: { color: c(item.color) },
         })),
         itemStyle: {
           borderWidth: 0,
@@ -195,7 +199,7 @@ const renderChart = () => {
 };
 
 // 监听数据变化刷新图表
-watch([selectedTab, currentData], () => {
+watch([selectedTab, currentData, () => settingStore.isDark], () => {
   renderChart();
 });
 

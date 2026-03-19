@@ -272,7 +272,7 @@
     border-radius: 1px !important;
     background-color: var(--color-primary-300) !important;
     transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) !important;
-    content: '' !important;
+    content: "" !important;
     transform: scale(0.55) !important; // 控制横杠的宽度
   }
 
@@ -905,7 +905,6 @@
     background-color: var(--color-slate-200) !important;
   }
 
-
   &.is-active {
     color: var(--color-slate-50, #fff) !important;
     background-color: transparent !important;
@@ -914,109 +913,167 @@
 
 // -------------------------------- 修改 el-date-picker 组件默认 --------------------------------
 .el-date-editor {
-  --el-date-editor-width: 240px;
+  --el-date-editor-width: 280px;
 
   &.el-input__wrapper {
-    height: var(--el-component-custom-height, 36px) !important;
-    padding: 0 14px !important;
-    border: 1px solid transparent !important;
-    border-radius: 12px !important;
-    background-color: var(--background-color, var(--color-slate-100)) !important;
-    box-shadow: inset 0 1px 2px rgb(0 0 0 / 3%) !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    justify-content: flex-start !important; /* 文字靠左对齐 */
+    height: 40px !important;
+    padding: 8px 12px !important;
+    border: 1px solid var(--color-slate-200) !important;
+    border-radius: 8px !important;
+    background-color: var(--color-slate-50) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
 
     &:hover {
-      border-color: var(--color-slate-400) !important;
+      background-color: var(--color-slate-100) !important; /* hover:bg-slate-50 */
     }
 
     &.is-focus,
     &.is-active {
-      border-color: var(--color-primary-500) !important;
-      background-color: var(--color-slate-100) !important;
-      box-shadow:
-        0 0 0 3px var(--color-primary-100),
-        inset 0 1px 2px rgb(0 0 0 / 3%) !important;
+      border-color: var(--color-slate-800) !important; /* focus 边框加深 */
+      background-color: var(--color-slate-50) !important;
+      box-shadow: 0 0 0 2px var(--color-slate-200) !important; /* focus-within:ring-2 */
     }
   }
 
   .el-input__inner,
   .el-range-input {
-    font-family:
-      Inter,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      Roboto,
-      sans-serif;
+    font-family: inherit;
     font-size: 14px !important;
-    font-weight: 500 !important;
-    color: var(--color-slate-800) !important;
+    font-weight: 400 !important;
+    color: var(--color-slate-900) !important;
+    text-align: left !important;
 
     &::placeholder {
       font-weight: 400 !important;
-      color: var(--color-slate-400) !important;
+      color: var(--color-slate-500) !important; /* text-muted-foreground */
     }
   }
 
   .el-range-separator {
-    line-height: var(--el-component-custom-height, 36px) !important;
     color: var(--color-slate-400) !important;
   }
 }
 
 .el-picker-panel {
+  margin-top: 4px !important;
+  padding: 12px !important; /* p-3 */
   border: 1px solid var(--color-slate-200) !important;
-  border-radius: 16px !important;
-  background: var(--color-slate-50) !important;
-  backdrop-filter: blur(12px) saturate(180%);
+  border-radius: 6px !important; /* rounded-md */
+  background: var(--color-slate-50) !important; /* bg-popover */
   box-shadow:
-    0 10px 15px -3px rgb(36 57 86 / 8%),
-    0 4px 6px -2px rgb(0 0 0 / 5%) !important;
-  overflow: hidden;
+    0 4px 6px -1px rgb(0 0 0 / 10%),
+    0 2px 4px -2px rgb(0 0 0 / 10%) !important; /* shadow-md */
 
   .el-picker-panel__body-wrapper,
   .el-picker-panel__body {
     background: transparent !important;
   }
 
-  .el-date-table th {
-    border-bottom: 1px solid var(--color-slate-100);
-    font-weight: 500;
-    color: var(--color-slate-500);
-  }
+  /* 日历头部 (年月与左右切换按钮) */
+  .el-date-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 16px;
+    padding-top: 4px;
 
-  .el-date-table td {
-    border-radius: 8px;
-
-    .el-date-table-cell__text {
-      border-radius: 8px !important;
-      font-weight: 500;
-      color: var(--color-slate-700);
-      transition: all 0.2s ease;
+    .el-date-picker__header-label {
+      font-size: 14px; /* text-sm */
+      font-weight: 500; /* font-medium */
+      color: var(--color-slate-900);
     }
 
-    &.available:hover {
+    button {
+      width: 28px; /* w-7 */
+      height: 28px; /* h-7 */
+      padding: 0;
+      border: 1px solid var(--color-slate-200); /* border-border */
+      border-radius: 6px; /* rounded-md */
       color: var(--color-slate-900);
+      background: transparent;
+      opacity: 0.5;
+      transition: all 0.2s ease;
 
-      .el-date-table-cell__text {
-        background-color: var(--color-slate-100);
+      &:hover {
+        background-color: var(--color-slate-100); /* hover:bg-accent */
+        opacity: 1;
       }
     }
+  }
 
-    &.today .el-date-table-cell__text {
-      font-weight: 700;
-      color: var(--color-primary-600);
+  /* 日历网格 */
+  .el-date-table {
+    th {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-bottom: none;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--color-slate-500);
+      text-align: center;
     }
 
-    &.current:not(.disabled) .el-date-table-cell__text,
-    &.start-date:not(.disabled) .el-date-table-cell__text,
-    &.end-date:not(.disabled) .el-date-table-cell__text {
-      color: var(--color-slate-900) !important;
-      background-color: var(--color-slate-800) !important;
-    }
+    td {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 6px;
 
-    &.in-range:not(.disabled) .el-date-table-cell {
-      background-color: var(--color-slate-100) !important;
+      .el-date-table-cell {
+        height: 32px;
+        padding: 0;
+      }
+
+      /* 日期按钮 */
+      .el-date-table-cell__text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin: 0 auto;
+        border-radius: 6px !important;
+        font-weight: 400;
+        color: var(--color-slate-900);
+        transition: all 0.2s ease;
+      }
+
+      /* 悬停态 */
+      &.available:hover .el-date-table-cell__text {
+        color: var(--color-slate-900);
+        background-color: var(--color-slate-100);
+      }
+
+      /* 今天 */
+      &.today .el-date-table-cell__text {
+        font-weight: 400;
+        color: var(--color-slate-900);
+        background-color: var(--color-slate-100);
+      }
+
+      /* 选中态 */
+      &.current:not(.disabled) .el-date-table-cell__text {
+        font-weight: 400;
+        color: var(--color-slate-50) !important;
+        background-color: var(--color-slate-900) !important;
+
+        &:hover {
+          color: var(--color-slate-50) !important;
+          background-color: var(--color-slate-900) !important;
+        }
+      }
+
+      /* 非当前月 */
+      &.prev-month,
+      &.next-month {
+        .el-date-table-cell__text {
+          color: var(--color-slate-400);
+          opacity: 0.5;
+        }
+      }
     }
   }
 }

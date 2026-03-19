@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
       <WnTabSwitch
         :model-value="modelValue"
         :options="viewOptions"
@@ -24,24 +24,24 @@
 
       <ElSelect
         :model-value="selectedAgenda"
-        placeholder="All Agenda"
+        :placeholder="t('doctorSchedule.allAgenda')"
         class="w-36"
         @update:model-value="$emit('update:selectedAgenda', $event)"
       >
         <ElOption
-          label="All Agenda"
+          :label="t('doctorSchedule.allAgenda')"
           value=""
         />
         <ElOption
-          label="Check-Up"
+          :label="t('doctorSchedule.checkUp')"
           value="checkup"
         />
         <ElOption
-          label="Surgery"
+          :label="t('doctorSchedule.surgery')"
           value="surgery"
         />
         <ElOption
-          label="Consultation"
+          :label="t('doctorSchedule.consultation')"
           value="consultation"
         />
       </ElSelect>
@@ -50,7 +50,7 @@
         type="primary"
         @click="$emit('add')"
       >
-        Add Schedule
+        {{ t('doctorSchedule.addSchedule') }}
       </WnButton>
     </div>
   </div>
@@ -58,11 +58,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnTabSwitch from '@/components/core/widget/Wn-tab-switch/index.vue';
 
 defineOptions({ name: 'ScheduleHeader' });
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: string;
@@ -79,11 +82,11 @@ defineEmits<{
   (e: 'add'): void;
 }>();
 
-const viewOptions = [
-  { label: 'Day', value: 'Day' },
-  { label: 'Week', value: 'Week' },
-  { label: 'Month', value: 'Month' },
-];
+const viewOptions = computed(() => [
+  { label: t('doctorSchedule.day'), value: 'Day' },
+  { label: t('doctorSchedule.week'), value: 'Week' },
+  { label: t('doctorSchedule.month'), value: 'Month' },
+]);
 
 const navigateButtons = [
   { direction: -1, icon: 'ri:arrow-left-s-line' },

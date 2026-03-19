@@ -16,7 +16,7 @@
           mode="add"
           @click="handleCreateInvoice"
         >
-          Add Invoice
+          {{ t('payments.addInvoice') }}
         </WnButton>
       </template>
     </WnTableHeader>
@@ -76,7 +76,7 @@
                 :size="18"
                 class="group-hover:scale-110 transition-transform"
               />
-              View
+              {{ t('payments.view') }}
             </button>
             <div class="w-px h-3 bg-slate-200" />
             <button class="flex items-center gap-1.5 hover:text-slate-800 transition-colors group">
@@ -85,7 +85,7 @@
                 :size="18"
                 class="group-hover:scale-110 transition-transform"
               />
-              Edit
+              {{ t('payments.edit') }}
             </button>
           </div>
         </template>
@@ -96,6 +96,7 @@
 
 <script setup lang="ts">
 import { ref, computed, h } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
 import PaymentStats from './modules/PaymentStats.vue';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
@@ -109,6 +110,8 @@ import { fetchPage } from '@/api/payment';
 import type { Invoice, InvoiceQuery } from '@/types/payment';
 
 defineOptions({ name: 'Payments' });
+
+const { t } = useI18n();
 
 const tableRef = ref();
 
@@ -152,44 +155,40 @@ const filterItems = computed<SearchFormItem[]>(() => [
     key: 'query',
     type: 'input',
     props: {
-      placeholder: 'Search name,treatment,etc',
+      placeholder: t('payments.filter.searchPlaceholder'),
       style: { width: '280px' },
-    },
-    slots: {
-      prefix: () =>
-        h('div', { class: 'flex-cc' }, [h(WnSvgIcon, { icon: 'local-actions/search', size: 16 })]),
     },
   },
   {
     key: 'dateRange',
     type: 'shadcn-daterange',
-    placeholder: 'Pick a date',
+    placeholder: t('payments.filter.pickDate'),
   },
   {
     key: 'paymentStatus',
     type: 'select',
     props: {
-      placeholder: 'Status',
+      placeholder: t('payments.filter.status'),
       options: [
-        { label: 'Status', value: undefined },
-        { label: 'Pending', value: 1 },
-        { label: 'Paid', value: 2 },
-        { label: 'Overdue', value: 3 },
+        { label: t('payments.filter.status'), value: undefined },
+        { label: t('payments.filter.pending'), value: 1 },
+        { label: t('payments.filter.paid'), value: 2 },
+        { label: t('payments.filter.overdue'), value: 3 },
       ],
       fitInputWidth: true,
     },
   },
 ]);
 
-const columns = [
-  { label: 'Invoice ID', prop: 'invoiceId', minWidth: 150, sortable: true },
-  { label: 'Patient Name', prop: 'patientName', minWidth: 150, sortable: true },
-  { label: 'Treatment', prop: 'treatment', useSlot: true, minWidth: 200, sortable: true },
-  { label: 'Date', prop: 'date', minWidth: 160, sortable: true },
-  { label: 'Amount', prop: 'amount', minWidth: 120, sortable: true },
-  { label: 'Status', prop: 'statusText', useSlot: true, minWidth: 140, sortable: true },
-  { label: 'Action', prop: 'action', useSlot: true, minWidth: 160 },
-];
+const columns = computed(() => [
+  { label: t('payments.table.invoiceId'), prop: 'invoiceId', minWidth: 150, sortable: true },
+  { label: t('payments.table.patientName'), prop: 'patientName', minWidth: 150, sortable: true },
+  { label: t('payments.table.treatment'), prop: 'treatment', useSlot: true, minWidth: 200, sortable: true },
+  { label: t('payments.table.date'), prop: 'date', minWidth: 160, sortable: true },
+  { label: t('payments.table.amount'), prop: 'amount', minWidth: 120, sortable: true },
+  { label: t('payments.table.status'), prop: 'statusText', useSlot: true, minWidth: 140, sortable: true },
+  { label: t('payments.table.action'), prop: 'action', useSlot: true, minWidth: 160 },
+]);
 
 const handleCreateInvoice = () => {
   ElMessage.success('Create Invoice dialog opened');

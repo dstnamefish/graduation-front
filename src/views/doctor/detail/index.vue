@@ -39,12 +39,12 @@
           :size="64"
           class="opacity-30 mb-4 mx-auto"
         />
-        <p class="text-lg font-medium mb-4">Doctor record not found</p>
+        <p class="text-lg font-medium mb-4">{{ t('doctors.detail.notFound') }}</p>
         <WnButton
           type="primary"
           @click="goBack"
         >
-          Return to List
+          {{ t('doctors.detail.returnToList') }}
         </WnButton>
       </div>
     </div>
@@ -55,6 +55,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import { getDoctorDashboard } from '@/api/doctor';
@@ -69,6 +70,7 @@ defineOptions({ name: 'DoctorDetails' });
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 
 const loading = ref(true);
 const doctorInfo = ref<DoctorDashboard | null>(null);
@@ -86,7 +88,7 @@ const fetchDetail = async () => {
     doctorInfo.value = res;
   } catch (err) {
     console.error('Failed to load doctor details:', err);
-    ElMessage.error('Failed to load doctor details');
+    ElMessage.error(t('doctors.detail.loadFailed'));
     doctorInfo.value = null;
   } finally {
     loading.value = false;

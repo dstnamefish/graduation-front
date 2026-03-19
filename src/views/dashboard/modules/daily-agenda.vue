@@ -74,19 +74,19 @@ const timelineData = computed(() => {
 
 const getEventTheme = (type: CalendarEvent['type']) => {
   const themes = {
-    meeting: 'bg-[#a2f2ef] text-[#1A2E44]',
-    surgery: 'bg-[#a2f2ef] text-[#1A2E44]',
-    consultation: 'bg-[#dff9fa] text-[#1A2E44]',
-    training: 'bg-[#dff9fa] text-[#1A2E44]',
-    break: 'bg-[#f0f0f0] text-[#718096]',
+    meeting: 'bg-accent-background text-title',
+    surgery: 'bg-accent-background text-title',
+    consultation: 'bg-accent text-title',
+    training: 'bg-accent text-title',
+    break: 'bg-surface-sunken text-muted',
   };
-  return themes[type] || 'bg-[#f0f0f0] text-[#1A2E44]';
+  return themes[type] || 'bg-surface-sunken text-title';
 };
 </script>
 
 <template>
   <div
-    class="agenda-container flex flex-col bg-white rounded-3xl p-6 h-full shadow-sm w-full mx-auto"
+    class="agenda-container flex flex-col bg-surface rounded-3xl p-6 h-full shadow-sm w-full mx-auto"
     :style="{
       '--slot-height': `${CONFIG.SLOT_HEIGHT}px`,
       '--card-pad-y': `${CONFIG.CARD_PADDING_Y}px`,
@@ -95,9 +95,9 @@ const getEventTheme = (type: CalendarEvent['type']) => {
     }"
   >
     <header class="flex items-center justify-between mb-8">
-      <h3 class="text-[#2D3748] font-bold text-lg cursor-default">{{ formattedDate }}</h3>
+      <h3 class="text-title font-bold text-lg cursor-default">{{ formattedDate }}</h3>
       <button
-        class="add-btn w-9 h-9 bg-[#1A2E44] hover:bg-[#2D4566] cursor-pointer text-white rounded-xl flex items-center justify-center transition-all"
+        class="add-btn w-9 h-9 bg-primary hover:bg-primary-hover cursor-pointer text-primary-foreground rounded-xl flex items-center justify-center transition-all"
         aria-label="Add event"
       >
         <WnSvgIcon
@@ -112,7 +112,7 @@ const getEventTheme = (type: CalendarEvent['type']) => {
         <div
           v-for="slot in timelineData"
           :key="slot.hour"
-          class="hour-slot relative border-[#f0f0f0]"
+          class="hour-slot relative border-border"
           :class="[slot.hour === CONFIG.START_HOUR ? 'mt-8' : '']"
           :style="{
             zIndex: slot.type === 'event' ? 20 : 1,
@@ -146,16 +146,16 @@ const getEventTheme = (type: CalendarEvent['type']) => {
 
           <div
             v-else-if="slot.type === 'placeholder'"
-            class="placeholder-slot bg-[#f0f0f0] rounded-xl w-full border border-red-100/30 transition-colors hover:bg-red-50"
+            class="placeholder-slot bg-surface-sunken rounded-xl w-full border border-transparent transition-colors hover:bg-destructive-subtle hover:border-destructive-subtle"
           ></div>
         </div>
 
         <div
-          class="hour-slot relative border-[#f0f0f0] h-0"
+          class="hour-slot relative border-border h-0"
           :style="{ borderTopWidth: 'var(--border-w)', borderTopStyle: 'solid' }"
         >
           <time
-            class="hour-label absolute left-[-56px] text-sm text-gray-400 w-12 text-right z-30"
+            class="hour-label absolute -left-14 text-sm text-placeholder w-12 text-right z-30"
             :style="{ top: 'calc(var(--border-w) / -2)', transform: 'translateY(-50%)' }"
           >
             {{ CONFIG.END_HOUR + 1 }}:00
@@ -197,6 +197,6 @@ const getEventTheme = (type: CalendarEvent['type']) => {
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 99px;
-  background-color: #edf2f7;
+  background-color: var(--color-border);
 }
 </style>

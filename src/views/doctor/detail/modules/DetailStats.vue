@@ -10,7 +10,7 @@
           </div>
           <!-- 数值与标签 -->
           <div class="flex flex-col justify-center">
-            <p class="text-[13px] font-medium text-muted mb-1">Total Patients</p>
+            <p class="text-[13px] font-medium text-muted mb-1">{{ t('doctors.stats.totalPatients') }}</p>
             <h2 class="text-3xl font-bold text-title leading-none">{{ stats.totalPatients }}</h2>
           </div>
         </div>
@@ -26,7 +26,7 @@
           </div>
           <!-- 数值与标签 -->
           <div class="flex flex-col justify-center">
-            <p class="text-[13px] font-medium text-muted mb-1">Total Appointments</p>
+            <p class="text-[13px] font-medium text-muted mb-1">{{ t('doctors.stats.totalAppointments') }}</p>
             <h2 class="text-3xl font-bold text-title leading-none">{{ stats.totalAppointments }}</h2>
           </div>
         </div>
@@ -38,10 +38,10 @@
     <!-- Appointment Stats Graph -->
     <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex-1 flex flex-col min-h-[360px]">
       <div class="flex items-center justify-between mb-8">
-        <h3 class="text-lg font-extrabold text-slate-800">Appointment Stats</h3>
+        <h3 class="text-lg font-extrabold text-slate-800">{{ t('doctors.stats.appointmentStats') }}</h3>
         <select class="bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl outline-none appearance-none cursor-pointer pr-10 relative shadow-md">
-          <option>This Week</option>
-          <option>Last Week</option>
+          <option>{{ t('doctors.stats.thisWeek') }}</option>
+          <option>{{ t('doctors.stats.lastWeek') }}</option>
         </select>
       </div>
 
@@ -54,15 +54,15 @@
       <div class="grid grid-cols-3 gap-6 bg-surface-sunken rounded-2xl p-4 mt-6">
         <div class="flex flex-col border-l-4 border-primary-300 pl-3">
           <span class="text-lg font-bold text-title">{{ totalAppts }}</span>
-          <span class="text-[11px] font-medium text-muted">Total Appointments</span>
+          <span class="text-[11px] font-medium text-muted">{{ t('doctors.stats.totalAppointments') }}</span>
         </div>
         <div class="flex flex-col border-l-4 border-slate-800 pl-3">
           <span class="text-lg font-bold text-title">{{ totalNew }}</span>
-          <span class="text-[11px] font-medium text-muted">New Patients</span>
+          <span class="text-[11px] font-medium text-muted">{{ t('doctors.stats.newPatients') }}</span>
         </div>
         <div class="flex flex-col border-l-4 border-primary-200 pl-3">
           <span class="text-lg font-bold text-title">{{ totalFollowUp }}</span>
-          <span class="text-[11px] font-medium text-muted">Follow-Up Patients</span>
+          <span class="text-[11px] font-medium text-muted">{{ t('doctors.stats.followUpPatients') }}</span>
         </div>
       </div>
     </div>
@@ -71,12 +71,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch, markRaw } from 'vue';
+import { useI18n } from 'vue-i18n';
 import * as echarts from 'echarts';
 import type { DayStat } from '@/types/doctor';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
 
 defineOptions({ name: 'DetailStats' });
+
+const { t } = useI18n();
 
 const props = defineProps<{
   stats: { totalPatients: number; totalAppointments: number };

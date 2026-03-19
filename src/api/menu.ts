@@ -5,7 +5,7 @@
  */
 
 import request from '@/utils/http';
-import { Route, Menu } from './types';
+import type { Route, Menu } from '@/types/api/menu';
 
 /**
  * 获取当前登录用户的动态路由树

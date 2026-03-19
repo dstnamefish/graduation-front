@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col h-full overflow-hidden bg-surface border border-border rounded-2xl z-10">
+  <div
+    class="flex flex-col h-full overflow-hidden bg-surface border border-border rounded-2xl z-10"
+  >
     <ScheduleHeader
       v-model="currentView"
       v-model:selected-agenda="selectedAgenda"
@@ -10,9 +12,7 @@
       @add="handleAddSchedule"
     />
 
-    <div
-      class="flex-1 min-h-0 relative overflow-hidden"
-    >
+    <div class="flex-1 min-h-0 relative overflow-hidden">
       <Transition
         name="view-fade"
         mode="out-in"
@@ -23,6 +23,7 @@
           :events="events"
           :selected-agenda="selectedAgenda"
           @event-click="handleEventClick"
+          @view-change="handleViewChange"
         />
 
         <ScheduleWeekView
@@ -48,15 +49,18 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n';
 import ScheduleHeader from './modules/ScheduleHeader.vue';
 import ScheduleMonthView from './modules/ScheduleMonthView.vue';
 import ScheduleWeekView from './modules/ScheduleWeekView.vue';
 import ScheduleDayView from './modules/ScheduleDayView.vue';
-import { fetchCalendar } from '@/api/core/appointment';
+import { fetchCalendar } from '@/api/appointment';
 import type { AgendaEvent } from '@/types/api/appointment';
 import type { ScheduleEvent } from '@/types/api/doctor-schedule';
 
 defineOptions({ name: 'DoctorsSchedule' });
+
+const { t } = useI18n();
 
 const currentDate = ref(new Date(2028, 6, 1));
 const currentView = ref<'Day' | 'Week' | 'Month'>('Month');
@@ -112,9 +116,16 @@ const getDateRange = () => {
     endDate = currentDate.value;
   }
 
+  const formatLocalYYYYMMDD = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
   return {
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
+    startDate: formatLocalYYYYMMDD(startDate),
+    endDate: formatLocalYYYYMMDD(endDate),
   };
 };
 
@@ -148,7 +159,7 @@ const fetchSchedules = async () => {
     }));
   } catch (error) {
     console.error('Failed to fetch agenda', error);
-    ElMessage.error('Failed to load schedule data');
+    ElMessage.error(t('doctorSchedule.loadFailed'));
     events.value = [];
   }
 };
@@ -192,11 +203,16 @@ watch(currentView, () => {
 });
 
 const handleAddSchedule = () => {
-  ElMessage.success('Opening Schedule Form...');
+  ElMessage.success(t('doctorSchedule.openingScheduleForm'));
 };
 
 const handleEventClick = (event: ScheduleEvent) => {
   ElMessage.success(`Doctor: ${event.doctorName} - ${event.time}`);
+};
+
+const handleViewChange = (view: 'Day' | 'Week' | 'Month', date: Date) => {
+  currentView.value = view;
+  currentDate.value = date;
 };
 
 onMounted(() => {

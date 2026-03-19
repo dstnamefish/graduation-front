@@ -25,9 +25,7 @@
         trigger="hover"
         @command="handleChangeLanguage"
       >
-        <WnIconButton
-          icon="meteor-icons:language"
-        />
+        <WnIconButton icon="meteor-icons:language" />
         <template #dropdown>
           <ElDropdownMenu>
             <ElDropdownItem

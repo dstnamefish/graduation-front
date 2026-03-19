@@ -166,7 +166,7 @@ const columns = computed<ColumnOption[]>(() => [
 ]);
 
 const handleAddDoctor = () => {
-  ElMessage.success('Add Doctor functionality coming soon!');
+  ElMessage.success(t('doctors.addDoctor') + ' functionality coming soon!');
 };
 
 const handleGoDetail = (row: Doctor) => {
@@ -177,18 +177,18 @@ const handleGoDetail = (row: Doctor) => {
 };
 
 const handleEdit = (row: Doctor) => {
-  ElMessage.info(`Editing ${row.name}`);
+  ElMessage.info(`${t('doctors.editDoctor')}: ${row.name}`);
 };
 
 const handleDelete = async (row: Doctor) => {
   try {
-    await ElMessageBox.confirm(`Are you sure you want to remove ${row.name}?`, 'Delete Doctor', {
+    await ElMessageBox.confirm(t('doctors.confirmDelete', { name: row.name }), t('doctors.deleteDoctor'), {
       type: 'warning',
       confirmButtonClass: 'el-button--danger',
-      confirmButtonText: 'Delete',
+      confirmButtonText: t('doctors.delete'),
     });
     await doctorApi.deleteDoctor(row.id);
-    ElMessage.success(`${row.name} removed successfully`);
+    ElMessage.success(t('doctors.deleteSuccess', { name: row.name }));
     handleSearch();
   } catch (error: any) {
     if (error !== 'cancel') {
@@ -216,7 +216,7 @@ const handleDelete = async (row: Doctor) => {
           mode="add"
           @click="handleAddDoctor"
         >
-          Add Doctor
+          {{ t('doctors.addDoctor') }}
         </WnButton>
       </template>
     </WnTableHeader>

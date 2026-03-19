@@ -2,20 +2,24 @@
   <div class="flex flex-col gap-6">
     <!-- 头部 -->
     <div class="flex items-center justify-between px-1">
-      <h2 class="text-xl font-bold text-slate-900">{{ currentMonthYear }}</h2>
-      <div class="flex gap-1">
-        <button @click="changeMonth(-1)" class="p-2 hover:bg-slate-100 rounded-lg transition-colors group">
-          <WnSvgIcon icon="local-directions/arrow-left" :size="18" class="text-slate-400 group-hover:text-slate-600 transition-colors" />
-        </button>
-        <button @click="changeMonth(1)" class="p-2 hover:bg-slate-100 rounded-lg transition-colors group">
-          <WnSvgIcon icon="local-directions/arrow-right" :size="18" class="text-slate-400 group-hover:text-slate-600 transition-colors" />
-        </button>
+      <h2 class="text-xl font-bold text-title">{{ currentMonthYear }}</h2>
+      <div class="flex items-center gap-1">
+        <WnIconButton
+          icon="hugeicons:arrow-left-01"
+          @click="changeMonth(-1)"
+          class="bg-transparent! hover:text-action-text!"
+        />
+        <WnIconButton
+          icon="hugeicons:arrow-right-01"
+          @click="changeMonth(1)"
+          class="bg-transparent! hover:text-action-text!"
+        />
       </div>
     </div>
 
     <!-- 周日标题 -->
     <div class="grid grid-cols-7 text-center">
-      <span v-for="day in weekDays" :key="day" class="text-sm text-slate-400">
+      <span v-for="day in weekDays" :key="day" class="text-sm text-placeholder">
         {{ day.substring(0, 3) }}
       </span>
     </div>
@@ -29,14 +33,14 @@
         :disabled="!dayObj.isCurrentMonth"
         class="relative w-8 h-8 mx-auto flex items-center justify-center rounded-lg transition-all duration-300"
         :class="[
-          dayObj.isSelected ? 'bg-[#243956] text-white z-10' : 'hover:bg-slate-50 text-slate-600',
+          dayObj.isSelected ? 'bg-primary text-primary-foreground z-10' : 'hover:bg-surface-bg text-body',
           !dayObj.isCurrentMonth ? 'opacity-20 cursor-default' : 'cursor-pointer',
-          dayObj.isToday && !dayObj.isSelected ? 'text-blue-600' : '',
+          dayObj.isToday && !dayObj.isSelected ? 'text-link' : '',
         ]"
       >
         {{ dayObj.date.getDate() }}
         <!-- 当前日期指示器 -->
-        <span v-if="dayObj.isToday && !dayObj.isSelected" class="absolute bottom-1.5 w-1 h-1 bg-[#045] rounded-full"></span>
+        <span v-if="dayObj.isToday && !dayObj.isSelected" class="absolute bottom-1.5 w-1 h-1 bg-link rounded-full"></span>
       </button>
     </div>
   </div>

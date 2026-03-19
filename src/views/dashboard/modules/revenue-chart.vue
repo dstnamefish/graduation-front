@@ -1,8 +1,8 @@
 <template>
-  <div class="p-6 rounded-[24px] border border-[#e7e7e9] w-full bg-white">
+  <div class="p-6 rounded-3xl border border-border w-full bg-surface">
     <div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4">
-        <h2 class="text-2xl font-bold text-slate-800">Revenue</h2>
+        <h2 class="text-2xl font-bold text-title">Revenue</h2>
         <WnTabSwitch
           v-model="selectedTab"
           :options="timeTabOptions"
@@ -12,12 +12,12 @@
 
       <div class="flex items-center gap-8 mb-6">
         <div class="flex items-center gap-2.5">
-          <span class="w-3.5 h-3.5 rounded-full bg-[#243956]"></span>
-          <span class="text-sm text-[#666]">Income</span>
+          <span class="w-3.5 h-3.5 rounded-full" style="background-color: var(--color-slate-800)"></span>
+          <span class="text-sm text-muted">Income</span>
         </div>
         <div class="flex items-center gap-2.5">
-          <span class="w-3.5 h-3.5 rounded-full bg-[#67e8f9]"></span>
-          <span class="text-sm text-[#666]">Expense</span>
+          <span class="w-3.5 h-3.5 rounded-full" style="background-color: var(--color-primary-400)"></span>
+          <span class="text-sm text-muted">Expense</span>
         </div>
       </div>
     </div>
@@ -33,6 +33,7 @@
 import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import WnTabSwitch from '@/components/core/widget/Wn-tab-switch/index.vue';
+import { useSettingStore } from '@/store/setting';
 
 defineOptions({ name: 'RevenueChart' });
 
@@ -42,6 +43,7 @@ const timeTabOptions = [
   { label: 'Year', value: 'Year' },
 ];
 const selectedTab = ref('Week');
+const settingStore = useSettingStore();
 const chartRef = ref<HTMLElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
 
@@ -79,8 +81,11 @@ const generateData = (type: string) => {
   }
 };
 
+const currentData = ref(generateData(selectedTab.value));
+
 const generateChartOptions = () => {
-  const { x, income, expense } = generateData(selectedTab.value);
+  const c = (val: string) => val.startsWith('var(') ? getCssVar(val.slice(4, -1)).trim() : val;
+  const { x, income, expense } = currentData.value;
 
   let zoomEnd = 100;
   if (selectedTab.value === 'Month') zoomEnd = (7 / 32) * 100;
@@ -101,7 +106,7 @@ const generateChartOptions = () => {
       : [];
 
   return {
-    color: ['#243956', '#67e8f9'],
+    color: [c('var(--color-slate-800)'), c('var(--color-primary-400)')],
     animationDuration: 1000,
     animationEasing: 'cubicOut' as const,
     dataZoom: dataZoom as any,
@@ -114,11 +119,11 @@ const generateChartOptions = () => {
     },
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#dff9fa',
-      borderColor: '#dff9fa',
+      backgroundColor: c('var(--color-primary-100)'),
+      borderColor: c('var(--color-primary-100)'),
       padding: [8, 16],
       textStyle: {
-        color: '#1e293b',
+        color: c('var(--color-slate-900)'),
         fontSize: 14,
         fontWeight: 'bold',
       },
@@ -136,7 +141,7 @@ const generateChartOptions = () => {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#94a3b8',
+        color: c('var(--color-slate-400)'),
         margin: 20,
         fontSize: 16,
         interval: 0,
@@ -144,7 +149,7 @@ const generateChartOptions = () => {
       splitLine: {
         show: true,
         lineStyle: {
-          color: '#e2e8f0',
+          color: c('var(--color-slate-200)'),
           type: 'solid',
           width: 1,
         },
@@ -157,13 +162,13 @@ const generateChartOptions = () => {
       splitLine: {
         show: true,
         lineStyle: {
-          color: '#e2e8f0',
+          color: c('var(--color-slate-200)'),
           type: 'solid',
           width: 2,
         },
       },
       axisLabel: {
-        color: '#62748e',
+        color: c('var(--color-slate-400)'),
         fontSize: 16,
         margin: 16,
         formatter: (value: number) => {
@@ -187,13 +192,13 @@ const generateChartOptions = () => {
           borderColor: 'rgba(0,0,0,0)',
           borderWidth: 0,
         },
-        lineStyle: { width: 3, color: '#243956' },
+        lineStyle: { width: 3, color: c('var(--color-slate-800)') },
         data: income,
         emphasis: {
           scale: true,
           itemStyle: {
-            color: '#243956',
-            borderColor: '#243956',
+            color: c('var(--color-slate-800)'),
+            borderColor: c('var(--color-slate-800)'),
             borderWidth: 3,
             opacity: 1,
           },
@@ -211,13 +216,13 @@ const generateChartOptions = () => {
           borderColor: 'rgba(0,0,0,0)',
           borderWidth: 0,
         },
-        lineStyle: { width: 3, color: '#67e8f9' },
+        lineStyle: { width: 3, color: c('var(--color-primary-400)') },
         data: expense,
         emphasis: {
           scale: true,
           itemStyle: {
-            color: '#67e8f9',
-            borderColor: '#67e8f9',
+            color: c('var(--color-primary-400)'),
+            borderColor: c('var(--color-primary-400)'),
             borderWidth: 3,
             opacity: 1,
           },
@@ -240,7 +245,10 @@ const handleResize = () => {
   chartInstance?.resize();
 };
 
-watch(selectedTab, () => {
+watch([selectedTab, () => settingStore.isDark], ([newTab], [oldTab]) => {
+  if (newTab !== oldTab) {
+    currentData.value = generateData(newTab as string);
+  }
   if (chartInstance) {
     chartInstance.setOption(generateChartOptions());
   }

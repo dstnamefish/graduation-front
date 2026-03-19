@@ -19,14 +19,15 @@ export class MenuProcessor {
    * 获取菜单数据
    */
   async getMenuList(): Promise<AppRouteRecord[]> {
-    const { isFrontendMode } = useAppMode();
+    // const { isFrontendMode } = useAppMode();
 
     let menuList: AppRouteRecord[];
-    if (isFrontendMode.value) {
-      menuList = await this.processFrontendMenu();
-    } else {
+    // 暂时注释掉前端模式相关代码，优先使用后端模式
+    // if (isFrontendMode.value) {
+    //   menuList = await this.processFrontendMenu();
+    // } else {
       menuList = await this.processBackendMenu();
-    }
+    // }
 
     // 规范化路径（将相对路径转换为完整路径）
     return this.normalizeMenuPaths(menuList);
@@ -59,19 +60,38 @@ export class MenuProcessor {
 
   private mapRouteVOToAppRouteRecord(routes: any[]): AppRouteRecord[] {
     return routes.map((route) => {
+      // 提供默认的 meta 对象，防止后端返回的 meta 为空时报错
+      const safeMeta = route.meta || {};
+      
+      // 默认顶部导航栏配置（如果后端没传，默认开启各项功能）
+      const defaultHeaderBar = {
+        breadcrumb: true,
+        globalSearch: true,
+      };
+
+      // 将后端传来的 headerBar 与默认配置合并，后端传了的以之为准
+      const mergedHeaderBar = {
+        ...defaultHeaderBar,
+        ...(safeMeta.headerBar || {}),
+      };
+
       const record: AppRouteRecord = {
         name: route.name,
         path: route.path,
         component: route.component,
         redirect: route.redirect,
         meta: {
-          ...route.meta,
-          title: route.meta.title,
-          icon: route.meta.icon,
-          isHide: route.meta.hidden,
-          activePath: route.meta.activeMenu,
-          keepAlive: !route.meta.noCache,
-          roles: route.meta.roles,
+          ...safeMeta,
+          title: safeMeta.title || route.name || '',
+          icon: safeMeta.icon,
+          isHide: safeMeta.hidden === true,
+          activePath: safeMeta.activeMenu,
+          keepAlive: safeMeta.noCache !== true,
+          roles: safeMeta.roles || [],
+          // 前端特定配置的降级处理
+          fixedHeight: safeMeta.fixedHeight !== undefined ? safeMeta.fixedHeight : false,
+          isDetail: safeMeta.isDetail !== undefined ? safeMeta.isDetail : false,
+          headerBar: mergedHeaderBar,
         },
       };
 

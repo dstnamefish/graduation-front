@@ -1,14 +1,14 @@
 <template>
-  <div class="bg-white p-6 rounded-2xl border border-[#e7e7e9] w-full">
+  <div class="bg-surface p-6 rounded-2xl border border-border w-full">
     <div class="flex justify-between items-center mb-8">
       <div class="flex flex-col gap-0.5">
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Doctors' Schedule</h2>
+        <h2 class="text-2xl font-bold text-title tracking-tight">Doctors' Schedule</h2>
       </div>
       <button
-        class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-95"
+        class="text-placeholder hover:bg-surface-bg p-2 rounded-xl transition-all active:scale-95"
       >
         <WnSvgIcon
-          icon="local-system/more"
+          icon="hugeicons:more-horizontal"
           :size="20"
         />
       </button>
@@ -19,23 +19,23 @@
         <div
           v-for="doctor in dashboardDoctors"
           :key="doctor.id"
-          class="flex items-center gap-4 group cursor-pointer py-4 first:pt-0 last:pb-0 border-b-3 border-slate-100 last:border-0"
+          class="flex items-center gap-4 group cursor-pointer py-4 first:pt-0 last:pb-0 border-b-3 border-border last:border-0"
         >
           <div class="relative">
             <img
               :src="doctor.avatar"
               :alt="doctor.name"
-              class="w-15 h-15 rounded-full object-cover border border-slate-100 transition-transform"
+              class="w-14 h-14 rounded-full object-cover border border-border transition-transform"
             />
           </div>
 
           <div class="flex-1 min-w-0">
             <h3
-              class="text-sm text-slate-800 truncate group-hover:text-[#243956] transition-colors"
+              class="text-sm text-title group-hover:text-primary transition-colors"
             >
               {{ doctor.name }}
             </h3>
-            <p class="text-xs text-slate-400 truncate mt-0.5 tracking-wide">
+            <p class="text-xs text-muted truncate mt-0.5 tracking-wide">
               {{ doctor.specialty }}
             </p>
           </div>
@@ -45,8 +45,8 @@
               class="px-2 py-0.5 rounded-full border whitespace-nowrap"
               :class="[
                 doctor.status === 'Available'
-                  ? 'bg-[#dff9f9] text-[] border-[#a2f2ef] text-xs'
-                  : 'bg-rose-50 text-rose-500 border-[#fc4245] text-sm',
+                  ? 'bg-doctor-available-bg text-doctor-available-text border-doctor-available-border text-xs'
+                  : 'bg-doctor-unavailable-bg text-doctor-unavailable-text border-doctor-unavailable-border text-sm',
               ]"
             >
               {{ doctor.status }}
@@ -54,7 +54,7 @@
 
             <span
               v-if="doctor.status === 'Available'"
-              class="text-xs text-slate-400"
+              class="text-xs text-muted"
             >
               {{ doctor.timeRange }}
             </span>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { Icon } from '@iconify/vue'; // 引入 Iconify
 
 // --- 类型定义 ---
 type ActivityType = 'discharge' | 'admission' | 'maintenance' | 'restock' | 'emergency';
@@ -46,59 +48,54 @@ const dashRecentActivities = ref<ActivityItem[]>([
 
 const getActIconName = (type: ActivityType) => {
   const map: Record<ActivityType, string> = {
-    discharge: 'local-business/discharge',
-    admission: 'local-business/admission',
-    maintenance: 'local-system/maintenance',
-    restock: 'local-actions/restock',
-    emergency: 'local-business/emergency'
+    discharge: 'hugeicons:tick-02', 
+    admission: 'hugeicons:bed',
+    maintenance: 'hugeicons:wrench-01',
+    restock: 'hugeicons:layers-01',
+    emergency: 'hugeicons:alert-circle'
   };
   return map[type];
 };
 </script>
 
 <template>
-  <div class="w-full bg-[#f5f5f5] rounded-2xl p-6">
-    <!-- Header -->
+  <div class="w-full bg-card rounded-2xl p-6">
     <div class="flex justify-between items-center mb-8 px-1">
       <div class="flex flex-col gap-0.5">
-        <h2 class="text-2xl font-bold text-slate-900">Recent Activity</h2>
+        <h2 class="text-2xl font-bold text-title">Recent Activity</h2>
       </div>
       <button
-        class="text-slate-400 hover:bg-slate-100 p-2 rounded-xl transition-all active:scale-90"
+        class="text-placeholder hover:bg-surface-bg p-2 rounded-xl transition-all active:scale-90"
       >
-        <WnSvgIcon
-          icon="local-system/more"
-          :size="24"
+        <Icon
+          icon="hugeicons:more-horizontal"
+          width="24"
+          height="24"
         />
       </button>
     </div>
 
-    <!-- Activity List -->
     <div class="flex flex-col gap-6 relative">
-      <!-- Vertical line indicator -->
-      <div class="absolute left-5 top-2 bottom-2 w-px bg-slate-100"></div>
-
       <div
         v-for="item in dashRecentActivities"
         :key="item.id"
-        class="flex items-start gap-4 relative z-10 group"
+        class="flex items-start gap-4 relative z-10 group cursor-pointer"
       >
-        <!-- Icon Container -->
         <div
-          class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#a2f2ef] text-[#1A2E44]"
+          class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-accent-background text-title shadow-sm"
         >
-          <WnSvgIcon
+          <Icon
             :icon="getActIconName(item.iconType)"
-            :size="24"
+            width="24"
+            height="24"
           />
         </div>
 
-        <!-- Content -->
         <div class="flex-1 min-w-0 pt-0.5">
-          <p class="leading-normal group-hover:text-blue-600 transition-colors">
+          <p class="leading-normal text-body group-hover:text-link transition-colors">
             {{ item.content }}
           </p>
-          <p class="text-xs text-[#666] mt-1.5 uppercase tracking-widest flex items-center gap-1.5">
+          <p class="text-xs text-muted mt-1.5 uppercase tracking-widest flex items-center gap-1.5">
             {{ item.time }}
           </p>
         </div>

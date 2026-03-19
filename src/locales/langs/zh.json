@@ -127,17 +127,114 @@
       "todaysAppointment": "今日预约",
       "availabilityStatus": "可用性状态",
       "action": "操作"
+    },
+    "addDoctor": "添加医生",
+    "editDoctor": "编辑医生",
+    "deleteDoctor": "删除医生",
+    "confirmDelete": "确定要删除 {name} 吗？",
+    "deleteSuccess": "{name} 删除成功",
+    "delete": "删除",
+    "detail": {
+      "notFound": "未找到医生记录",
+      "returnToList": "返回列表",
+      "loadFailed": "加载医生详情失败"
+    },
+    "profile": {
+      "specialist": "专业领域",
+      "about": "简介",
+      "workExperience": "工作经历"
+    },
+    "stats": {
+      "totalPatients": "总患者数",
+      "totalAppointments": "总预约数",
+      "appointmentStats": "预约统计",
+      "thisWeek": "本周",
+      "lastWeek": "上周",
+      "newPatients": "新患者",
+      "followUpPatients": "复诊患者"
+    },
+    "schedule": {
+      "title": "日程安排",
+      "schedulesToday": "今日日程",
+      "noSchedules": "暂无日程"
+    },
+    "feedback": {
+      "title": "患者反馈"
     }
+  },
+  "doctorSchedule": {
+    "title": "医生排班",
+    "addSchedule": "添加日程",
+    "allAgenda": "全部日程",
+    "checkUp": "体检",
+    "surgery": "手术",
+    "consultation": "咨询",
+    "day": "日",
+    "week": "周",
+    "month": "月",
+    "more": "更多",
+    "noEvents": "暂无日程",
+    "noSchedules": "今日无日程安排",
+    "doctorsScheduleToday": "今日医生日程",
+    "loadFailed": "加载日程数据失败",
+    "openingScheduleForm": "正在打开日程表单..."
   },
   "inventory": {
     "table": {
       "image": "图片",
       "item": "物品",
       "category": "类别",
-      "Availiability": "可用性",
-      "Qty In Stock": "库存数量",
-      "Qty In Recorder": "记录数量",
-      "Action": "操作"
+      "availability": "可用性",
+      "qtyInStock": "库存数量",
+      "qtyInReorder": "补货数量",
+      "action": "操作"
+    },
+    "filter": {
+      "allCategories": "所有类别",
+      "category": "类别",
+      "status": "状态",
+      "available": "有货",
+      "low": "库存不足",
+      "outOfStock": "缺货",
+      "searchPlaceholder": "搜索物品..."
+    },
+    "addItem": "添加物品",
+    "batchReorder": "批量补货",
+    "batchDelete": "批量删除",
+    "reorder": "补货",
+    "loadCategoriesFailed": "无法加载库存类别",
+    "addItemOpened": "添加物品对话框已打开",
+    "reorderSuccess": "{name} 补货成功",
+    "batchReorderSuccess": "{count} 个物品补货成功",
+    "batchDeleteSuccess": "{count} 个物品已删除"
+  },
+  "payments": {
+    "table": {
+      "invoiceId": "发票编号",
+      "patientName": "患者姓名",
+      "treatment": "治疗项目",
+      "date": "日期",
+      "amount": "金额",
+      "status": "状态",
+      "action": "操作"
+    },
+    "filter": {
+      "searchPlaceholder": "搜索姓名、治疗项目等...",
+      "pickDate": "选择日期",
+      "status": "状态",
+      "pending": "待支付",
+      "paid": "已支付",
+      "overdue": "逾期"
+    },
+    "addInvoice": "添加发票",
+    "view": "查看",
+    "edit": "编辑",
+    "createInvoiceOpened": "创建发票对话框已打开",
+    "stats": {
+      "totalInvoice": "总发票数",
+      "paidInvoice": "已支付发票",
+      "pendingInvoice": "待支付发票",
+      "overdue": "逾期发票"
     }
   },
   "auth": {
@@ -222,6 +319,40 @@
         "passwordMismatch": "两次输入的密码不一致！"
       }
     }
+  },
+  "appointments": {
+    "addAppointment": "添加预约",
+    "batchCancel": "批量取消",
+    "reschedule": "改期",
+    "cancel": "取消",
+    "table": {
+      "name": "姓名",
+      "date": "日期",
+      "time": "时间",
+      "doctor": "医生",
+      "treatment": "治疗项目",
+      "status": "状态",
+      "action": "操作"
+    },
+    "status": {
+      "all": "全部",
+      "confirmed": "已确认",
+      "pending": "待确认",
+      "cancelled": "已取消"
+    },
+    "searchPlaceholder": "搜索患者姓名...",
+    "confirmCancel": "确定要取消 {patient} 的预约吗？",
+    "cancelTitle": "确认取消",
+    "cancelSuccess": "{patient} 的预约已取消。",
+    "confirmBatchCancel": "确定要取消 {count} 个预约吗？",
+    "batchCancelTitle": "确认批量取消",
+    "yesCancel": "是的，取消它们",
+    "noKeep": "不，保留它们",
+    "batchCancelSuccess": "{count} 个预约已取消。",
+    "fetchFailed": "获取预约列表失败",
+    "cancelFailed": "取消预约失败",
+    "rescheduleComingSoon": "改期功能即将推出！",
+    "addComingSoon": "添加预约弹窗即将推出！"
   },
   "userMenu": {
     "viewProfile": "查看个人资料",

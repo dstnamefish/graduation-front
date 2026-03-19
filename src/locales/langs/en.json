@@ -127,17 +127,114 @@
       "todaysAppointment": "Today's Appointments",
       "availabilityStatus": "Availability Status",
       "action": "Action"
+    },
+    "addDoctor": "Add Doctor",
+    "editDoctor": "Edit Doctor",
+    "deleteDoctor": "Delete Doctor",
+    "confirmDelete": "Are you sure you want to remove {name}?",
+    "deleteSuccess": "{name} removed successfully",
+    "delete": "Delete",
+    "detail": {
+      "notFound": "Doctor record not found",
+      "returnToList": "Return to List",
+      "loadFailed": "Failed to load doctor details"
+    },
+    "profile": {
+      "specialist": "Specialist",
+      "about": "About",
+      "workExperience": "Work Experience"
+    },
+    "stats": {
+      "totalPatients": "Total Patients",
+      "totalAppointments": "Total Appointments",
+      "appointmentStats": "Appointment Stats",
+      "thisWeek": "This Week",
+      "lastWeek": "Last Week",
+      "newPatients": "New Patients",
+      "followUpPatients": "Follow-Up Patients"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "schedulesToday": "schedules today",
+      "noSchedules": "No schedules"
+    },
+    "feedback": {
+      "title": "Feedback"
     }
+  },
+  "doctorSchedule": {
+    "title": "Doctors Schedule",
+    "addSchedule": "Add Schedule",
+    "allAgenda": "All Agenda",
+    "checkUp": "Check-Up",
+    "surgery": "Surgery",
+    "consultation": "Consultation",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "more": "more",
+    "noEvents": "No events",
+    "noSchedules": "No schedules for this day.",
+    "doctorsScheduleToday": "Doctors' schedule today",
+    "loadFailed": "Failed to load schedule data",
+    "openingScheduleForm": "Opening Schedule Form..."
   },
   "inventory": {
     "table": {
       "image": "Image",
       "item": "Item",
       "category": "Category",
-      "Availiability": "Availiability",
-      "Qty In Stock": "Qty In Stock",
-      "Qty In Recorder": "Qty In Recorder",
-      "Action": "Action"
+      "availability": "Availability",
+      "qtyInStock": "Qty In Stock",
+      "qtyInReorder": "Qty In Reorder",
+      "action": "Action"
+    },
+    "filter": {
+      "allCategories": "All Categories",
+      "category": "Category",
+      "status": "Status",
+      "available": "Available",
+      "low": "Low",
+      "outOfStock": "Out of Stock",
+      "searchPlaceholder": "Search item..."
+    },
+    "addItem": "Add Item",
+    "batchReorder": "Batch Reorder",
+    "batchDelete": "Batch Delete",
+    "reorder": "Reorder",
+    "loadCategoriesFailed": "Unable to load inventory categories",
+    "addItemOpened": "Add Item dialog opened",
+    "reorderSuccess": "Reordered {name} successfully",
+    "batchReorderSuccess": "Reordered {count} item(s) successfully",
+    "batchDeleteSuccess": "{count} item(s) have been deleted"
+  },
+  "payments": {
+    "table": {
+      "invoiceId": "Invoice ID",
+      "patientName": "Patient Name",
+      "treatment": "Treatment",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status",
+      "action": "Action"
+    },
+    "filter": {
+      "searchPlaceholder": "Search name,treatment,etc",
+      "pickDate": "Pick a date",
+      "status": "Status",
+      "pending": "Pending",
+      "paid": "Paid",
+      "overdue": "Overdue"
+    },
+    "addInvoice": "Add Invoice",
+    "view": "View",
+    "edit": "Edit",
+    "createInvoiceOpened": "Create Invoice dialog opened",
+    "stats": {
+      "totalInvoice": "Total Invoice",
+      "paidInvoice": "Paid Invoice",
+      "pendingInvoice": "Pending Invoice",
+      "overdue": "Overdue"
     }
   },
   "auth": {
@@ -222,6 +319,40 @@
         "passwordMismatch": "Password confirmation does not match!"
       }
     }
+  },
+  "appointments": {
+    "addAppointment": "Add Appointment",
+    "batchCancel": "Batch Cancel",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "table": {
+      "name": "Name",
+      "date": "Date",
+      "time": "Time",
+      "doctor": "Doctor",
+      "treatment": "Treatment",
+      "status": "Status",
+      "action": "Action"
+    },
+    "status": {
+      "all": "All",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "searchPlaceholder": "Search patient name...",
+    "confirmCancel": "Are you sure you want to cancel appointment for {patient}?",
+    "cancelTitle": "Confirm Cancellation",
+    "cancelSuccess": "Appointment for {patient} has been cancelled.",
+    "confirmBatchCancel": "Are you sure you want to cancel {count} appointment(s)?",
+    "batchCancelTitle": "Confirm Batch Cancellation",
+    "yesCancel": "Yes, cancel them",
+    "noKeep": "No, keep them",
+    "batchCancelSuccess": "{count} appointment(s) have been cancelled.",
+    "fetchFailed": "Failed to fetch appointments",
+    "cancelFailed": "Failed to cancel appointment",
+    "rescheduleComingSoon": "Reschedule functionality coming soon!",
+    "addComingSoon": "Add Appointment modal coming soon!"
   },
   "userMenu": {
     "viewProfile": "View Profile",

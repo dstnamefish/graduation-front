@@ -25,9 +25,9 @@
     </main>
 
     <!-- 右侧侧边栏：日历 & 本日议程 & 最近活动 -->
-    <aside class="hidden xl:flex w-[460px] flex-col gap-6 pl-0 backdrop-blur-xl">
+    <aside class="hidden xl:flex w-115 flex-col gap-6 pl-0 backdrop-blur-xl">
       <!-- 背景 -->
-      <div class="bg-[#f5f5f5] rounded-2xl p-6 border border-[#f5f5f5] flex flex-col flex-1 min-h-0">
+      <div class="bg-card rounded-2xl p-6 border border-card flex flex-col flex-1 min-h-0">
         <!-- 日历 -->
         <div class="shrink-0">
           <MiniCalendar v-model="selectedDate" />

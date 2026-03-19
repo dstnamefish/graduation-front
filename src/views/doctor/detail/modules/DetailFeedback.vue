@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col flex-1 shrink-0 overflow-hidden mt-6">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm font-extrabold text-slate-800">Feedback</h3>
+      <h3 class="text-sm font-extrabold text-slate-800">{{ t('doctors.feedback.title') }}</h3>
       <WnIconButton
         icon="ri:more-line"
         :size="18"
@@ -34,11 +34,14 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Feedback } from '@/types/doctor';
 import WnIconButton from '@/components/core/widget/Wn-icon-button/index.vue';
 import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 
 defineOptions({ name: 'DetailFeedback' });
+
+const { t } = useI18n();
 
 defineProps<{
   feedback: Feedback[];

@@ -15,7 +15,6 @@
  * @author 16518
  */
 
-
 import { headerBarConfig } from '@/config/modules/headerBar';
 import { useSettingStore } from '@/store/setting';
 import { HeaderBarFeatureConfig, RouteMeta } from '@/types';

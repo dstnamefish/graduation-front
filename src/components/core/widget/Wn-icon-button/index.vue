@@ -1,7 +1,7 @@
 <!-- 图标按钮组件：可点击的图标容器，支持圆形和自定义尺寸 -->
 <template>
   <div class="h-10 w-10 inline-flex items-center justify-center 
-    bg-field-muted! hover:bg-field-muted-hover! text-title rounded-xl! overflow-hidden c-p outline-none! select-none transition-all duration-300"
+    bg-field-muted! hover:bg-field-muted-hover! text-title rounded-xl! overflow-hidden c-p outline-none! select-none transition-all duration-300 [&_svg]:active:scale-90 [&_svg]:transition-transform [&_svg]:duration-200"
       :class="{ 'rounded-full!': props.circle }">
     <WnSvgIcon :icon="props.icon" :size="props.size" class="shrink-0" />
     <slot v-if="slots.default" />

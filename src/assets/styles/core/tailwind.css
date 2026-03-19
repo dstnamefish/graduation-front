@@ -205,6 +205,7 @@
   --color-destructive-foreground: #ffffff; /* [白] 危险反色 */
   --color-destructive-subtle: var(--color-danger-50); /* [红] 危险浅底 */
   --color-destructive-text: var(--color-danger-700); /* [红] 危险文字 */
+  --color-destructive-bg: var(--color-danger-300); /* [红] 提示框背景 */
 
   /* 成功 */
   --color-success: var(--color-success-500); /* [绿] 成功主体 */

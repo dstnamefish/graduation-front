@@ -1,18 +1,18 @@
 <template>
-  <div class="p-7 rounded-2xl border border-[#eef0f2] w-full">
+  <div class="p-7 rounded-2xl border border-border w-full bg-surface">
     <div class="flex justify-between items-center mb-8 px-1">
-      <h2 class="text-2xl font-bold text-[#1a1c1e] tracking-tight">patient appointments</h2>
-      <button class="text-slate-600 hover:text-slate-600 transition-colors">View All</button>
+      <h2 class="text-2xl font-bold text-title tracking-tight">patient appointments</h2>
+      <button class="text-action-text hover:text-action-text-hover transition-colors">View All</button>
     </div>
 
     <!-- 日期 -->
-    <div class="flex items-center justify-between bg-[#dff9fa] rounded-[24px] p-2 mb-10">
+    <div class="flex items-center justify-between bg-accent rounded-2xl p-2 mb-10">
       <button
         @click="scrollDates('left')"
         class="w-10 h-10 flex items-center justify-center group"
       >
         <WnSvgIcon
-          icon="local-directions/arrow-left"
+          icon="hugeicons:arrow-left-01"
           :size="24"
         />
       </button>
@@ -27,20 +27,17 @@
         >
           <div
             @click="selectDate(day)"
-            class="flex flex-col items-center justify-center min-w-[86px] h-[56px] rounded-[8px] cursor-pointer transition-all duration-300"
-            :class="day.isActive ? 'bg-[#243956] text-white' : 'text-slate-400 hover:bg-slate-50'"
+            class="flex flex-col items-center justify-center min-w-[86px] h-14 rounded-lg cursor-pointer transition-all duration-300"
+            :class="day.isActive ? 'bg-primary text-primary-foreground' : 'text-placeholder hover:bg-surface'"
           >
-            <span
-              class="text-xs opacity-60 mb-1 transition-colors"
-              :class="day.isActive ? 'text-slate-300' : ''"
-            >
+            <span class="text-xs opacity-60 mb-1 transition-colors">
               {{ day.weekDay }}
             </span>
             <span class="text-xl text leading-none">{{ day.date }}</span>
           </div>
           <div
             v-if="idx < calendarDays.length - 1"
-            class="w-[2px] h-12 bg-[#e3edee] mx-2 shrink-0"
+            class="w-0.5 h-12 bg-border mx-2 shrink-0"
           ></div>
         </div>
       </div>
@@ -49,7 +46,7 @@
         class="w-10 h-10 flex items-center justify-center group"
       >
         <WnSvgIcon
-          icon="local-directions/arrow-right"
+          icon="hugeicons:arrow-right-01"
           :size="24"
         />
       </button>
@@ -64,7 +61,7 @@
               v-for="col in tableColumns"
               :key="col.key"
               @click="toggleSort(col.key)"
-              class="pb-6 text-sm px-4 text-[#666] cursor-pointer font-normal select-none group/th"
+              class="pb-6 text-sm px-4 text-muted cursor-pointer font-normal select-none group/th"
             >
               <div class="flex items-center gap-1.5 transition-colors">
                 {{ col.name }}
@@ -77,20 +74,20 @@
                   "
                 >
                   <WnSvgIcon
-                    icon="local-directions/arrow-up"
+                    icon="hugeicons:arrow-up-01"
                     :size="16"
                     :class="
                       sortConfig.key === col.key && sortConfig.order === 'asc'
-                        ? 'text-blue-500'
+                        ? 'text-link'
                         : ''
                     "
                   />
                   <WnSvgIcon
-                    icon="local-directions/arrow-down"
+                    icon="hugeicons:arrow-down-01"
                     :size="16"
                     :class="
                       sortConfig.key === col.key && sortConfig.order === 'desc'
-                        ? 'text-blue-500'
+                        ? 'text-link'
                         : ''
                     "
                     class="-mt-2.5"
@@ -110,9 +107,9 @@
             <td
               v-for="col in tableColumns"
               :key="col.key"
-              class="py-5 px-4"
+              class="py-5 px-4 block sm:table-cell"
               :class="[
-                index !== sortedAppointments.length - 1 ? 'border-b-4 border-[#f5f7f9]' : '',
+                index !== sortedAppointments.length - 1 ? 'border-b border-border' : '',
               ]"
             >
               <span
@@ -125,12 +122,12 @@
               <template v-else>{{ apt[col.key as keyof typeof apt] }}</template>
             </td>
             <td
-              class="py-5 px-4 text-right"
-              :class="index !== sortedAppointments.length - 1 ? 'border-b-4 border-[#f5f7f9]' : ''"
+              class="py-5 px-4 text-right block sm:table-cell"
+              :class="index !== sortedAppointments.length - 1 ? 'border-b border-border' : ''"
             >
-              <button class="text-slate-300 hover:text-slate-900 p-2">
+              <button class="text-placeholder hover:text-title p-2">
                 <WnSvgIcon
-                  icon="local-system/more"
+                  icon="hugeicons:more-horizontal"
                   :size="24"
                 />
               </button>
@@ -157,9 +154,9 @@ const tableColumns = [
 ];
 
 const STATUS_STYLES: Record<string, string> = {
-  Confirmed: 'bg-[#a2f2ed]',
-  Pending: 'bg-[#ffe1e1]',
-  Cancelled: 'bg-[#c4c4c4]',
+  Confirmed: 'bg-appointment-confirmed-bg text-appointment-confirmed-text border-appointment-confirmed-border',
+  Pending: 'bg-appointment-pending-bg text-appointment-pending-text border-appointment-pending-border',
+  Cancelled: 'bg-appointment-cancelled-bg text-appointment-cancelled-text border-appointment-cancelled-border',
 };
 
 const dateScrollContainer = ref<HTMLElement | null>(null);

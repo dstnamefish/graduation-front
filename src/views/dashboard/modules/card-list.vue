@@ -12,53 +12,53 @@
       :lg="6"
     >
       <div
-        class="group relative flex flex-col justify-between px-6 py-6 rounded-[24px] border border-[#e7e7e9] transition-all duration-300"
+        class="group relative flex flex-col justify-between px-6 py-6 rounded-2xl border border-border transition-all duration-300 hover:shadow-sm hover:border-border-strong"
       >
         <div class="flex justify-between items-start">
           <div class="flex items-center gap-3">
             <WnSvgIcon
-              :icon="getIcon(item.iconName)"
+              :icon="item.iconName"
               :size="20"
-              color="#666"
+              class="text-muted"
             />
-            <span class="text-sm font-medium text-slate-500 leading-[21px]">{{ item.title }}</span>
+            <span class="text-sm font-medium text-muted leading-5">{{ item.title }}</span>
           </div>
 
           <button
-            class="text-slate-300 hover:text-slate-600 transition-colors cursor-pointer p-1 -mr-1"
+            class="text-placeholder hover:text-action-text transition-colors cursor-pointer p-1 -mr-1"
           >
             <WnSvgIcon
-              icon="local-system/more"
+              icon="hugeicons:more-horizontal"
               :size="20"
-              color="#666"
+              class="text-placeholder group-hover:text-action-text"
             />
           </button>
         </div>
 
         <div class="flex items-center justify-between mt-4">
-          <span class="text-[30px] font-bold text-slate-900 tracking-tight leading-[36px]">
+          <span class="text-3xl font-bold text-title tracking-tight leading-9">
             {{ item.value.toLocaleString() }}
           </span>
 
           <div
-            class="flex items-center px-2 py-1 rounded-lg text-[12px] font-medium"
-            :class="item.trendPercent >= 0 ? 'bg-[#a1f1ee]' : 'bg-[#ffbabc]'"
+            class="flex items-center px-2 py-1 rounded-lg text-xs text-title font-medium"
+            :class="item.trendPercent >= 0 ? 'bg-accent-background' : 'bg-destructive-bg'"
           >
             <WnSvgIcon
               :icon="
-                item.trendPercent >= 0 ? 'local-status/trend-up' : 'local-status/trend-down'
+                item.trendPercent >= 0 ? 'iconamoon:trend-up-light' : 'iconamoon:trend-down-light'
               "
-              :size="12"
+              :size="16"
               class="mr-1"
             />
-            <span class="leading-[18px]">
+            <span class="leading-4">
               {{ item.trendPercent > 0 ? '+' : '' }}{{ item.trendPercent }}%
             </span>
           </div>
         </div>
 
         <div
-          class="text-[12px] text-slate-400 font-regular mt-2 flex items-center gap-1 leading-[18px]"
+          class="text-xs text-placeholder font-regular mt-2 flex items-center gap-1 leading-4"
         >
           <span>{{ Math.abs(item.changeValue) }}</span>
           <span>{{ item.changeValue >= 0 ? 'more' : 'less' }}</span>
@@ -70,10 +70,7 @@
 </template>
 
 <script setup lang="ts">
-
 defineOptions({ name: 'CardList' });
-
-const getIcon = (name: string) => `local-business/${name}`;
 
 interface CardDataItem {
   iconName: string;
@@ -85,28 +82,28 @@ interface CardDataItem {
 
 const dataList = reactive<CardDataItem[]>([
   {
-    iconName: 'invoice',
+    iconName: 'ph:users',
     title: 'Total Invoice',
     value: 1287,
     trendPercent: 2.14,
     changeValue: 56,
   },
   {
-    iconName: 'patients',
+    iconName: 'uil:user-circle',
     title: 'Total Patients',
     value: 965,
     trendPercent: 3.78,
     changeValue: 45,
   },
   {
-    iconName: 'appt',
+    iconName: 'mdi:calendar-check-outline',
     title: 'Appointments',
     value: 128,
     trendPercent: -1.56,
     changeValue: -18,
   },
   {
-    iconName: 'ph:bed-bold',
+    iconName: 'ph:bed-light',
     title: 'Bedroom',
     value: 315,
     trendPercent: 1.64,
