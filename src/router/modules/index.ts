@@ -1,14 +1,19 @@
 import { AppRouteRecord } from '@/types/router';
 
-import { appointmentsRoutes } from './appointments';
 import { dashboardRoutes } from './dashboard';
-import { departmentsRoutes } from './departments';
+import { appointmentsRoutes } from './appointments';
 import { doctorsRoutes } from './doctors';
+import { departmentsRoutes } from './departments';
 import { doctorsScheduleRoutes } from './doctorsSchedule';
+import { paymentsRoutes } from './payments';
 import { inventoryRoutes } from './inventory';
 import { messagesRoutes } from './messages';
 import { patientsRoutes } from './patients';
-import { paymentsRoutes } from './payments';
+import { feedbackRoutes } from './feedback';
+import { financeRoutes } from './finance';
+import { dictionaryRoutes } from './dictionary';
+import { scheduleRoutes } from './schedule';
+import { systemRoutes } from './system';
 
 /**
  * 导出所有模块化路由
@@ -23,4 +28,9 @@ export const routeModules: AppRouteRecord[] = [
   ...paymentsRoutes,
   ...inventoryRoutes,
   ...messagesRoutes,
+  ...feedbackRoutes,
+  ...financeRoutes,
+  ...dictionaryRoutes,
+  ...scheduleRoutes,
+  ...systemRoutes,
 ];

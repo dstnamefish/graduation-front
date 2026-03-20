@@ -97,13 +97,9 @@ export function fetchByPatient(params: PatientAppointmentQuery): Promise<Appoint
   });
 }
 
-/**
- * 按状态统计预约数量
- * @description 用于预约管理页面的状态标签统计展示
- * @returns 各状态的预约数量列表
- */
-export function fetchStatusCount(): Promise<AppointmentStatusCountListResponse> {
+export function fetchStatusCountFiltered(params?: AppointmentQuery): Promise<AppointmentStatusCountListResponse> {
   return request.get<AppointmentStatusCountListResponse>({
-    url: '/appointments/stats/by-status',
+    url: '/appointments/stats/by-status-filtered',
+    params,
   });
 }

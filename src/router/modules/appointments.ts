@@ -10,8 +10,9 @@ export const appointmentsRoutes: AppRouteRecord[] = [
       headerBar: {
         globalSearch: false,
       },
-      icon: 'local-business/appointments',
+      icon: 'hugeicons:calendar-03',
       fixedHeight: true,
+      roles: ['super_admin', 'department_admin', 'doctor', 'patient'],
       title: 'menus.appointments.title',
     },
     name: 'Appointments',

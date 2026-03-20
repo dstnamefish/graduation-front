@@ -1,29 +1,76 @@
 <!-- 侧边栏菜单组件：左侧导航菜单，支持折叠、多级菜单和徽章显示 -->
 <template>
-  <div class="flex flex-col h-screen bg-sidebar overflow-hidden transition-all duration-300" v-if="showLeftMenu" :style="{ width: getMenuOpenWidth }">
-    <div class="flex-ic h-20 px-6 cursor-pointer select-none transition-opacity hover:opacity-80" @click="navigateToHome">
-      <WnLogo :size="28" class="mr-2.5" />
-      <span class="text-xl font-extrabold tracking-tight text-color-slate-800">WellNest</span>
+  <div
+    class="relative flex flex-col h-screen bg-sidebar transition-[width] duration-300 z-50 ease-in-out"
+    :class="menuOpen ? 'overflow-hidden' : 'overflow-visible'"
+    v-if="showLeftMenu"
+    :style="{ width: getMenuOpenWidth }"
+  >
+    <div
+      class="flex-ic h-20 cursor-pointer select-none transition-all"
+      :class="menuOpen ? 'px-6 justify-start' : 'justify-center'"
+      @click="toggleSidebar"
+    >
+      <WnLogo
+        :size="menuOpen ? 28 : 32"
+        class="shrink-0"
+        :class="menuOpen ? 'mr-2.5' : ''"
+      />
+      <span
+        v-show="menuOpen"
+        class="text-xl font-extrabold tracking-tight text-title whitespace-nowrap"
+      >
+        WellNest
+      </span>
     </div>
-    <div class="flex-1 overflow-hidden px-3">
-      <ElScrollbar class="h-full">
-        <ElMenu :defaultActive="routerPath" :uniqueOpened="uniqueOpened" :defaultOpeneds="defaultOpenedMenus">
-          <SidebarSubmenu :list="menuList" :isMobile="isMobileMode" :level="0" @close="handleMenuClose" />
-        </ElMenu>
-      </ElScrollbar>
+    <div
+      class="flex-1 w-full hide-scrollbar transition-all duration-300"
+      :class="menuOpen ? 'px-4 overflow-y-auto overflow-x-hidden' : 'px-2.5 overflow-visible'"
+    >
+      <ul class="flex flex-col gap-1 w-full relative pb-4">
+        <SidebarSubmenu
+          :list="menuList"
+          :isMobile="isMobileMode"
+          :level="0"
+          :collapsed="!menuOpen"
+          @close="handleMenuClose"
+        />
+      </ul>
     </div>
-    <div class="p-4 mt-auto">
+    
+    <div
+      v-show="menuOpen"
+      class="p-4 mt-auto"
+    >
       <div class="relative bg-secondary rounded-2xl p-5 overflow-hidden shadow-sm group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500"></div>
+        <div
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-500"
+        ></div>
         <div class="relative z-10">
-          <div class="w-10 h-10 bg-primary/20 border border-primary/20 rounded-xl flex items-center justify-center mb-4">
-            <WnSvgIcon icon="lock" color="var(--Wn-primary)" :size="20" />
+          <div
+            class="w-10 h-10 bg-primary/20 border border-primary/20 rounded-xl flex items-center justify-center mb-4"
+          >
+            <WnSvgIcon
+              icon="lock"
+              color="var(--Wn-primary)"
+              :size="20"
+            />
           </div>
           <h4 class="text-white text-[13px] font-bold leading-snug mb-1">Unlock New Features</h4>
-          <p class="text-white/60 text-[11px] leading-relaxed mb-4">& Maximize Your Hospital Management Efficiency</p>
+          <p class="text-white/60 text-[11px] leading-relaxed mb-4">
+            & Maximize Your Hospital Management Efficiency
+          </p>
           <div class="flex items-center justify-between">
-            <button class="text-white/50 text-[10px] font-bold hover:text-white transition-colors uppercase tracking-wider">What's New?</button>
-            <button class="bg-white text-secondary text-[11px] font-bold py-2.5 px-5 rounded-xl hover:bg-white/90 transition-all active:scale-95 shadow-sm">Upgrade</button>
+            <button
+              class="text-white/50 text-[10px] font-bold hover:text-white transition-colors uppercase tracking-wider"
+            >
+              What's New?
+            </button>
+            <button
+              class="bg-white text-secondary text-[11px] font-bold py-2.5 px-5 rounded-xl hover:bg-white/90 transition-all active:scale-95 shadow-sm"
+            >
+              Upgrade
+            </button>
           </div>
         </div>
       </div>
@@ -43,14 +90,16 @@ const route = useRoute();
 const router = useRouter();
 const settingStore = useSettingStore();
 
-const { getMenuOpenWidth, menuType, uniqueOpened } = storeToRefs(settingStore);
+const { getMenuOpenWidth, menuType, uniqueOpened, menuOpen } = storeToRefs(settingStore);
 
 const defaultOpenedMenus = ref<string[]>([]);
 const isMobileMode = ref(false);
 const currentScreenWidth = ref(0);
 
 /** 是否显示左侧菜单 */
-const showLeftMenu = computed(() => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT);
+const showLeftMenu = computed(
+  () => menuType.value === MenuTypeEnum.LEFT || menuType.value === MenuTypeEnum.TOP_LEFT,
+);
 
 /** 当前路由路径 */
 const routerPath = computed(() => String(route.meta.activePath || route.path));
@@ -76,6 +125,11 @@ const findIframeMenuList = (currentPath: string, menuList: any[]) => {
     if (menu.children && hasPath(menu.children)) return menu.children;
   }
   return [];
+};
+
+/** 切换侧边栏展开/收缩 */
+const toggleSidebar = (): void => {
+  settingStore.toggleMenuOpen();
 };
 
 const navigateToHome = (): void => {

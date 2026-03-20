@@ -14,7 +14,6 @@
     "EffectScope": true,
     "ElLoading": true,
     "ElMessage": true,
-    "ElMessageBox": true,
     "ErrorLogData": true,
     "ErrorResponse": true,
     "ExtractDefaultPropTypes": true,

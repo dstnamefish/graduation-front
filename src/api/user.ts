@@ -53,3 +53,43 @@ export function getUserDetail(id: number) {
     url: `/users/detail/${id}`,
   });
 }
+
+/**
+ * 获取分页查询用户
+ */
+export function getUserPage(params: any) {
+  return request.get({
+    url: '/users/page',
+    params,
+  });
+}
+
+/**
+ * 修改用户角色
+ */
+export function assignUserRoles(userId: number, roleIds: number[]) {
+  return request.post({
+    url: `/users/${userId}/roles`,
+    data: roleIds,
+  });
+}
+
+/**
+ * 禁用/启用用户
+ */
+export function updateUserStatus(userId: number, status: number) {
+  return request.put({
+    url: `/users/${userId}/status`,
+    params: { status },
+  });
+}
+
+/**
+ * 重置用户密码
+ */
+export function resetUserPassword(userId: number, newPassword: string) {
+  return request.put({
+    url: `/users/${userId}/password/reset`,
+    params: { newPassword },
+  });
+}

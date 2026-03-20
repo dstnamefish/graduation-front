@@ -66,6 +66,9 @@ export const useUserStore = defineStore(
     /** 用户信息 */
     const info = ref<Partial<User>>({});
 
+    /** 用户权限列表 */
+    const permissions = ref<string[]>([]);
+
     /** 搜索历史记录 */
     const searchHistory = ref<any[]>([]);
 
@@ -90,6 +93,11 @@ export const useUserStore = defineStore(
     /** 设置用户信息 */
     const setUserInfo = (newInfo: User) => {
       info.value = newInfo;
+    };
+
+    /** 设置权限列表 */
+    const setPermissions = (perms: string[]) => {
+      permissions.value = perms;
     };
 
     /** 设置登录状态 */
@@ -145,9 +153,20 @@ export const useUserStore = defineStore(
       return info.value.role?.code === roleCode;
     };
 
+    /** 检查用户是否拥有指定权限 */
+    const hasPermission = (permission: string): boolean => {
+      return permissions.value.includes(permission);
+    };
+
+    /** 检查用户是否拥有任一权限 */
+    const hasAnyPermission = (perms: string[]): boolean => {
+      return perms.some((p) => permissions.value.includes(p));
+    };
+
     /** 退出登录 */
     const logOut = () => {
       info.value = {};
+      permissions.value = [];
       isLogin.value = false;
       isLock.value = false;
       lockPassword.value = '';
@@ -169,6 +188,8 @@ export const useUserStore = defineStore(
       getUserInfo,
       getUserRoleCode,
       getWorktabState,
+      hasAnyPermission,
+      hasPermission,
       info,
       isLock,
       isLogin,
@@ -176,12 +197,14 @@ export const useUserStore = defineStore(
       lockPassword,
       logOut,
       login,
+      permissions,
       refreshToken,
       searchHistory,
       setLanguage,
       setLockPassword,
       setLockStatus,
       setLoginStatus,
+      setPermissions,
       setSearchHistory,
       setToken,
       setUserInfo,

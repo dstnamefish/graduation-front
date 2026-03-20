@@ -9,6 +9,7 @@
     :offset="4"
     :popper-style="{
       width: triggerWidth > 0 ? `${triggerWidth + 16}px` : 'auto',
+      minWidth: '200px',
       padding: 0,
       borderRadius: '12px',
       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',

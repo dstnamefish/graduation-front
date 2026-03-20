@@ -5,20 +5,18 @@ import { AppRouteRecord } from '@/types/router';
  */
 export const patientsRoutes: AppRouteRecord[] = [
   {
-    // Move list view into dedicated folder to avoid ComponentLoader hitting it for detail route
     component: '/patients',
     meta: {
       headerBar: {
         globalSearch: false,
       },
-      icon: 'local-business/menu-patients',
+      icon: 'hugeicons:user-group',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin', 'doctor'],
       fixedHeight: true,
       title: 'menus.patients.title',
     },
     name: 'Patients',
     path: '/patients',
   },
-  
 ];

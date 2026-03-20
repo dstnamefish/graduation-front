@@ -10,9 +10,9 @@ export const inventoryRoutes: AppRouteRecord[] = [
       headerBar: {
         globalSearch: false,
       },
-      icon: 'local-business/inventory',
+      icon: 'hugeicons:package',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin'],
       fixedHeight: true,
       title: 'menus.inventory.title',
     },

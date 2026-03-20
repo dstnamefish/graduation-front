@@ -40,127 +40,143 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
 import ChatSidebar from './modules/ChatSidebar.vue';
 import ChatArea from './modules/ChatArea.vue';
-// 🚀 直接导入静态 Mock 数据，脱离真实 API
-import { mockConversations, mockMessages } from '@/mock/messages';
+import {
+  fetchConversationList,
+  fetchMessages,
+  createMessage
+} from '@/api/message';
+import type { Conversation, Message } from '@/types/api/message';
+import { useUserStore } from '@/types/api/user.model';
 
 defineOptions({ name: 'MessagesLayout' });
 
+const userStore = useUserStore();
 const isMobile = ref(false);
 const showChatArea = ref(false);
 const loading = ref(false);
 const messagesLoading = ref(false);
 const sending = ref(false);
 
-const chats = ref<any[]>([]);
-const activeChat = ref<any | null>(null);
-const currentMessages = ref<any[]>([]);
-
-const currentUserId = 1; // 模拟当前登录用户的 ID
+const chats = ref<Conversation[]>([]);
+const activeChat = ref<Conversation | null>(null);
+const currentMessages = ref<Message[]>([]);
 
 const checkScreenSize = () => {
   isMobile.value = window.innerWidth < 1024;
 };
 
-// 模拟获取联系人列表
-const fetchConversations = () => {
+const fetchConversations = async () => {
   loading.value = true;
-  setTimeout(() => {
-    chats.value = [...mockConversations];
+  try {
+    const res = await fetchConversationList();
+    chats.value = res || [];
+  } catch (error) {
+    console.error('Failed to fetch conversations:', error);
+    ElMessage.error('Failed to load conversations');
+    chats.value = [];
+  } finally {
     loading.value = false;
-  }, 600); // 模拟 600ms 的网络延迟
+  }
 };
 
-// 模拟获取聊天记录
-const handleSelectChat = (chat: any) => {
+const handleSelectChat = async (chat: Conversation) => {
   activeChat.value = chat;
   if (isMobile.value) {
     showChatArea.value = true;
   }
 
   messagesLoading.value = true;
-  setTimeout(() => {
-    // 过滤出当前对话的消息（目前只有 ID=4 有数据，其他的会显示空白欢迎页）
-    const data = mockMessages.filter((m) => m.conversationId === chat.id);
-
-    currentMessages.value = data.map((msg: any) => ({
+  try {
+    const res = await fetchMessages(chat.id);
+    currentMessages.value = (res || []).map((msg) => ({
       ...msg,
-      isOwn: msg.senderId === currentUserId,
+      isOwn: msg.senderId === userStore.info?.id
     }));
+
+    const targetChat = chats.value.find(c => c.id === chat.id);
+    if (targetChat) {
+      targetChat.unreadCount = 0;
+    }
+  } catch (error) {
+    console.error('Failed to fetch messages:', error);
+    ElMessage.error('Failed to load messages');
+    currentMessages.value = [];
+  } finally {
     messagesLoading.value = false;
-  }, 400); // 模拟 400ms 的网络延迟
+  }
 };
 
-// 模拟发送消息
-const handleSendMessage = (content: string) => {
+const handleSendMessage = async (content: string) => {
   if (!activeChat.value) return;
   sending.value = true;
 
-  setTimeout(() => {
-    const tempMessage = {
-      id: Date.now(),
+  try {
+    await createMessage({
       content,
-      sentAt: new Date().toISOString(),
-      isOwn: true,
-      senderId: currentUserId,
       conversationId: activeChat.value.id,
-      isRead: false
-    };
+      type: 0
+    });
 
-    // 放入当前聊天窗口
-    currentMessages.value.push(tempMessage);
+    const res = await fetchMessages(activeChat.value.id);
+    currentMessages.value = (res || []).map((msg) => ({
+      ...msg,
+      isOwn: msg.senderId === userStore.info?.id
+    }));
 
-    // 同步更新侧边栏的最后一条消息预览
-    const targetChat = chats.value.find(c => c.id === activeChat.value.id);
+    const targetChat = chats.value.find(c => c.id === activeChat.value!.id);
     if (targetChat) {
       targetChat.lastMessageContent = content;
-      targetChat.lastMessageTime = tempMessage.sentAt;
+      targetChat.lastMessageTime = new Date().toISOString();
     }
-
+  } catch (error) {
+    console.error('Failed to send message:', error);
+    ElMessage.error('Failed to send message');
+  } finally {
     sending.value = false;
-  }, 300); // 模拟 300ms 的发送延迟
+  }
 };
 
-// 模拟发送带文件的消息
-const handleSendFiles = (content: string, files: File[]) => {
+const handleSendFiles = async (content: string, files: File[]) => {
   if (!activeChat.value) return;
   sending.value = true;
 
-  setTimeout(() => {
-    // 模拟上传文件，生成临时 URL
+  try {
     const attachments = files.map((file) => ({
       name: file.name,
       type: file.type,
       size: file.size,
-      url: URL.createObjectURL(file), // 实际项目中应上传到服务器获取真实 URL
+      url: URL.createObjectURL(file)
     }));
 
-    const tempMessage = {
-      id: Date.now(),
-      content,
-      sentAt: new Date().toISOString(),
-      isOwn: true,
-      senderId: currentUserId,
+    const messageContent = content || (files.length > 0 ? files[0].name : '');
+    await createMessage({
+      content: messageContent,
       conversationId: activeChat.value.id,
-      isRead: false,
-      attachments,
-    };
+      type: 3
+    });
 
-    // 放入当前聊天窗口
-    currentMessages.value.push(tempMessage);
+    const res = await fetchMessages(activeChat.value.id);
+    currentMessages.value = (res || []).map((msg) => ({
+      ...msg,
+      isOwn: msg.senderId === userStore.info?.id
+    }));
 
-    // 同步更新侧边栏的最后一条消息预览
-    const targetChat = chats.value.find(c => c.id === activeChat.value.id);
+    const targetChat = chats.value.find(c => c.id === activeChat.value!.id);
     if (targetChat) {
-      targetChat.lastMessageContent = files.length > 0 
+      targetChat.lastMessageContent = files.length > 0
         ? `📎 ${files[0].name}${files.length > 1 ? ` and ${files.length - 1} more` : ''}`
         : content;
-      targetChat.lastMessageTime = tempMessage.sentAt;
+      targetChat.lastMessageTime = new Date().toISOString();
     }
-
+  } catch (error) {
+    console.error('Failed to send files:', error);
+    ElMessage.error('Failed to send files');
+  } finally {
     sending.value = false;
-  }, 500); // 模拟 500ms 的发送延迟（文件上传稍慢）
+  }
 };
 
 onMounted(() => {

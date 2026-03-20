@@ -50,6 +50,9 @@ export const useSettingStore = defineStore(
     /** 菜单展开宽度 */
     const menuOpenWidth = ref(SETTING_DEFAULT_CONFIG.menuOpenWidth);
 
+    /** 菜单收缩宽度 */
+    const menuCollapseWidth = ref(SETTING_DEFAULT_CONFIG.menuCollapseWidth);
+
     /** 菜单是否展开 */
     const menuOpen = ref(SETTING_DEFAULT_CONFIG.menuOpen);
 
@@ -145,8 +148,18 @@ export const useSettingStore = defineStore(
      * 获取菜单展开宽度
      */
     const getMenuOpenWidth = computed((): string => {
+      if (!menuOpen.value) {
+        return menuCollapseWidth.value + 'px';
+      }
       return menuOpenWidth.value + 'px' || SETTING_DEFAULT_CONFIG.menuOpenWidth + 'px';
     });
+
+    /**
+     * 切换菜单展开/收缩状态
+     */
+    const toggleMenuOpen = () => {
+      menuOpen.value = !menuOpen.value;
+    };
 
     /**
      * 是否显示烟花
@@ -349,6 +362,7 @@ export const useSettingStore = defineStore(
       holidayFireworksLoaded,
       isDark,
       isShowFireworks,
+      menuCollapseWidth,
       menuOpen,
       menuOpenWidth,
       menuThemeType,
@@ -387,6 +401,7 @@ export const useSettingStore = defineStore(
       systemThemeMode,
       systemThemeType,
       tabStyle,
+      toggleMenuOpen,
       uniqueOpened,
       watermarkVisible,
     };

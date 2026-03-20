@@ -6,14 +6,13 @@ import { AppRouteRecord } from '@/types/router';
 export const departmentsRoutes: AppRouteRecord[] = [
   {
     component: '/department/list',
-
     meta: {
       headerBar: {
         globalSearch: false,
       },
-      icon: 'local-business/departments',
+      icon: 'hugeicons:hospital-02',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin', 'doctor', 'patient'],
       title: 'menus.departments.title',
     },
     name: 'Departments',
@@ -28,7 +27,7 @@ export const departmentsRoutes: AppRouteRecord[] = [
       title: 'Department Details',
       isHide: true,
       activePath: '/departments',
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin', 'doctor', 'patient'],
       isDetail: true,
     },
     name: 'DepartmentDetails',

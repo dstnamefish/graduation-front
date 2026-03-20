@@ -71,13 +71,25 @@
           </li>
         </ul>
 
-        <WnButton
-          type="primary"
-          size="small"
-          @click="$emit('view', data)"
-        >
-          See Detail
-        </WnButton>
+        <div class="flex items-center gap-2">
+          <WnButton
+            v-roles="['R_SUPER']"
+            type="default"
+            size="small"
+            class="!rounded-lg"
+            @click.stop="$emit('edit', data)"
+          >
+            编辑
+          </WnButton>
+          <WnButton
+            type="primary"
+            size="small"
+            class="!rounded-lg"
+            @click.stop="$emit('view', data)"
+          >
+            See Detail
+          </WnButton>
+        </div>
       </footer>
     </div>
   </article>
@@ -107,5 +119,6 @@ defineProps<{
 
 defineEmits<{
   (e: 'view', data: Department): void;
+  (e: 'edit', data: Department): void;
 }>();
 </script>

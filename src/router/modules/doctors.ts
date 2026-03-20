@@ -10,14 +10,13 @@ export const doctorsRoutes: AppRouteRecord[] = [
       headerBar: {
         globalSearch: false,
       },
-      icon: 'local-business/doctors',
+      icon: 'hugeicons:stethoscope-02',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin', 'patient'],
       fixedHeight: true,
       title: 'menus.doctors.title',
     },
     name: 'Doctors',
     path: '/doctors',
   },
-  
 ];

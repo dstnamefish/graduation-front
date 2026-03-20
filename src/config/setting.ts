@@ -27,6 +27,8 @@ export const SETTING_DEFAULT_CONFIG = {
   menuOpen: true,
   /** 菜单展开宽度 */
   menuOpenWidth: 230,
+  /** 菜单收缩宽度 */
+  menuCollapseWidth: 64,
   /** 菜单风格 */
   menuThemeType: MenuThemeEnum.DESIGN,
   /** 菜单类型 */

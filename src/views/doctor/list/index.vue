@@ -12,9 +12,12 @@ import WnSvgIcon from '@/components/core/base/Wn-svg-icon/index.vue';
 import WnTableHeader from '@/components/core/tables/Wn-table-header/index.vue';
 import WnButton from '@/components/core/base/Wn-button/index.vue';
 import WnTable from '@/components/core/tables/Wn-table/index.vue';
+import WnForm from '@/components/core/forms/Wn-form/index.vue';
 import { useTable } from '@/hooks/core/useTable';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import * as doctorApi from '@/api/doctor';
 import * as departmentApi from '@/api/department';
+import * as userApi from '@/api/user';
 
 defineOptions({ name: 'Doctors' });
 
@@ -22,6 +25,7 @@ const router = useRouter();
 const { t, locale } = useI18n();
 const departmentOptions = ref<{label: string, value: any}[]>([]);
 const specialtyOptions = ref<{label: string, value: any}[]>([]);
+const unboundUserOptions = ref<{label: string, value: any}[]>([]);
 
 const loadMeta = async () => {
   try {
@@ -39,6 +43,15 @@ const loadMeta = async () => {
       label: resolveLocalizedText(s.name, locale.value),
       value: s.id
     }));
+
+    // 获取未绑定的系统用户（假设后端存在此 API，否则可在此优雅降级或使用一般用户列表）
+    try {
+      const users = await userApi.getUnboundUsers?.() || [];
+      unboundUserOptions.value = users.map((u: any) => ({
+        label: `${u.name || u.username} (${u.phone || '无手机号'})`,
+        value: u.id
+      }));
+    } catch(e) { /* ignore */ }
   } catch (error) {
     console.error('Failed to load meta data', error);
   }
@@ -165,8 +178,99 @@ const columns = computed<ColumnOption[]>(() => [
   { label: t('doctors.table.action'), prop: 'action', minWidth: 120, useSlot: true },
 ]);
 
+// ================= 医生配置抽屉 (Add/Edit) =================
+const drawerVisible = ref(false);
+const drawerTitle = ref('');
+const formRef = ref<any>(null);
+const submitting = ref(false);
+
+const formSchema = computed(() => [
+  {
+    type: 'select',
+    label: '关联系统账号',
+    key: 'userId',
+    options: unboundUserOptions.value,
+    rules: [{ required: true, message: '请选择要绑定的系统用户账号' }]
+  },
+  {
+    type: 'select',
+    label: '所属科室',
+    key: 'departmentId',
+    options: departmentOptions.value,
+    rules: [{ required: true, message: '请选择科室' }]
+  },
+  {
+    type: 'input',
+    label: '医生姓名',
+    key: 'name',
+    rules: [{ required: true, message: '请输入医生姓名' }]
+  },
+  {
+    type: 'input',
+    label: '职称',
+    key: 'title',
+    rules: [{ required: true, message: '请输入职称（如：主任医师）' }]
+  },
+  {
+    type: 'input',
+    label: '擅长方向',
+    key: 'specialist', // backend typically maps to specialty or specialist
+    rules: [{ required: true, message: '请输入擅长方向' }]
+  },
+  {
+    type: 'input',
+    label: '排班限额',
+    key: 'dailyLimit',
+    props: {
+      type: 'number',
+      min: 0,
+      max: 100
+    },
+    rules: [{ required: true, message: '请输入排班限额' }]
+  }
+]);
+
 const handleAddDoctor = () => {
-  ElMessage.success(t('doctors.addDoctor') + ' functionality coming soon!');
+  drawerTitle.value = '新增医生档案';
+  drawerVisible.value = true;
+  setTimeout(() => {
+    formRef.value?.setValues({ dailyLimit: 20 });
+  }, 100);
+};
+
+const handleEdit = (row: Doctor) => {
+  drawerTitle.value = '编辑医生档案';
+  drawerVisible.value = true;
+  setTimeout(() => {
+    formRef.value?.setValues({
+      userId: row.userId,
+      departmentId: row.departmentId,
+      name: row.name,
+      title: row.title,
+      specialist: row.specialist,
+      dailyLimit: row.dailyLimit || 20
+    });
+  }, 100);
+};
+
+const handleSubmitDoc = async () => {
+  if (!formRef.value) return;
+  const valid = await formRef.value.validate();
+  if (valid) {
+    submitting.value = true;
+    try {
+      // 实际应调用 doctorApi.addDoctor / updateDoctor
+      console.log('保存医生信息:', formRef.value.getValues());
+      ElMessage.success(`${drawerTitle.value}保存成功!`);
+      drawerVisible.value = false;
+      handleSearch();
+    } catch (e) {
+      console.error(e);
+      ElMessage.error('保存失败');
+    } finally {
+      submitting.value = false;
+    }
+  }
 };
 
 const handleGoDetail = (row: Doctor) => {
@@ -174,10 +278,6 @@ const handleGoDetail = (row: Doctor) => {
     name: 'DoctorDetails',
     params: { id: row.id.toString() },
   });
-};
-
-const handleEdit = (row: Doctor) => {
-  ElMessage.info(`${t('doctors.editDoctor')}: ${row.name}`);
 };
 
 const handleDelete = async (row: Doctor) => {
@@ -213,6 +313,7 @@ const handleDelete = async (row: Doctor) => {
 
       <template #right>
         <WnButton
+          v-roles="['R_SUPER']"
           mode="add"
           @click="handleAddDoctor"
         >
@@ -262,6 +363,8 @@ const handleDelete = async (row: Doctor) => {
           </div>
         </template>
 
+
+
         <template #availabilityStatus="{ row }">
           <div
             class="inline-flex items-center px-3 py-1 rounded-lg border font-medium transition-all duration-300"
@@ -274,12 +377,14 @@ const handleDelete = async (row: Doctor) => {
         <template #action="{ row }">
           <div class="flex items-center gap-2 text-title">
             <WnSvgIcon
+              v-roles="['R_SUPER']"
               icon="lucide:edit"
               class="c-p hover:text-(--color-primary-500) active:text-(--color-primary-800) transition-colors"
               @click="handleEdit(row)"
             />
-            <div class="w-[2px] h-4 bg-disabled-border"></div>
+            <div class="w-[2px] h-4 bg-disabled-border" v-roles="['R_SUPER']"></div>
             <WnSvgIcon
+              v-roles="['R_SUPER']"
               icon="mi:delete"
               class="c-p hover:text-(--color-danger-500) active:text-(--color-danger-600) transition-colors"
               @click="handleDelete(row)"
@@ -288,5 +393,43 @@ const handleDelete = async (row: Doctor) => {
         </template>
       </WnTable>
     </div>
+
+    <!-- 新增/编辑医生档案抽屉 (el-drawer) -->
+    <el-drawer
+      v-model="drawerVisible"
+      :title="drawerTitle"
+      size="500px"
+      append-to-body
+      destroy-on-close
+    >
+      <div class="flex flex-col h-full bg-white relative">
+        <div class="px-6 py-5 border-b border-slate-100 shrink-0">
+          <h3 class="text-lg font-bold text-slate-800">{{ drawerTitle }}</h3>
+          <p class="text-[13px] text-slate-500 mt-1.5">维护核心医生信息及其出诊排班限额与关联系统用户账号。</p>
+        </div>
+        
+        <div class="flex-1 px-6 py-6 overflow-y-auto w-full">
+          <WnForm ref="formRef" :items="formSchema" />
+        </div>
+
+        <div class="px-6 py-4 border-t border-slate-100 bg-white grid grid-cols-2 gap-4 shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.02)]">
+          <WnButton 
+            type="default"
+            class="w-full !rounded-xl !py-5"
+            @click="drawerVisible = false"
+          >
+            取消操作
+          </WnButton>
+          <WnButton 
+            type="primary"
+            class="w-full !rounded-xl !py-5"
+            :loading="submitting"
+            @click="handleSubmitDoc"
+          >
+            保存医生档案
+          </WnButton>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>

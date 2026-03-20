@@ -7,9 +7,9 @@ export const messagesRoutes: AppRouteRecord[] = [
   {
     component: '/messages',
     meta: {
-      icon: 'local-business/messages',
+      icon: 'hugeicons:message-multiple-02',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin', 'doctor', 'patient'],
       title: 'menus.messages.title',
     },
     name: 'Messages',

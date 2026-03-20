@@ -16,7 +16,7 @@
           @keyup.enter="handleSearch"
         />
         <WnButton
-          mode="add"
+          type="primary"
           @click="handleAddAppointment"
         >
           {{ $t('appointments.addAppointment') }}
@@ -104,55 +104,80 @@ const selectedRows = ref<Appointment[]>([]);
 
 /** 统计数据 */
 const statsData = ref({ all: 0, confirmed: 0, pending: 0, cancelled: 0 });
-const isStatsLoading = ref(false);
 
-/** 获取统计数据 */
-const fetchStats = async () => {
-  isStatsLoading.value = true;
+/** 处理统计数据 */
+const processStatsData = (statusCounts: AppointmentStatusCount[]): { all: number; confirmed: number; pending: number; cancelled: number } => {
+  let all = 0;
+  let confirmed = 0;
+  let pending = 0;
+  let cancelled = 0;
+  (statusCounts || []).forEach((item) => {
+    const count = Number(item.count) || 0;
+    all += count;
+    switch (item.status) {
+      case AppointmentStatus.CONFIRMED:
+        confirmed = count;
+        break;
+      case AppointmentStatus.PENDING:
+        pending = count;
+        break;
+      case AppointmentStatus.CANCELLED:
+        cancelled = count;
+        break;
+    }
+  });
+  return { all, confirmed, pending, cancelled };
+};
+
+/** 获取带筛选条件的统计数据 */
+const fetchFilteredStats = async (query?: string, dateFilter?: string) => {
   try {
-    const response = await AppointmentApi.fetchStatusCount();
-    const statusCounts: AppointmentStatusCount[] = response || [];
-    let all = 0;
-    let confirmed = 0;
-    let pending = 0;
-    let cancelled = 0;
-    statusCounts.forEach((item) => {
-      const count = Number(item.count) || 0;
-      all += count;
-      switch (item.status) {
-        case AppointmentStatus.CONFIRMED:
-          confirmed = count;
-          break;
-        case AppointmentStatus.PENDING:
-          pending = count;
-          break;
-        case AppointmentStatus.CANCELLED:
-          cancelled = count;
-          break;
+    const params: AppointmentQuery = {
+      query: query?.trim() || undefined,
+      dateFilter: dateFilter || undefined,
+    };
+    Object.keys(params).forEach(key => {
+      if (params[key as keyof AppointmentQuery] === undefined || params[key as keyof AppointmentQuery] === '') {
+        delete params[key as keyof AppointmentQuery];
       }
     });
-    statsData.value = { all, confirmed, pending, cancelled };
+    const response = await AppointmentApi.fetchStatusCountFiltered(params);
+    statsData.value = processStatsData(response);
   } catch (error) {
-    console.error('Failed to fetch appointment stats:', error);
-    statsData.value = { all: 0, confirmed: 0, pending: 0, cancelled: 0 };
-  } finally {
-    isStatsLoading.value = false;
+    console.error('Failed to fetch filtered stats:', error);
   }
 };
 
-/** 页面加载时获取统计数据 */
-onMounted(() => {
-  fetchStats();
-});
-
 const apiFn = async (params: any): Promise<any> => {
   try {
-    const response = await AppointmentApi.fetchPage(params);
+    const apiParams: any = {
+      pageNum: params.pageNum,
+      pageSize: params.pageSize,
+      query: params.query?.trim() || undefined,
+      status: params.status,
+      dateFilter: params.date || undefined,
+    };
+    Object.keys(apiParams).forEach(key => {
+      if (apiParams[key] === undefined || apiParams[key] === '') {
+        delete apiParams[key];
+      }
+    });
+    
+    const [pageResponse, statsResponse] = await Promise.all([
+      AppointmentApi.fetchPage(apiParams),
+      AppointmentApi.fetchStatusCountFiltered({
+        query: apiParams.query,
+        dateFilter: apiParams.dateFilter,
+      }),
+    ]);
+    
+    statsData.value = processStatsData(statsResponse);
+    
     return {
-      data: response.records || [],
-      total: response.total || 0,
-      current: response.current,
-      size: response.size,
+      data: pageResponse.records || [],
+      total: pageResponse.total || 0,
+      current: pageResponse.current,
+      size: pageResponse.size,
     };
   } catch (error) {
     ElMessage.error('Failed to fetch appointments');
@@ -275,7 +300,6 @@ const handleCancel = async (row: Appointment) => {
     if (success) {
       ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
       handleSearch();
-      fetchStats();
     }
   } catch (error: any) {
     if (error !== 'cancel') {
@@ -306,7 +330,6 @@ const handleBatchCancel = async () => {
     selectedRows.value = [];
     tableRef.value?.elTableRef?.clearSelection();
     handleSearch();
-    fetchStats();
   } catch (error: any) {
     if (error !== 'cancel') {
     }

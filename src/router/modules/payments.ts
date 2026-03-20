@@ -10,9 +10,9 @@ export const paymentsRoutes: AppRouteRecord[] = [
       headerBar:{
         globalSearch:false
       },
-      icon: 'local-business/payments',
+      icon: 'hugeicons:money',
       keepAlive: false,
-      roles: ['ADMIN'],
+      roles: ['super_admin', 'department_admin'],
       title: 'menus.payments.title',
       fixedHeight: true,
     },

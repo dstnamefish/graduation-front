@@ -10,7 +10,8 @@
 export enum MessageType {
   TEXT = 0,
   IMAGE = 1,
-  FILE = 2,
+  VOICE = 2,
+  FILE = 3,
 }
 
 /**
@@ -20,8 +21,22 @@ export enum MessageType {
 export enum MessageStatus {
   UNREAD = 0,
   READ = 1,
+  SENT = 2,
   RECALLED = 3,
   DELETED = 4,
+  FAILED = 5,
+}
+
+/**
+ * Attachment
+ * @description Message attachment info
+ */
+export interface Attachment {
+  id: number;
+  name: string;
+  type: string;
+  size: number;
+  url: string;
 }
 
 /**
@@ -54,15 +69,15 @@ export interface Conversation {
  * @description Chat message info
  * @property {number} id - Message ID
  * @property {string} content - Message content
- * @property {number} type - Message type: 0-Text, 1-Image, 2-File
- * @property {number} status - Message status: 0-Unread, 1-Read, 3-Recalled, 4-Deleted
+ * @property {number} type - Message type: 0-Text, 1-Image, 2-Voice, 3-File
+ * @property {number} status - Message status: 0-Unread, 1-Read, 2-Sent, 3-Recalled, 4-Deleted, 5-Failed
  * @property {string} sentAt - Sent time
- * @property {string} readAt - Read time, empty if unread
  * @property {boolean} isRead - Is read
  * @property {number} senderId - Sender ID
- * @property {string} senderAvatar - Sender avatar
+ * @property {number} conversationId - Conversation ID
  * @property {number} fileId - File ID, when message type is image or file
- * @property {string} fileUrl - File access URL, real file access path assembled cross-module
+ * @property {string} senderAvatar - Sender avatar
+ * @property {Attachment[]} attachments - Attachment list
  */
 export interface Message {
   id: number;
@@ -70,19 +85,19 @@ export interface Message {
   type: number;
   status: number;
   sentAt: string;
-  readAt?: string;
   isRead: boolean;
   senderId: number;
-  senderAvatar: string;
+  conversationId: number;
   fileId?: number;
-  fileUrl?: string;
+  senderAvatar: string;
+  attachments?: Attachment[];
 }
 
 /**
  * Send message form
  * @description Form data for sending message
  * @property {string} content - Message content, text content for text message, file name or description for image/file message
- * @property {number} type - Message type: 0-Text, 1-Image, 2-File
+ * @property {number} type - Message type: 0-Text, 1-Image, 2-Voice, 3-File
  * @property {number} conversationId - Conversation ID, identifies which conversation the message belongs to
  * @property {number} fileId - File ID, when message type is image or file, associated file record ID
  */

@@ -9,7 +9,7 @@ import {
   Conversation,
   Message,
   MessageForm
-} from '@/types/message';
+} from '@/types/api/message';
 
 /**
  * 获取当前用户的私聊列表
