@@ -724,6 +724,7 @@
 
     &:hover {
       border-color: var(--color-slate-900) !important;
+      color: var(--color-slate-50) !important;
       background-color: var(--color-slate-900) !important;
     }
 
@@ -746,31 +747,65 @@
   }
 }
 
-/* TODO 次级按钮设置 */
+/* 次级/默认边框按钮 (Default Outline Button) */
 .el-button--default {
-  border-color: var(--color-slate-300) !important;
-  color: var(--color-slate-800) !important;
-  background-color: var(--color-slate-50) !important;
+  border-color: var(--color-slate-300) !important; 
+  color: var(--color-slate-800) !important; 
+  background-color: var(--color-slate-50) !important; 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; 
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   gap: 6px !important;
 
   &:hover {
-    border-color: var(--color-primary-500) !important;
-    color: var(--color-primary-50) !important;
-    background-color: var(--color-primary-100) !important;
+    border-color: var(--color-slate-400) !important; 
+    color: var(--color-slate-900) !important;
+    background-color: var(--color-slate-100) !important; 
   }
 
   &:active {
-    border-color: var(--color-slate-200) !important;
-    background-color: var(--color-slate-200) !important;
-    transition: all 0.3s !important;
-    transform: translateY(0) scale(0.97);
+    border-color: var(--color-slate-400) !important;
+    background-color: var(--color-slate-200) !important; 
+    transition: all 0.1s !important;
+    transform: translateY(1px) scale(0.98);
   }
 
   &.is-disabled {
     border-color: var(--color-slate-200) !important;
     color: var(--color-slate-400) !important;
-    background-color: var(--color-slate-100) !important;
+    background-color: var(--color-slate-50) !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+
+/* 危险/删除按钮设置 (Danger Button) */
+.el-button--danger {
+  border-color: var(--color-danger-500) !important;
+  color: #ffffff !important;
+  background-color: var(--color-danger-500) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  gap: 6px !important;
+
+  &:hover {
+    border-color: var(--color-danger-600) !important; 
+    color: #ffffff !important;
+    background-color: var(--color-danger-600) !important;
+    box-shadow: 0 4px 12px rgba(253, 67, 68, 0.2) !important; 
+  }
+
+  &:active {
+    border-color: var(--color-danger-700) !important;
+    background-color: var(--color-danger-700) !important;
+    transition: all 0.1s !important;
+    transform: translateY(1px) scale(0.97);
+  }
+
+  &.is-disabled {
+    border-color: var(--color-danger-200) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    background-color: var(--color-danger-200) !important;
+    transform: none !important;
+    box-shadow: none !important;
   }
 }
 
@@ -1064,6 +1099,95 @@
           opacity: 0.5;
         }
       }
+    }
+  }
+}
+
+// -------------------------------- 修改 el-dialog 组件默认 --------------------------------
+/* 模糊纯黑叠加层 (Backdrop) */
+.el-overlay.is-message-box,
+.el-overlay-dialog,
+.el-overlay {
+  background-color: rgba(28, 28, 30, 0.6) !important; /* 基于 slate-900 (#1c1c1e) 的半透明色 */
+  backdrop-filter: blur(4px) !important;
+}
+
+/* 对话框主体卡片 (Dialog Card) */
+.el-dialog {
+  background-color: var(--color-slate-50) !important; /* 映射到纯白大底色 */
+  border-radius: 12px !important; 
+  border: 1px solid var(--color-slate-300) !important; /* 标准通用描线边框 */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; 
+  padding: 0 !important;
+  margin-top: 20vh !important;
+  
+  /* 标题头部 (Header) */
+  .el-dialog__header {
+    padding: 24px 24px 16px 24px !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+
+    .el-dialog__title {
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      line-height: 1.5 !important;
+      letter-spacing: -0.025em !important;
+      color: var(--color-slate-900) !important; /* 深度极高的一级深色标题 */
+    }
+
+    /* 现代化的微缩关闭按钮 (x) */
+    .el-dialog__headerbtn {
+      top: 16px !important;
+      right: 16px !important;
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 6px !important;
+      transition: background-color 0.2s !important;
+      outline: none !important;
+      
+      .el-dialog__close {
+        color: var(--color-slate-500) !important; /* 辅助级别的浅灰色 */
+        font-size: 16px !important;
+        transition: opacity 0.2s !important;
+        opacity: 0.7 !important;
+      }
+      
+      &:hover {
+        background-color: var(--color-slate-100) !important; /* hover 块状背景阴影 */
+        .el-dialog__close {
+          opacity: 1 !important;
+          color: var(--color-slate-900) !important; /* hover 加深高亮图标 */
+        }
+      }
+      
+      &:focus-visible {
+        box-shadow: 0 0 0 2px var(--color-primary-300) !important; /* 匹配主品牌色的聚焦光圈 */
+      }
+    }
+  }
+
+  /* 核心正文区域 (Body) */
+  .el-dialog__body {
+    padding: 0 24px 24px 24px !important;
+    font-size: 14px !important;
+    color: var(--color-slate-700) !important; /* 标准段落灰 */
+  }
+
+  /* 底部操作区 (Footer) */
+  .el-dialog__footer {
+    padding: 0 24px 24px 24px !important;
+    margin: 0 !important;
+    border-top: none !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    gap: 8px !important; 
+    
+    text-align: right !important;
+    
+    .el-button {
+      margin-left: 0 !important;
     }
   }
 }

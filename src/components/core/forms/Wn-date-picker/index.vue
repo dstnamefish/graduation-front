@@ -75,16 +75,19 @@
             :key="index"
             type="button"
             @click="selectDate(date)"
-            :disabled="!date.currentMonth && !showOutsideDays"
+            :disabled="isDateDisabled(date)"
             :class="
               cn(
                 'h-8 w-8 p-0 text-sm font-normal flex items-center justify-center rounded-md transition-colors',
-                !date.isSelected && date.currentMonth && 'text-body hover:bg-surface-sunken',
+                !date.isSelected && date.currentMonth && !isDateDisabled(date) && 'text-body hover:bg-surface-sunken',
                 date.isSelected &&
+                  !isDateDisabled(date) &&
                   'bg-primary text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground shadow-md font-medium',
                 !date.currentMonth &&
                   !date.isSelected &&
+                  !isDateDisabled(date) &&
                   'text-placeholder opacity-50 hover:bg-surface-sunken hover:text-body',
+                isDateDisabled(date) && 'text-placeholder opacity-30 cursor-not-allowed',
               )
             "
           >
@@ -144,6 +147,8 @@ const props = withDefaults(
     showOutsideDays?: boolean;
     autoWidth?: boolean;
     placement?: 'left' | 'right';
+    disablePastDates?: boolean;
+    disabledDate?: (date: Date) => boolean;
   }>(),
   {
     placeholder: 'Pick a date',
@@ -151,6 +156,7 @@ const props = withDefaults(
     showOutsideDays: true,
     autoWidth: true,
     placement: 'right',
+    disablePastDates: false,
   },
 );
 
@@ -242,6 +248,24 @@ const goToToday = () => {
   viewDate.value = today;
   modelValue.value = today.format('YYYY-MM-DD');
   popoverVisible.value = false;
+};
+
+const isDateDisabled = (date: any) => {
+  if (!date.currentMonth && !props.showOutsideDays) {
+    return true;
+  }
+  if (props.disablePastDates) {
+    const today = dayjs().startOf('day');
+    const checkDate = dayjs(date.fullDate);
+    if (checkDate.isBefore(today)) {
+      return true;
+    }
+  }
+  if (props.disabledDate) {
+    const checkDate = new Date(date.fullDate);
+    return props.disabledDate(checkDate);
+  }
+  return false;
 };
 
 watch(modelValue, (val) => {

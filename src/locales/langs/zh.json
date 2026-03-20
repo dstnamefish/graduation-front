@@ -341,6 +341,15 @@
       "cancelled": "已取消"
     },
     "searchPlaceholder": "搜索姓名、医生等",
+    "cancelDialog": {
+      "title": "确认要取消此预约吗？",
+      "desc": "此操作无法撤销。取消后，该时间段的号源将被释放回号池。",
+      "patientInfo": "患者：{patient} ({time} {department})",
+      "reasonLabel": "取消原因（可选）",
+      "reasonPlaceholder": "请输入取消原因（如：患者要求、医生停诊等）",
+      "keep": "保留预约",
+      "confirm": "确认取消"
+    },
     "confirmCancel": "确定要取消 {patient} 的预约吗？",
     "cancelTitle": "确认取消",
     "cancelSuccess": "{patient} 的预约已取消。",

@@ -341,6 +341,15 @@
       "cancelled": "Cancelled"
     },
     "searchPlaceholder": "Search name,doctor,etc",
+    "cancelDialog": {
+      "title": "Cancel this appointment?",
+      "desc": "This action cannot be undone. The timeslot will be released back to the pool.",
+      "patientInfo": "Patient: {patient} ({time} {department})",
+      "reasonLabel": "Cancellation Reason (Optional)",
+      "reasonPlaceholder": "e.g. Patient requested, Doctor unavailable",
+      "keep": "Keep Appointment",
+      "confirm": "Confirm Cancel"
+    },
     "confirmCancel": "Are you sure you want to cancel appointment for {patient}?",
     "cancelTitle": "Confirm Cancellation",
     "cancelSuccess": "Appointment for {patient} has been cancelled.",

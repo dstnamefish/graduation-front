@@ -74,11 +74,29 @@
         </template>
       </WnTable>
     </div>
+
+    <CancelDialog
+      v-model:visible="cancelDialogVisible"
+      :appointment="currentCancelAppointment"
+      :loading="cancelLoading"
+      @confirm="confirmCancelAppointment"
+    />
+
+    <RescheduleDialog
+      v-model:visible="rescheduleDialogVisible"
+      :appointment="currentRescheduleAppointment"
+      :loading="rescheduleLoading"
+      @confirm="confirmRescheduleAppointment"
+    />
+
+    <NewAppointmentDialog
+      v-model:visible="addDialogVisible"
+      @success="handleSearch"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
 import { ElMessage, ElMessageBox, ElButton } from 'element-plus';
 import * as AppointmentApi from '@/api/appointment';
 import type {
@@ -94,6 +112,9 @@ import { ColumnOption } from '@/types/component';
 import { SearchFormItem } from '@/components/core/forms/Wn-search-bar/index.vue';
 import { useTable } from '@/hooks/core/useTable';
 import WnTabSwitch from '@/components/core/widget/Wn-tab-switch/index.vue';
+import CancelDialog from './modules/CancelDialog.vue';
+import NewAppointmentDialog from './modules/NewAppointmentDialog.vue';
+import RescheduleDialog from './modules/RescheduleDialog.vue';
 import { $t } from '@/locales';
 
 defineOptions({ name: 'Appointments' });
@@ -101,6 +122,16 @@ defineOptions({ name: 'Appointments' });
 const tableRef = ref();
 const activeTab = ref('all');
 const selectedRows = ref<Appointment[]>([]);
+
+const cancelDialogVisible = ref(false);
+const currentCancelAppointment = ref<Appointment | null>(null);
+const cancelLoading = ref(false);
+
+const addDialogVisible = ref(false);
+
+const rescheduleDialogVisible = ref(false);
+const currentRescheduleAppointment = ref<Appointment | null>(null);
+const rescheduleLoading = ref(false);
 
 /** 统计数据 */
 const statsData = ref({ all: 0, confirmed: 0, pending: 0, cancelled: 0 });
@@ -215,9 +246,9 @@ const statusTabs = computed(() => {
 });
 
 /** 取消预约函数 */
-const cancelAppointment = async (id: number) => {
+const cancelAppointment = async (id: number, reason?: string) => {
   try {
-    const params: AppointmentCancelParams = { id };
+    const params: AppointmentCancelParams & { reason?: string } = { id, reason };
     await AppointmentApi.cancel(params);
     return true;
   } catch (error) {
@@ -227,8 +258,20 @@ const cancelAppointment = async (id: number) => {
   }
 };
 
-const handleRescheduleFn = () => {
-  ElMessage.info('Reschedule functionality coming soon!');
+const confirmRescheduleAppointment = async (data: { date: string; time: string; remark: string }) => {
+  if (!currentRescheduleAppointment.value) return;
+  rescheduleLoading.value = true;
+  try {
+    // 这里因为你未提供真实API，暂时使用模拟异步实现成功反馈，你后续可以在 appointment.ts 中新增 update 方法进行对接
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    ElMessage.success($t('appointments.rescheduleSuccess'));
+    rescheduleDialogVisible.value = false;
+    handleSearch();
+  } catch (error) {
+    ElMessage.error('修改失败，请重试');
+  } finally {
+    rescheduleLoading.value = false;
+  }
 };
 
 /** 搜索项配置 */
@@ -282,28 +325,32 @@ const handleTabUpdate = (value: string | number) => {
 };
 
 const handleAddAppointment = () => {
-  ElMessage.success('Add Appointment modal coming soon!');
+  addDialogVisible.value = true;
 };
 
 const handleReschedule = (row: Appointment) => {
-  handleRescheduleFn();
+  currentRescheduleAppointment.value = row;
+  rescheduleDialogVisible.value = true;
 };
 
-const handleCancel = async (row: Appointment) => {
+const handleCancel = (row: Appointment) => {
+  currentCancelAppointment.value = row;
+  cancelDialogVisible.value = true;
+};
+
+const confirmCancelAppointment = async (reason: string) => {
+  if (!currentCancelAppointment.value) return;
+  
+  cancelLoading.value = true;
   try {
-    await ElMessageBox.confirm(
-      $t('appointments.confirmCancel', { patient: row.patientName }),
-      $t('appointments.cancelTitle'),
-      { type: 'warning', confirmButtonClass: 'el-button--danger' },
-    );
-    const success = await cancelAppointment(row.id);
+    const success = await cancelAppointment(currentCancelAppointment.value.id, reason);
     if (success) {
-      ElMessage.success('Appointment for ' + row.patientName + ' has been cancelled.');
+      ElMessage.success($t('appointments.cancelSuccess', '预约已成功取消'));
+      cancelDialogVisible.value = false;
       handleSearch();
     }
-  } catch (error: any) {
-    if (error !== 'cancel') {
-    }
+  } finally {
+    cancelLoading.value = false;
   }
 };
 
